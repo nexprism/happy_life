@@ -22,14 +22,16 @@ const translations = {
     myForum: 'My Forum',
     mySubmissions: 'My Submissions',
     myPurchases: 'My Purchases',
-    myCourses: 'My Courses',
     allCourses: 'All Courses',
     gsCourses: 'GS Courses',
     optionalCourses: 'Optional Courses',
     testSeries: 'Test Series',
     buyBooks: 'Buy Books',
     jobPostings: 'Job Postings',
-    support: 'Support & Help',
+    coursesSubtitle: 'Curated Academic Modules & Learning Tracks',
+    coursesAvailable: 'COURSES AVAILABLE',
+    moreFilters: 'MORE FILTERS',
+    hideFilters: 'HIDE FILTERS',
 
     // Profile & User Info
     security: 'Security',
@@ -562,7 +564,10 @@ const translations = {
     testSeries: 'टेस्ट सीरीज़',
     buyBooks: 'पुस्तकें खरीदें',
     jobPostings: 'जॉब पोस्टिंग',
-    support: 'सहायता और सहायता केंद्र',
+    coursesSubtitle: 'क्यूरेटेड अकादमिक मॉड्यूल और लर्निंग ट्रैक्स',
+    coursesAvailable: 'उपलब्ध कोर्स',
+    moreFilters: 'अधिक फ़िल्टर',
+    hideFilters: 'फ़िल्टर छिपाएं',
 
     // Profile & User Info
     security: 'सुरक्षा',

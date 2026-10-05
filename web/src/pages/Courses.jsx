@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState, useMemo } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { gsap } from 'gsap'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchCourses } from '../redux/slices/courseSlice'
+import { fetchCourses, fetchCategories } from '../redux/slices/courseSlice'
 import RollingText from '../components/RollingText'
 import CourseCard from '../components/CourseCard'
 import EventHero from '../components/EventHero'
@@ -10,21 +10,50 @@ import { fetchEvents } from '../redux/slices/eventSlice'
 import { useLanguage } from '../context/LanguageContext'
 import { dummyCourses, testSeriesData, buyBooksData } from '../data/coursesData'
 
-const filterKeys = [
-  { id: 'ALL COURSES', labelKey: 'allCoursesTab', defaultLabel: 'ALL COURSES' },
-  { id: 'GS COURSES', labelKey: 'gsCoursesTab', defaultLabel: 'GS COURSES' },
-  { id: 'OPTIONAL COURSES', labelKey: 'optionalCoursesTab', defaultLabel: 'OPTIONAL COURSES' },
-  { id: 'TEST SERIES', labelKey: 'testSeriesTab', defaultLabel: 'TEST SERIES' },
-  { id: 'BUY BOOKS', labelKey: 'buyBooksTab', defaultLabel: 'BUY BOOKS' }
-]
-
 const Courses = () => {
   const dispatch = useDispatch()
   const [searchParams, setSearchParams] = useSearchParams()
-  const { courses, loading, error } = useSelector((state) => state.courses)
+  const { courses, categories, loading, error } = useSelector((state) => state.courses)
   const { eventList, loading: eventsLoading } = useSelector((state) => state.events)
+  const authUser = useSelector((state) => state.auth?.user)
   const containerRef = useRef(null)
   const { t } = useLanguage()
+
+  // Generate dynamic category tabs list from API + specialized modules
+  const dynamicFilterKeys = useMemo(() => {
+    const list = [
+      { id: 'ALL COURSES', labelKey: 'allCoursesTab', defaultLabel: 'ALL COURSES', isSpecial: false }
+    ]
+
+    if (categories && categories.length > 0) {
+      categories
+        .filter(cat => !cat.isDeleted && cat.status !== 'inactive')
+        .forEach(cat => {
+          list.push({
+            id: cat._id,
+            name: cat.name,
+            slug: cat.slug,
+            labelKey: '',
+            defaultLabel: (cat.name || '').toUpperCase(),
+            isCategory: true
+          })
+        })
+    } else {
+      // Fallback if API hasn't loaded yet
+      list.push(
+        { id: 'GS COURSES', labelKey: 'gsCoursesTab', defaultLabel: 'GS COURSES' },
+        { id: 'OPTIONAL COURSES', labelKey: 'optionalCoursesTab', defaultLabel: 'OPTIONAL COURSES' }
+      )
+    }
+
+    // Include specialized modules
+    list.push(
+      { id: 'TEST SERIES', labelKey: 'testSeriesTab', defaultLabel: 'TEST SERIES', isSpecial: true },
+      { id: 'BUY BOOKS', labelKey: 'buyBooksTab', defaultLabel: 'BUY BOOKS', isSpecial: true }
+    )
+
+    return list
+  }, [categories])
 
   // Determine initial filter from URL params
   const getInitialFilter = () => {
@@ -34,9 +63,15 @@ const Courses = () => {
 
     if (tabParam === 'test-series' || filterParam === 'TEST SERIES') return 'TEST SERIES'
     if (tabParam === 'buy-books' || filterParam === 'BUY BOOKS') return 'BUY BOOKS'
-    if (catParam === 'gs' || filterParam === 'GS COURSES') return 'GS COURSES'
-    if (catParam === 'optional' || filterParam === 'OPTIONAL COURSES') return 'OPTIONAL COURSES'
-    if (filterParam && filterKeys.some(f => f.id === filterParam)) return filterParam
+    if (catParam) {
+      const match = categories?.find(c => c.slug === catParam || c._id === catParam || c.name?.toLowerCase() === catParam.toLowerCase())
+      if (match) return match._id
+    }
+    if (filterParam) {
+      const match = categories?.find(c => c._id === filterParam || c.name?.toUpperCase() === filterParam.toUpperCase() || c.slug === filterParam)
+      if (match) return match._id
+      return filterParam
+    }
     return 'ALL COURSES'
   }
 
@@ -57,15 +92,26 @@ const Courses = () => {
 
   const [activeBookModal, setActiveBookModal] = useState(null)
   const [isBookPurchased, setIsBookPurchased] = useState(false)
+
+  // Event Registration Modal State
+  const [activeEventModal, setActiveEventModal] = useState(null)
+  const [eventFormData, setEventFormData] = useState({ fullName: '', email: '', phone: '' })
+  const [eventRegisterLoading, setEventRegisterLoading] = useState(false)
+  const [eventRegisterError, setEventRegisterError] = useState('')
+  const [eventRegistrationSuccess, setEventRegistrationSuccess] = useState(null)
+
   const quizModalRef = useRef(null)
   const bookModalRef = useRef(null)
+  const eventModalRef = useRef(null)
 
   // Prevent background Lenis scroll and enable automatic mouse/finger scrolling on modal open
   useEffect(() => {
-    if (activeQuizModal || activeBookModal) {
+    if (activeQuizModal || activeBookModal || activeEventModal) {
       document.body.style.overflow = 'hidden'
       const timer = setTimeout(() => {
-        if (quizModalRef.current) {
+        if (eventModalRef.current) {
+          eventModalRef.current.focus()
+        } else if (quizModalRef.current) {
           quizModalRef.current.focus()
         } else if (bookModalRef.current) {
           bookModalRef.current.focus()
@@ -78,13 +124,13 @@ const Courses = () => {
     } else {
       document.body.style.overflow = ''
     }
-  }, [activeQuizModal, activeBookModal])
+  }, [activeQuizModal, activeBookModal, activeEventModal])
 
-  // Sync activeFilter when searchParams change in URL
+  // Sync activeFilter when searchParams or categories change
   useEffect(() => {
     const newFilter = getInitialFilter()
     setActiveFilter(newFilter)
-  }, [searchParams])
+  }, [searchParams, categories])
 
   // Quiz timer
   useEffect(() => {
@@ -107,12 +153,15 @@ const Courses = () => {
       setSearchParams({ tab: 'test-series' })
     } else if (filterId === 'BUY BOOKS') {
       setSearchParams({ tab: 'buy-books' })
-    } else if (filterId === 'GS COURSES') {
-      setSearchParams({ filter: 'GS COURSES' })
-    } else if (filterId === 'OPTIONAL COURSES') {
-      setSearchParams({ filter: 'OPTIONAL COURSES' })
-    } else {
+    } else if (filterId === 'ALL COURSES') {
       setSearchParams({})
+    } else {
+      const matchedCat = categories?.find(c => c._id === filterId || c.name === filterId || c.slug === filterId)
+      if (matchedCat?.slug) {
+        setSearchParams({ category: matchedCat.slug })
+      } else {
+        setSearchParams({ filter: filterId })
+      }
     }
   }
 
@@ -121,38 +170,34 @@ const Courses = () => {
     const apiAvailable = courses && courses.length > 0
     let listToFilter = apiAvailable ? courses : dummyCourses
 
-    // If activeFilter is GS COURSES
-    if (activeFilter === 'GS COURSES') {
-      let gsResults = []
-      if (apiAvailable) {
-        gsResults = courses.filter(item => {
-          const cat = (item.categoryId?.name || item.category?.name || item.category || '').toUpperCase()
-          const title = (item.title || '').toUpperCase()
-          const tags = Array.isArray(item.tags) ? item.tags.join(' ').toUpperCase() : ''
-          return cat.includes('GS') || cat.includes('GENERAL STUDIES') || title.includes('GS') || tags.includes('GS')
-        })
-      }
-      if (gsResults.length === 0) {
-        gsResults = dummyCourses.filter(c => c.category === 'GS COURSES')
-      }
-      listToFilter = gsResults
-    }
+    // Dynamic Category Filtering
+    if (activeFilter !== 'ALL COURSES' && activeFilter !== 'TEST SERIES' && activeFilter !== 'BUY BOOKS') {
+      const matchedCat = categories?.find(c => c._id === activeFilter || c.name === activeFilter || c.slug === activeFilter)
+      const targetId = matchedCat?._id || activeFilter
+      const targetName = (matchedCat?.name || activeFilter).toUpperCase()
+      const targetSlug = (matchedCat?.slug || '').toLowerCase()
 
-    // If activeFilter is OPTIONAL COURSES
-    if (activeFilter === 'OPTIONAL COURSES') {
-      let optResults = []
       if (apiAvailable) {
-        optResults = courses.filter(item => {
-          const cat = (item.categoryId?.name || item.category?.name || item.category || '').toUpperCase()
+        listToFilter = courses.filter(item => {
+          const itemCatId = item.categoryId?._id || item.categoryId || item.category?._id || ''
+          if (itemCatId && String(itemCatId) === String(targetId)) return true
+
+          const itemCatName = (item.categoryId?.name || item.category?.name || item.category || '').toUpperCase()
+          if (itemCatName && (itemCatName === targetName || itemCatName.includes(targetName) || targetName.includes(itemCatName))) return true
+
+          const itemCatSlug = (item.categoryId?.slug || item.category?.slug || '').toLowerCase()
+          if (targetSlug && itemCatSlug && itemCatSlug === targetSlug) return true
+
           const title = (item.title || '').toUpperCase()
-          const tags = Array.isArray(item.tags) ? item.tags.join(' ').toUpperCase() : ''
-          return cat.includes('OPTIONAL') || title.includes('OPTIONAL') || tags.includes('OPTIONAL')
+          const tags = Array.isArray(item.tags) ? item.tags.join(' ').toUpperCase() : (typeof item.tags === 'string' ? item.tags.toUpperCase() : '')
+          return title.includes(targetName) || tags.includes(targetName)
+        })
+      } else {
+        listToFilter = dummyCourses.filter(c => {
+          const cat = (c.category || '').toUpperCase()
+          return cat.includes(targetName) || targetName.includes(cat)
         })
       }
-      if (optResults.length === 0) {
-        optResults = dummyCourses.filter(c => c.category === 'OPTIONAL COURSES')
-      }
-      listToFilter = optResults
     }
 
     return listToFilter.filter(item => {
@@ -198,11 +243,12 @@ const Courses = () => {
 
       return matchesDifficulty && matchesDuration
     })
-  }, [courses, activeFilter, selectedDifficulty, selectedDuration])
+  }, [courses, categories, activeFilter, selectedDifficulty, selectedDuration])
 
   useEffect(() => {
     dispatch(fetchCourses())
-    dispatch(fetchEvents({ status: 'active' })).finally(() => setHasFetchedEvents(true))
+    dispatch(fetchCategories())
+    dispatch(fetchEvents({ status: 'published', limit: 50 })).finally(() => setHasFetchedEvents(true))
     window.scrollTo(0, 0)
 
     const ctx = gsap.context(() => {
@@ -235,9 +281,10 @@ const Courses = () => {
 
   const getImageUrl = (thumb) => {
     if (!thumb) return '/herocard.png'
-    if (/^https?:\/\//i.test(thumb)) return thumb
-    const baseUrl = import.meta.env.VITE_BASE_URL || 'http://localhost:5000'
-    return thumb.startsWith('/') ? `${baseUrl}${thumb}` : `${baseUrl}/${thumb}`
+    const normalized = String(thumb).replace(/\\/g, '/')
+    if (/^https?:\/\//i.test(normalized)) return normalized
+    const baseUrl = import.meta.env.VITE_BASE_URL || 'https://happy-life-sx03.onrender.com'
+    return normalized.startsWith('/') ? `${baseUrl}${normalized}` : `${baseUrl}/${normalized}`
   }
 
   // Quiz Handling
@@ -282,6 +329,181 @@ const Courses = () => {
     setIsBookPurchased(false)
   }
 
+  // Event Modal Handling & Registration
+  const openEventModal = (event) => {
+    setActiveEventModal(event)
+    setEventFormData({
+      fullName: authUser?.fullName || authUser?.name || '',
+      email: authUser?.email || '',
+      phone: authUser?.phoneNumber || authUser?.phone || '',
+    })
+    setEventRegisterError('')
+    setEventRegistrationSuccess(null)
+    setEventRegisterLoading(false)
+  }
+
+  const formatEventDate = (startDate, endDate) => {
+    if (!startDate) return ''
+    try {
+      const start = new Date(startDate)
+      const dateStr = start.toLocaleDateString('en-US', {
+        weekday: 'short',
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+      })
+      const timeStr = start.toLocaleTimeString('en-US', {
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true,
+      })
+      if (endDate) {
+        const end = new Date(endDate)
+        const endTimeStr = end.toLocaleTimeString('en-US', {
+          hour: 'numeric',
+          minute: '2-digit',
+          hour12: true,
+        })
+        return `${dateStr} • ${timeStr} - ${endTimeStr}`
+      }
+      return `${dateStr} • ${timeStr}`
+    } catch (e) {
+      return String(startDate)
+    }
+  }
+
+  const handleEventRegister = async (e) => {
+    if (e) e.preventDefault()
+    if (!activeEventModal) return
+    if (!eventFormData.email || !eventFormData.fullName) {
+      setEventRegisterError('Please provide your full name and email address.')
+      return
+    }
+
+    setEventRegisterLoading(true)
+    setEventRegisterError('')
+
+    const BASE_URL = import.meta.env.VITE_BASE_URL || 'https://happy-life-sx03.onrender.com'
+    const token = localStorage.getItem('edrilla_token') || localStorage.getItem('token')
+    const headers = { 'Content-Type': 'application/json' }
+    if (token) headers['Authorization'] = `Bearer ${token}`
+
+    try {
+      const rawPrice = activeEventModal.price ? parseFloat(activeEventModal.price.toString()) : 0
+
+      if (rawPrice > 0) {
+        // Paid event check and Razorpay order creation
+        const checkRes = await fetch(`${BASE_URL}/events/${activeEventModal._id || activeEventModal.id}/check-register`, {
+          method: 'POST',
+          headers,
+          body: JSON.stringify({
+            guestEmail: eventFormData.email,
+            guestName: eventFormData.fullName,
+            is_verify: true
+          })
+        })
+        const checkData = await checkRes.json()
+
+        if (!checkRes.ok || !checkData.success) {
+          throw new Error(checkData.message || 'Unable to register for this event')
+        }
+
+        if (checkData.is_valid === false) {
+          throw new Error(checkData.message || 'Already registered or registration unavailable')
+        }
+
+        if (checkData.razorpay) {
+          const loadRazorpayScript = () => new Promise((resolve, reject) => {
+            if (window.Razorpay) return resolve(true)
+            const script = document.createElement('script')
+            script.src = 'https://checkout.razorpay.com/v1/checkout.js'
+            script.onload = () => resolve(true)
+            script.onerror = () => reject(new Error('Razorpay SDK failed to load'))
+            document.body.appendChild(script)
+          })
+
+          await loadRazorpayScript()
+
+          const options = {
+            key: checkData.razorpay.key,
+            amount: checkData.razorpay.amount,
+            currency: checkData.razorpay.currency || 'INR',
+            name: 'Happy Life',
+            description: `Registration: ${activeEventModal.title}`,
+            order_id: checkData.razorpay.order?.id,
+            prefill: {
+              name: eventFormData.fullName,
+              email: eventFormData.email,
+              contact: eventFormData.phone || ''
+            },
+            handler: async function (response) {
+              try {
+                const regRes = await fetch(`${BASE_URL}/events/${activeEventModal._id || activeEventModal.id}/register`, {
+                  method: 'POST',
+                  headers,
+                  body: JSON.stringify({
+                    guestEmail: eventFormData.email,
+                    guestName: eventFormData.fullName,
+                    paymentId: response.razorpay_payment_id,
+                    orderId: response.razorpay_order_id,
+                    signature: response.razorpay_signature,
+                    phone: eventFormData.phone || ''
+                  })
+                })
+                const regData = await regRes.json()
+                if (!regRes.ok || !regData.success) {
+                  throw new Error(regData.message || 'Registration failed after payment')
+                }
+                setEventRegistrationSuccess(regData.data || regData)
+              } catch (err) {
+                setEventRegisterError(err.message || 'Registration completion failed')
+              } finally {
+                setEventRegisterLoading(false)
+              }
+            },
+            modal: {
+              ondismiss: function () {
+                setEventRegisterLoading(false)
+              }
+            },
+            theme: {
+              color: '#3b82f6'
+            }
+          }
+
+          const rzp = new window.Razorpay(options)
+          rzp.on('payment.failed', function (resp) {
+            setEventRegisterError(resp.error?.description || 'Payment failed. Please try again.')
+            setEventRegisterLoading(false)
+          })
+          rzp.open()
+          return
+        }
+      }
+
+      // Free event registration
+      const regRes = await fetch(`${BASE_URL}/events/${activeEventModal._id || activeEventModal.id}/register`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+          guestEmail: eventFormData.email,
+          guestName: eventFormData.fullName,
+          phone: eventFormData.phone || '',
+          paymentId: 'FREE_EVENT'
+        })
+      })
+      const regData = await regRes.json()
+      if (!regRes.ok || !regData.success) {
+        throw new Error(regData.message || 'Failed to complete registration')
+      }
+      setEventRegistrationSuccess(regData.data || regData)
+    } catch (err) {
+      setEventRegisterError(err.message || 'Failed to complete registration')
+    } finally {
+      setEventRegisterLoading(false)
+    }
+  }
+
   return (
     <div ref={containerRef} className="min-h-screen bg-dark pt-0 pb-24 text-normal">
 
@@ -299,7 +521,7 @@ const Courses = () => {
             </h1>
           </div>
           <p className="font-jetbrains text-xs text-accent uppercase tracking-[0.4em] font-bold italic mt-2">
-            {t('coursesSubtitle') || 'Curated Academic Modules & Learning Tracks'}
+            {t('coursesSubtitle') !== 'coursesSubtitle' ? t('coursesSubtitle') : 'Curated Academic Modules & Learning Tracks'}
           </p>
         </div>
 
@@ -311,19 +533,20 @@ const Courses = () => {
             
             {/* Filter Buttons */}
             <div className="col-span-8 flex items-center flex-wrap gap-3">
-              {filterKeys.map(({ id, labelKey, defaultLabel }) => {
+              {dynamicFilterKeys.map(({ id, labelKey, defaultLabel }) => {
                 const isActive = activeFilter === id
+                const labelText = labelKey && t(labelKey) !== labelKey ? t(labelKey) : defaultLabel
                 return (
                   <button
                     key={id}
                     onClick={() => handleFilterChange(id)}
-                    className={`course-filter-reveal opacity-0 px-6 py-3 font-montserrat text-[11px] font-bold tracking-[0.2em] border transition-all duration-500 uppercase rounded-none cursor-pointer ${
+                    className={`course-filter-reveal px-6 py-3 font-montserrat text-[11px] font-bold tracking-[0.2em] border transition-all duration-500 uppercase rounded-none cursor-pointer ${
                       isActive
                         ? 'bg-accent text-white border-accent'
                         : 'text-description border-border hover:border-accent/40 hover:text-normal'
                     }`}
                   >
-                    <RollingText text={t(labelKey) || defaultLabel} />
+                    <RollingText text={labelText} />
                   </button>
                 )
               })}
@@ -461,7 +684,7 @@ const Courses = () => {
                 onClick={() => setIsFilterOpen(!isFilterOpen)}
                 className="w-full flex items-center justify-between px-6 py-5 bg-card border border-border font-montserrat text-[11px] font-bold tracking-[0.2em] text-normal cursor-pointer"
               >
-                <span>CATEGORY: {filterKeys.find(f => f.id === activeFilter)?.defaultLabel || activeFilter}</span>
+                <span>CATEGORY: {dynamicFilterKeys.find(f => f.id === activeFilter)?.defaultLabel || activeFilter}</span>
                 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" className={`transition-transform duration-300 ${isFilterOpen ? 'rotate-180 text-accent' : ''}`} stroke="currentColor">
                   <path d="M6 9l6 6 6-6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
@@ -469,17 +692,20 @@ const Courses = () => {
 
               {isFilterOpen && (
                 <div className="absolute top-full left-0 w-full mt-2 z-50 bg-card border border-border shadow-2xl divide-y divide-border">
-                  {filterKeys.map(({ id, labelKey, defaultLabel }) => (
-                    <button
-                      key={id}
-                      onClick={() => handleFilterChange(id)}
-                      className={`w-full px-6 py-4 text-left font-montserrat text-[11px] font-bold tracking-[0.15em] uppercase transition-colors cursor-pointer ${
-                        activeFilter === id ? 'bg-accent text-white' : 'text-description hover:bg-black/5 dark:hover:bg-white/5'
-                      }`}
-                    >
-                      {t(labelKey) || defaultLabel}
-                    </button>
-                  ))}
+                  {dynamicFilterKeys.map(({ id, labelKey, defaultLabel }) => {
+                    const labelText = labelKey && t(labelKey) !== labelKey ? t(labelKey) : defaultLabel
+                    return (
+                      <button
+                        key={id}
+                        onClick={() => handleFilterChange(id)}
+                        className={`w-full px-6 py-4 text-left font-montserrat text-[11px] font-bold tracking-[0.15em] uppercase transition-colors cursor-pointer ${
+                          activeFilter === id ? 'bg-accent text-white' : 'text-description hover:bg-black/5 dark:hover:bg-white/5'
+                        }`}
+                      >
+                        {labelText}
+                      </button>
+                    )
+                  })}
                 </div>
               )}
             </div>
@@ -665,21 +891,31 @@ const Courses = () => {
             {eventsLoading ? (
               <div className="col-span-full text-center py-20 text-accent font-montserrat">LOADING EVENTS...</div>
             ) : eventList && eventList.length > 0 ? (
-              eventList.map((event) => (
-                <CourseCard
-                  key={event._id || event.id}
-                  item={{
-                    id: event._id || event.id,
-                    title: event.title,
-                    category: event.category || 'EVENT',
-                    description: event.description,
-                    image: getImageUrl(event.thumbnail || event.image),
-                    buttonText: event.buttonText || 'Register Now',
-                    isNew: event.isNew
-                  }}
-                  variant="event"
-                />
-              ))
+              eventList.map((event) => {
+                const eventPrice = event.price ? `₹${event.price}` : event.originalPrice ? `₹${event.originalPrice}` : 'FREE'
+                const eventType = event.type ? event.type.toUpperCase() : ''
+                const eventCategory = event.category ? event.category.toUpperCase() : 'EVENT'
+                const categoryBadge = eventType ? `${eventType} • ${eventCategory}` : eventCategory
+
+                return (
+                  <CourseCard
+                    key={event._id || event.id}
+                    item={{
+                      id: event._id || event.id,
+                      title: event.title,
+                      category: categoryBadge,
+                      description: event.description,
+                      image: getImageUrl(event.thumbnail || event.image),
+                      buttonText: event.buttonText || (eventPrice === 'FREE' ? 'Register Free' : `Register • ${eventPrice}`),
+                      price: eventPrice,
+                      isNew: event.isNew !== undefined ? event.isNew : true,
+                      onRegister: () => openEventModal(event)
+                    }}
+                    onRegister={() => openEventModal(event)}
+                    variant="event"
+                  />
+                )
+              })
             ) : hasFetchedEvents ? (
               <div className="col-span-full text-center py-20 text-description font-montserrat uppercase tracking-widest">No upcoming events at the moment.</div>
             ) : null}
@@ -938,6 +1174,228 @@ const Courses = () => {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* 7. INTERACTIVE EVENT REGISTRATION MODAL */}
+      {activeEventModal && (
+        <div
+          data-lenis-prevent="true"
+          onClick={(e) => {
+            if (e.target === e.currentTarget && !eventRegisterLoading) setActiveEventModal(null)
+          }}
+          className="fixed inset-0 z-[150] flex items-center justify-center p-4 bg-slate-950/75 backdrop-blur-md overflow-y-auto overscroll-contain"
+        >
+          <div
+            ref={eventModalRef}
+            tabIndex={-1}
+            data-lenis-prevent="true"
+            onClick={(e) => e.stopPropagation()}
+            className="bg-white w-full max-w-2xl rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-2xl space-y-6 max-h-[92vh] overflow-y-auto overscroll-contain outline-none focus:outline-none my-auto"
+          >
+            {/* Header */}
+            <div className="flex items-start justify-between border-b border-slate-100 pb-4">
+              <div className="space-y-1.5 pr-4">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-[10px] font-mono font-bold text-sky-700 bg-sky-50 px-2.5 py-1 rounded-md uppercase tracking-wider">
+                    {activeEventModal.type ? `${activeEventModal.type.toUpperCase()}` : 'EVENT'}
+                  </span>
+                  {activeEventModal.category && (
+                    <span className="text-[10px] font-mono font-bold text-amber-700 bg-amber-50 px-2.5 py-1 rounded-md uppercase tracking-wider">
+                      {activeEventModal.category}
+                    </span>
+                  )}
+                  {activeEventModal.price && Number(activeEventModal.price) > 0 ? (
+                    <span className="text-[10px] font-mono font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-md">
+                      ₹{activeEventModal.price}
+                    </span>
+                  ) : (
+                    <span className="text-[10px] font-mono font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-md">
+                      FREE
+                    </span>
+                  )}
+                </div>
+                <h3 className="font-newsreader text-2xl sm:text-3xl font-bold text-slate-900 leading-tight">
+                  {activeEventModal.title}
+                </h3>
+              </div>
+              <button
+                disabled={eventRegisterLoading}
+                onClick={() => setActiveEventModal(null)}
+                className="w-10 h-10 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center font-bold transition-colors cursor-pointer shrink-0 disabled:opacity-50"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            {eventRegistrationSuccess ? (
+              /* Success View */
+              <div className="text-center py-6 space-y-6">
+                <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center text-3xl mx-auto shadow-inner">
+                  ✓
+                </div>
+                <div className="space-y-2">
+                  <h4 className="font-newsreader text-3xl font-bold text-slate-900">
+                    Registration Confirmed! 🎉
+                  </h4>
+                  <p className="text-xs sm:text-sm text-slate-600 max-w-md mx-auto">
+                    You have successfully registered for <span className="font-semibold text-slate-900">{activeEventModal.title}</span>.
+                  </p>
+                </div>
+
+                <div className="bg-slate-50 p-5 rounded-2xl border border-slate-100 max-w-md mx-auto text-left space-y-2.5 text-xs text-slate-700">
+                  {eventRegistrationSuccess.ticket?.ticketNo && (
+                    <div className="flex items-center justify-between border-b border-slate-200/60 pb-2">
+                      <span className="text-slate-500 font-mono">Ticket Number</span>
+                      <span className="font-mono font-bold text-slate-900">{eventRegistrationSuccess.ticket.ticketNo}</span>
+                    </div>
+                  )}
+                  {activeEventModal.startDate && (
+                    <div className="flex items-center justify-between border-b border-slate-200/60 pb-2">
+                      <span className="text-slate-500">Date & Time</span>
+                      <span className="font-medium text-slate-900">{formatEventDate(activeEventModal.startDate, activeEventModal.endDate)}</span>
+                    </div>
+                  )}
+                  <div className="flex items-center justify-between">
+                    <span className="text-slate-500">Registered Email</span>
+                    <span className="font-medium text-slate-900">{eventFormData.email}</span>
+                  </div>
+                </div>
+
+                <p className="text-[11px] text-slate-500 max-w-md mx-auto leading-relaxed">
+                  A confirmation email with ticket details and joining information has been sent to your email address.
+                </p>
+
+                <button
+                  onClick={() => setActiveEventModal(null)}
+                  className="px-8 py-3 rounded-xl bg-slate-900 text-white font-montserrat text-xs font-bold uppercase tracking-wider hover:bg-accent hover:text-slate-950 transition-all cursor-pointer shadow-md"
+                >
+                  Done
+                </button>
+              </div>
+            ) : (
+              /* Registration Form View */
+              <div className="space-y-6">
+                
+                {/* Event Highlights Strip */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-slate-50 p-4 rounded-2xl border border-slate-100 text-xs">
+                  {activeEventModal.startDate && (
+                    <div className="flex items-center gap-2.5 text-slate-700">
+                      <span className="text-base">📅</span>
+                      <div>
+                        <div className="text-[10px] text-slate-400 uppercase font-mono">Date & Time</div>
+                        <div className="font-medium">{formatEventDate(activeEventModal.startDate, activeEventModal.endDate)}</div>
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="flex items-center gap-2.5 text-slate-700">
+                    <span className="text-base">📍</span>
+                    <div>
+                      <div className="text-[10px] text-slate-400 uppercase font-mono">Platform / Location</div>
+                      <div className="font-medium">
+                        {activeEventModal.type === 'online'
+                          ? (activeEventModal.onlineLink?.platform ? activeEventModal.onlineLink.platform.toUpperCase() : 'Online Live Stream')
+                          : activeEventModal.venue?.name || activeEventModal.venue?.address || 'Venue TBD'}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {activeEventModal.description && (
+                  <p className="text-xs sm:text-sm text-slate-600 leading-relaxed max-h-24 overflow-y-auto">
+                    {activeEventModal.description}
+                  </p>
+                )}
+
+                {/* Form */}
+                <form onSubmit={handleEventRegister} className="space-y-4 pt-2">
+                  <div className="space-y-1">
+                    <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
+                      Full Name *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={eventFormData.fullName}
+                      onChange={(e) => setEventFormData({ ...eventFormData, fullName: e.target.value })}
+                      placeholder="e.g. Alex Johnson"
+                      className="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-colors"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                      <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
+                        Email Address *
+                      </label>
+                      <input
+                        type="email"
+                        required
+                        value={eventFormData.email}
+                        onChange={(e) => setEventFormData({ ...eventFormData, email: e.target.value })}
+                        placeholder="e.g. alex@example.com"
+                        className="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-colors"
+                      />
+                    </div>
+
+                    <div className="space-y-1">
+                      <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
+                        Phone / WhatsApp (Optional)
+                      </label>
+                      <input
+                        type="tel"
+                        value={eventFormData.phone}
+                        onChange={(e) => setEventFormData({ ...eventFormData, phone: e.target.value })}
+                        placeholder="+91 98765 43210"
+                        className="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-colors"
+                      />
+                    </div>
+                  </div>
+
+                  {eventRegisterError && (
+                    <div className="p-3.5 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-700 font-medium">
+                      ⚠️ {eventRegisterError}
+                    </div>
+                  )}
+
+                  {/* Pricing Footer & Submit */}
+                  <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-slate-100">
+                    <div>
+                      <div className="text-[10px] font-mono text-slate-400 uppercase">Registration Fee</div>
+                      <div className="text-xl font-bold font-newsreader text-slate-900">
+                        {activeEventModal.price && Number(activeEventModal.price) > 0
+                          ? `₹${activeEventModal.price}`
+                          : 'FREE'}
+                      </div>
+                    </div>
+
+                    <button
+                      type="submit"
+                      disabled={eventRegisterLoading}
+                      className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-accent text-slate-950 font-montserrat text-xs font-black uppercase tracking-wider hover:scale-105 active:scale-98 transition-all shadow-md disabled:opacity-50 disabled:scale-100 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer"
+                    >
+                      {eventRegisterLoading ? (
+                        <>
+                          <svg className="animate-spin h-4 w-4 text-slate-950" viewBox="0 0 24 24" fill="none">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+                          </svg>
+                          <span>Processing...</span>
+                        </>
+                      ) : activeEventModal.price && Number(activeEventModal.price) > 0 ? (
+                        <span>Proceed to Pay ₹{activeEventModal.price} →</span>
+                      ) : (
+                        <span>Confirm Free Registration →</span>
+                      )}
+                    </button>
+                  </div>
+                </form>
+
+              </div>
+            )}
           </div>
         </div>
       )}

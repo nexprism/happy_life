@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import gsap from 'gsap'
 import { fetchExploreJobs } from '../redux/slices/jobSlice'
 import { useLanguage } from '../context/LanguageContext'
+import { formatBudget } from '../utils/formatBudget'
 
 const GigCard = ({ gig }) => {
   const cardRef = useRef(null)
@@ -17,13 +18,27 @@ const GigCard = ({ gig }) => {
     </svg>
   );
 
-  // Helper to strictly ensure we return a string, never an object
+  // Helper to strictly ensure we return a string, never an object or raw JSON
   const safeRender = (val) => {
     if (val === null || val === undefined) return '';
-    if (typeof val === 'string') return val;
+    if (typeof val === 'string') {
+      const trimmed = val.trim();
+      if ((trimmed.startsWith('{') && trimmed.endsWith('}')) || (trimmed.startsWith('[') && trimmed.endsWith(']'))) {
+        try {
+          const parsed = JSON.parse(trimmed);
+          if (parsed && typeof parsed === 'object' && (parsed.min !== undefined || parsed.max !== undefined || parsed.currency !== undefined)) {
+            return formatBudget(parsed);
+          }
+        } catch (e) {}
+      }
+      return val;
+    }
     if (typeof val === 'number') return String(val);
     if (Array.isArray(val)) return val.map(safeRender).join(', ');
     if (typeof val === 'object') {
+      if (val.min !== undefined || val.max !== undefined || val.currency !== undefined) {
+        return formatBudget(val);
+      }
       const preferred = val.address || val.type || val.name || val.label || val.title || val.value;
       if (preferred && typeof preferred !== 'object') return String(preferred);
       if (preferred && typeof preferred === 'object') return safeRender(preferred);
@@ -239,10 +254,24 @@ const JobDetail = ({ job, onBack, submitting, dispatch }) => {
 
   const safeRender = (val) => {
     if (val === null || val === undefined) return '';
-    if (typeof val === 'string') return val;
+    if (typeof val === 'string') {
+      const trimmed = val.trim();
+      if ((trimmed.startsWith('{') && trimmed.endsWith('}')) || (trimmed.startsWith('[') && trimmed.endsWith(']'))) {
+        try {
+          const parsed = JSON.parse(trimmed);
+          if (parsed && typeof parsed === 'object' && (parsed.min !== undefined || parsed.max !== undefined || parsed.currency !== undefined)) {
+            return formatBudget(parsed);
+          }
+        } catch (e) {}
+      }
+      return val;
+    }
     if (typeof val === 'number') return String(val);
-    if (Array.isArray(val)) return val.map(v => (typeof v === 'object' ? (v.name || v.label || JSON.stringify(v)) : String(v))).join(', ');
+    if (Array.isArray(val)) return val.map(v => (typeof v === 'object' ? (v.name || v.label || safeRender(v)) : String(v))).join(', ');
     if (typeof val === 'object') {
+      if (val.min !== undefined || val.max !== undefined || val.currency !== undefined) {
+        return formatBudget(val);
+      }
       const preferred = val.address || val.type || val.name || val.label || val.title || val.value;
       if (preferred && typeof preferred !== 'object') return String(preferred);
       try { return JSON.stringify(val); } catch (e) { return '[Data]'; }
@@ -306,7 +335,7 @@ const JobDetail = ({ job, onBack, submitting, dispatch }) => {
                 { icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>, label: 'Job Type', value: job.type || 'Full Time' },
                 { icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>, label: 'Location', value: job.location || 'Remote' },
                 { icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>, label: 'Work Mode', value: job.workMode || 'Remote' },
-                { icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>, label: 'Budget', value: job.budget || '$1k - $5k' },
+                { icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>, label: 'Budget', value: formatBudget(job.budget) },
                 { icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>, label: 'Experience Level', value: job.experienceLevel || 'Expert' },
                 { icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>, label: 'Posted', value: job.createdAt ? new Date(job.createdAt).toLocaleDateString() : 'Recently' }
               ].map((item, i) => (

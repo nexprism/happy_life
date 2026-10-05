@@ -261,20 +261,11 @@ export const checkRegisterForEvent = async (req, res) => {
       });
     }
 
-    // Check if event already started
-    if (new Date(event.startDate) < new Date()) {
+    // Check if event has ended
+    if (event.endDate && new Date(event.endDate) < new Date()) {
       return res.status(400).json({
         success: false,
-        message: 'Event has already started',
-        is_valid: false
-      });
-    }
-
-    // Check if event is ended
-    if (new Date(event.endDate) < new Date()) {
-      return res.status(400).json({
-        success: false,
-        message: 'Event has already ended',
+        message: 'Event registration is closed because the event has ended',
         is_valid: false
       });
     }

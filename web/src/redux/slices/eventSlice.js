@@ -4,9 +4,14 @@ const BASE_URL = import.meta.env.VITE_BASE_URL || 'https://happy-life-sx03.onren
 
 export const fetchEvents = createAsyncThunk(
     'events/fetchEvents',
-    async ({ page = 1, limit = 10, status = 'active' } = {}, { rejectWithValue }) => {
+    async (params = {}, { rejectWithValue }) => {
         try {
-            const response = await fetch(`${BASE_URL}/events?page=${page}&limit=${limit}&status=${status}`, {
+            const { page = 1, limit = 50, status = 'published' } = typeof params === 'object' ? params : {};
+            let queryUrl = `${BASE_URL}/events?page=${page}&limit=${limit}`;
+            if (status) {
+                queryUrl += `&status=${encodeURIComponent(status)}`;
+            }
+            const response = await fetch(queryUrl, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -44,11 +49,19 @@ const eventSlice = createSlice({
             .addCase(fetchEvents.fulfilled, (state, action) => {
                 state.loading = false;
                 if (action.payload?.data) {
-                    const { data: events, total, page, totalPages } = action.payload.data;
-                    state.eventList = events || [];
-                    state.total = total || 0;
-                    state.currentPage = page || 1;
-                    state.totalPages = totalPages || 1;
+                    if (Array.isArray(action.payload.data)) {
+                        state.eventList = action.payload.data;
+                        state.total = action.payload.data.length;
+                    } else {
+                        const { data: events, total, page, totalPages } = action.payload.data;
+                        state.eventList = Array.isArray(events) ? events : [];
+                        state.total = total || 0;
+                        state.currentPage = page || 1;
+                        state.totalPages = totalPages || 1;
+                    }
+                } else if (Array.isArray(action.payload)) {
+                    state.eventList = action.payload;
+                    state.total = action.payload.length;
                 }
             })
             .addCase(fetchEvents.rejected, (state, action) => {

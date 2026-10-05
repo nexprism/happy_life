@@ -19,6 +19,22 @@ export const fetchCourses = createAsyncThunk(
   }
 );
 
+export const fetchCategories = createAsyncThunk(
+  'courses/fetchCategories',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await fetch(`${BASE_URL}/coursecategories?limit=100`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch categories');
+      }
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
 export const fetchCourseDetail = createAsyncThunk(
   'courses/fetchCourseDetail',
   async (courseId, { rejectWithValue }) => {
@@ -44,8 +60,10 @@ const courseSlice = createSlice({
   name: 'courses',
   initialState: {
     courses: [],
+    categories: [],
     currentCourse: null,
     loading: false,
+    categoriesLoading: false,
     detailLoading: false,
     error: null,
   },
@@ -92,6 +110,17 @@ const courseSlice = createSlice({
       .addCase(fetchCourses.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      })
+      .addCase(fetchCategories.pending, (state) => {
+        state.categoriesLoading = true;
+      })
+      .addCase(fetchCategories.fulfilled, (state, action) => {
+        state.categoriesLoading = false;
+        const rawCats = action.payload?.data?.categories?.result || action.payload?.data?.categories || action.payload?.data || action.payload || [];
+        state.categories = Array.isArray(rawCats) ? rawCats : [];
+      })
+      .addCase(fetchCategories.rejected, (state) => {
+        state.categoriesLoading = false;
       })
       .addCase(fetchCourseDetail.pending, (state) => {
         state.detailLoading = true;

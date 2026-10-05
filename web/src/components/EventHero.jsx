@@ -3,6 +3,14 @@ import { gsap } from 'gsap'
 import RollingText from './RollingText'
 import bannerImg from '../assets/images/banner.png'
 
+const getImageUrl = (thumb) => {
+  if (!thumb) return bannerImg
+  const normalized = String(thumb).replace(/\\/g, '/')
+  if (/^https?:\/\//i.test(normalized)) return normalized
+  const baseUrl = import.meta.env.VITE_BASE_URL || 'https://happy-life-sx03.onrender.com'
+  return normalized.startsWith('/') ? `${baseUrl}${normalized}` : `${baseUrl}/${normalized}`
+}
+
 const EventHero = ({ events }) => {
   const [currentIndex, setCurrentIndex] = useState(0)
   const containerRef = useRef(null)
@@ -57,20 +65,33 @@ const EventHero = ({ events }) => {
       <div ref={sliderRef} className="relative w-full h-full">
         {events.map((event, i) => (
           <div 
-            key={i} 
+            key={event._id || i} 
             className={`event-slide absolute inset-0 w-full h-full overflow-hidden ${i === currentIndex ? 'opacity-100 z-10' : 'opacity-0 z-0'}`}
           >
             {/* Background Image */}
             <img  
-              src={bannerImg} 
-              alt="" 
-              className=" inset-0 w-full h-full object-cover object-top"
+              src={getImageUrl(event.thumbnail || event.image)} 
+              alt={event.title || 'Event'} 
+              className="inset-0 w-full h-full object-cover object-center"
+              onError={(e) => { e.currentTarget.src = bannerImg }}
             />
-            {/* Event Specific Overlay Image / Element */}
-            <div className="absolute inset-0 bg-black/40" />
+            {/* Event Specific Overlay */}
+            <div className="absolute inset-0 bg-gradient-to-t from-dark via-dark/40 to-black/30" />
             
-            {/* Subtle Gradient Branding Overlay */}
-            <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-dark via-transparent to-transparent opacity-60" />
+            {/* Event Info Overlay */}
+            <div className="absolute bottom-12 left-6 md:left-16 max-w-2xl z-20 space-y-2">
+              <span className="inline-block px-3 py-1 bg-accent/90 text-white font-jetbrains text-[10px] font-bold uppercase tracking-widest rounded-sm">
+                {event.category || 'FEATURED EVENT'}
+              </span>
+              <h2 className="font-newsreader text-2xl md:text-5xl italic text-white font-extralight tracking-tight leading-tight">
+                {event.title}
+              </h2>
+              {event.description && (
+                <p className="font-montserrat text-xs md:text-sm text-gray-300 line-clamp-2 max-w-xl">
+                  {event.description}
+                </p>
+              )}
+            </div>
             
           </div>
         ))}
@@ -81,7 +102,7 @@ const EventHero = ({ events }) => {
          {events.map((_, i) => (
            <div 
              key={i} 
-             className={`h-[2px] transition-all duration-700 ${i === currentIndex ? 'w-12 bg-accent' : 'w-4 bg-white/10'}`}
+             className={`h-[2px] transition-all duration-700 ${i === currentIndex ? 'w-12 bg-accent' : 'w-4 bg-white/20'}`}
            />
          ))}
       </div>

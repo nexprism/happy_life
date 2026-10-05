@@ -20,9 +20,22 @@ const router = express.Router();
 router.get('/', getAllEvents);
 router.get('/:id', getEventById);
 
-// Protected routes (authenticated users)
-router.post('/:id/check-register', accessTokenAutoRefresh, passport.authenticate('jwt', { session: false }), checkRegisterForEvent);
-router.post('/:id/register', accessTokenAutoRefresh, passport.authenticate('jwt', { session: false }), registerForEvent);
+// Optional auth helper: populates req.user if token is present, but allows guest submissions
+const optionalAuth = (req, res, next) => {
+  const token = req.headers.authorization?.split(' ')[1] || req.cookies?.accessToken;
+  if (token) {
+    passport.authenticate('jwt', { session: false }, (err, user) => {
+      if (user) req.user = user;
+      next();
+    })(req, res, next);
+  } else {
+    next();
+  }
+};
+
+// Registration routes (supports logged in users and guests)
+router.post('/:id/check-register', optionalAuth, checkRegisterForEvent);
+router.post('/:id/register', optionalAuth, registerForEvent);
 
 // Protected routes
 router.use(accessTokenAutoRefresh);

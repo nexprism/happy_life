@@ -3,8 +3,19 @@ import sanitizeDisplay from '../utils/textSanitize'
 import { Link } from 'react-router-dom'
 import { useLanguage } from '../context/LanguageContext'
 
-const CourseCard = ({ item, className = '', variant = 'course' }) => {
+const CourseCard = ({ item, className = '', variant = 'course', onRegister }) => {
   const { t } = useLanguage()
+
+  const handleAction = (e) => {
+    if (variant === 'event') {
+      if (e) {
+        e.preventDefault()
+        e.stopPropagation()
+      }
+      if (item?.onRegister) item.onRegister(item)
+      else if (onRegister) onRegister(item)
+    }
+  }
 
   const CardContent = (
     <div className={`catalog-card flex flex-col h-full group ${className}`}>
@@ -57,7 +68,11 @@ const CourseCard = ({ item, className = '', variant = 'course' }) => {
               </div>
             </>
           ) : (
-            <button className="w-full py-3 bg-accent text-white font-montserrat text-[11px] font-bold tracking-[0.2em] uppercase hover:scale-[1.02] shadow-sm transition-all duration-300">
+            <button 
+              type="button"
+              onClick={handleAction}
+              className="w-full py-3 bg-accent text-white font-montserrat text-[11px] font-bold tracking-[0.2em] uppercase hover:scale-[1.02] active:scale-98 shadow-sm transition-all duration-300 cursor-pointer text-center"
+            >
               {item.buttonText || t('registerNow') || 'REGISTER NOW'}
             </button>
           )}
@@ -71,6 +86,14 @@ const CourseCard = ({ item, className = '', variant = 'course' }) => {
       <Link to={`/course-detail/${item.id}`} className="block h-full">
         {CardContent}
       </Link>
+    )
+  }
+
+  if (variant === 'event') {
+    return (
+      <div onClick={handleAction} className="block h-full cursor-pointer">
+        {CardContent}
+      </div>
     )
   }
 

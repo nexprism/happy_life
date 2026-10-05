@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/all'
-import certificateImg from '../assets/images/certi-new-two.png'
+import certificateImg from '../assets/images/happy_life_certificate.png'
 import { useLanguage } from '../context/LanguageContext'
 
 gsap.registerPlugin(ScrollTrigger)
@@ -90,33 +90,32 @@ const CertificatePricingSection = ({ course }) => {
                 <div className="absolute -inset-4 bg-amber-400/10 blur-2xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
                 <div className="relative border-8 border-slate-200 bg-white p-2 shadow-2xl overflow-hidden rounded-xl">
                    <img
-                      src={course?.certificateImage ? `https://happy-life-sx03.onrender.com/${course.certificateImage}` : certificateImg}
-                      alt="Vanguard Architect Certificate"
+                      src={(() => {
+                         if (!course?.certificateImage) return certificateImg;
+                         if (course.certificateImage.startsWith('http') || course.certificateImage.startsWith('blob:')) return course.certificateImage;
+                         const rawBase = import.meta.env.VITE_IMAGE_URL || import.meta.env.VITE_BASE_URL || import.meta.env.VITE_API_BASE || 'https://happy-life-sx03.onrender.com';
+                         const baseUrl = rawBase.replace(/\/api\/v1\/?$/, '');
+                         return `${baseUrl}${course.certificateImage.startsWith('/') ? '' : '/'}${course.certificateImage}`;
+                      })()}
+                      alt="Happy Life Academy Certificate"
                       className="w-full h-auto transition-all duration-1000"
                    />
 
-                   {/* USER NAME OVERLAY - Positioned above the line */}
-                   <div className="absolute top-[52%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-full text-center pointer-events-none">
-                      <span className="font-montserrat font-medium italic text-dark/80 text-[clamp(1rem,2.2vw,1.8rem)] leading-none">
+                   {/* USER NAME OVERLAY */}
+                   <div className="absolute top-[47.5%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-full text-center pointer-events-none px-8">
+                      <span className="font-newsreader font-semibold italic text-[#1a2e4c] text-[clamp(1.1rem,2.4vw,2rem)] leading-none drop-shadow-xs tracking-wide">
                          {displayName}
                       </span>
                    </div>
 
-                   {/* COURSE INFO OVERLAY - Positioned just below the physical line */}
-                   <div className="absolute top-[58%] left-1/2 -translate-x-1/2 w-full text-center pointer-events-none px-12">
-                      <p className="font-newsreader !font-medium italic text-dark/80 text-[clamp(0.3rem,0.9vw,0.6rem)] leading-tight">
-                         has successfully completed the cohort <span className="text-dark font-semibold">{courseTitle}</span>
-                         <br />
-                         Masterclass on <span className="text-dark font-semibold">{formattedDate}</span>
+                   {/* COURSE INFO OVERLAY */}
+                   <div className="absolute top-[60.5%] left-1/2 -translate-x-1/2 w-full text-center pointer-events-none px-12">
+                      <p className="font-montserrat font-bold text-[#1a2e4c] text-[clamp(0.45rem,1vw,0.75rem)] leading-tight uppercase tracking-wider">
+                         {courseTitle}
                       </p>
-                   </div>
-
-                   {/* FIXED RIBBON BADGE */}
-                   <div className="absolute top-4 right-8 w-14 h-20 bg-accent flex items-center justify-center p-3 clip-path-ribbon shadow-xl z-10">
-                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" className="text-slate-950">
-                         <path d="M12 15L15 21L12 19L9 21L12 15Z" fill="currentColor" />
-                         <circle cx="12" cy="10" r="7" stroke="currentColor" strokeWidth="2.5" />
-                      </svg>
+                      <p className="font-montserrat text-[#4a5568] text-[clamp(0.35rem,0.75vw,0.55rem)] mt-0.5 font-medium tracking-wide">
+                         Awarded on {formattedDate}
+                      </p>
                    </div>
                 </div>
                 <div className="mt-8 space-y-4">

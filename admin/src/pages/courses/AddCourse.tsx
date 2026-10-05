@@ -426,7 +426,7 @@ const AddCourse = () => {
     certificateRecipientName: "Student Name",
     certificateIssuerName: "",
     certificateIssuerTitle: "",
-    certificateOrganization: "Lapaas LMS",
+    certificateOrganization: "Happy Life Academy",
     certificateDescription: "",
     // Enhanced Landing Page Sections
     landingPageSections: [
@@ -740,7 +740,7 @@ const AddCourse = () => {
         certificateRecipientName: "Student Name",
         certificateIssuerName: "",
         certificateIssuerTitle: "",
-        certificateOrganization: "Lapaas LMS",
+        certificateOrganization: "Happy Life Academy",
         certificateDescription: "",
         // Enhanced Landing Page Sections
         overviewSection: { show: false, title: "", subtitle: "", description: null, images: [] },

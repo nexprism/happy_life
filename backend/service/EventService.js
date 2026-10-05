@@ -1,12 +1,12 @@
 import Event from '../models/Event.js';
 import mongoose from 'mongoose';
-import puppeteer from 'puppeteer';
 import Setting from '../models/setting.js';
 import fs from 'fs';
 import path from 'path';
 import User from '../models/user.js';
 import UserService from './userService.js';
 import emailService from '../utils/emailService.js';
+import { renderHtmlToPdf } from '../utils/pdfRenderer.js';
 
 const userService = new UserService();
 
@@ -53,7 +53,13 @@ class EventService {
       // Add filters
       if (filter.type) query.type = filter.type;
       if (filter.category) query.category = filter.category;
-      if (filter.status) query.status = filter.status;
+      if (filter.status) {
+        if (filter.status === 'active') {
+          query.status = { $in: ['published', 'active'] };
+        } else {
+          query.status = filter.status;
+        }
+      }
       if (filter.startDate) query.startDate = { $gte: new Date(filter.startDate) };
       if (filter.endDate) query.endDate = { $lte: new Date(filter.endDate) };
 
@@ -192,7 +198,7 @@ class EventService {
     try {
       //console.log("Registering participant with data:", ticketData);
       if (!ticketData.guestEmail) {
-        return res.status(400).json({ message: "email is required" });
+        throw new Error("Email is required for event registration");
       }
 
       const guestEmail = ticketData.guestEmail;
@@ -369,29 +375,17 @@ class EventService {
   }
 
   async htmlToPdfBuffer(html) {
-    let browser;
     try {
-      browser = await puppeteer.launch({
-        headless: "new",
-        executablePath: "/usr/bin/google-chrome",
-        args: [
-          "--no-sandbox",
-          "--disable-setuid-sandbox",
-          "--disable-dev-shm-usage",
-          "--disable-accelerated-2d-canvas",
-          "--disable-gpu",
-        ],
+      return await renderHtmlToPdf(html, {
+        pdfOptions: {
+          format: 'A4',
+          printBackground: true,
+          margin: { top: '1cm', bottom: '1cm', left: '1cm', right: '1cm' }
+        }
       });
-      const page = await browser.newPage();
-      await page.setContent(html);
-      const buffer = await page.pdf({
-        format: 'A4',
-        printBackground: true,
-        margin: { top: '1cm', bottom: '1cm', left: '1cm', right: '1cm' }
-      });
-      return buffer;
-    } finally {
-      if (browser) await browser.close();
+    } catch (err) {
+      console.warn("PDF generation error in EventService, creating fallback document:", err?.message);
+      return Buffer.from(html, 'utf-8');
     }
   }
 

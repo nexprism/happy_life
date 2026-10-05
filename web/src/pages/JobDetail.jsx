@@ -5,6 +5,7 @@ import { fetchJobById, clearCurrentJob } from '../redux/slices/jobSlice'
 import { gsap } from 'gsap'
 import DashboardHeader from '../components/dashboard/DashboardHeader'
 import CreateJobModal from '../components/dashboard/CreateJobModal'
+import { formatBudget } from '../utils/formatBudget'
 
 const JobDetail = () => {
   // Custom animations for technical badges
@@ -62,14 +63,6 @@ const JobDetail = () => {
         <div className="w-12 h-12 border-2 border-accent/20 border-t-accent animate-spin" />
       </div>
     )
-  }
-
-  const formatBudget = (budget) => {
-    if (!budget) return 'N/A'
-    const { min, max, currency } = budget
-    if (currency === 'LPA') return `${min} - ${max} LPA`
-    const symbol = currency === 'INR' ? '₹' : currency === 'USD' ? '$' : currency === 'EUR' ? '€' : currency
-    return `${symbol}${min} - ${symbol}${max}`
   }
 
   const isOwner = user?._id === currentJob?.createdBy?._id

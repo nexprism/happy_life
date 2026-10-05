@@ -298,7 +298,7 @@ const EditCourse = () => {
     certificateRecipientName: "Student Name",
     certificateIssuerName: "",
     certificateIssuerTitle: "",
-    certificateOrganization: "Lapaas LMS",
+    certificateOrganization: "Happy Life Academy",
     certificateDescription: "",
     // Enhanced Landing Page Sections
     landingPageSections: [],
@@ -506,7 +506,7 @@ const EditCourse = () => {
         certificateRecipientName: course.certificateRecipientName || "Student Name",
         certificateIssuerName: course.certificateIssuerName || "",
         certificateIssuerTitle: course.certificateIssuerTitle || "",
-        certificateOrganization: course.certificateOrganization || "Lapaas LMS",
+        certificateOrganization: course.certificateOrganization || "Happy Life Academy",
         certificateDescription: course.certificateDescription || "",
         // Enhanced Landing Page Sections
         landingPageSections: (course.landingPageSections && course.landingPageSections.length > 0)
@@ -1964,19 +1964,20 @@ const EditCourse = () => {
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                           Certificate Preview
                         </label>
-                        <div className="w-full max-w-4xl mx-auto bg-gradient-to-br from-amber-50 to-amber-100 rounded-lg shadow-2xl p-8 border-4 border-amber-300">
+                        <div className="w-full max-w-4xl mx-auto bg-gradient-to-br from-amber-50 to-amber-100 rounded-lg shadow-2xl p-8 border-4 border-amber-400">
                           {/* Certificate Header */}
-                          <div className="bg-red-600 text-white py-4 px-6 rounded-t-lg mb-6">
-                            <h3 className="text-2xl font-bold">
+                          <div className="bg-gradient-to-r from-[#0f172a] via-[#1e3a8a] to-[#0f172a] text-white py-5 px-6 rounded-t-lg mb-6 text-center border-b-2 border-amber-400">
+                            <span className="text-[10px] font-bold text-amber-300 uppercase tracking-[0.3em]">HAPPY LIFE ACADEMY</span>
+                            <h3 className="text-2xl font-bold mt-1 text-white">
                               {(formData as any).certificateTitle || "Certificate of Completion"}
                             </h3>
-                            <p className="text-red-200 text-sm mt-1">
+                            <p className="text-amber-200 text-xs mt-1 tracking-wider uppercase">
                               {(formData as any).certificateSubtitle || "Awarded for Excellence"}
                             </p>
                           </div>
 
                           {/* Certificate Body */}
-                          <div className="py-8 px-6">
+                          <div className="py-8 px-6 text-center">
                             <p className="text-gray-800 text-lg leading-relaxed mb-8">
                               {(() => {
                                 const recipientName = (formData as any).certificateRecipientName || "Student Name";
@@ -1988,7 +1989,7 @@ const EditCourse = () => {
 
                                 return description.split('**').map((part: string, index: number) =>
                                   index % 2 === 1 ? (
-                                    <strong key={index} className="text-amber-700 font-bold">
+                                    <strong key={index} className="text-[#1e3a8a] font-bold">
                                       {part || recipientName}
                                     </strong>
                                   ) : (
@@ -1999,10 +2000,10 @@ const EditCourse = () => {
                             </p>
 
                             {/* Certificate Footer */}
-                            <div className="mt-12 flex justify-between items-end border-t-2 border-amber-300 pt-6">
-                              <div className="text-left">
+                            <div className="mt-12 flex justify-between items-end border-t-2 border-amber-300 pt-6 text-left">
+                              <div>
                                 <p className="font-bold text-gray-800">
-                                  {(formData as any).certificateIssuerName || (formData as any).mentorName || "Instructor"}
+                                  {(formData as any).certificateIssuerName || (formData as any).mentorName || "Authorized Instructor"}
                                 </p>
                                 {((formData as any).certificateIssuerTitle || (formData as any).mentorTitle) && (
                                   <p className="text-sm text-gray-600">
@@ -2011,8 +2012,8 @@ const EditCourse = () => {
                                 )}
                               </div>
                               <div className="text-right">
-                                <p className="font-bold text-gray-800">
-                                  {(formData as any).certificateOrganization || "Lapaas LMS"}
+                                <p className="font-bold text-[#1e3a8a]">
+                                  {(formData as any).certificateOrganization || "Happy Life Academy"}
                                 </p>
                               </div>
                             </div>
@@ -2118,10 +2119,10 @@ const EditCourse = () => {
                         <input
                           type="text"
                           name="certificateOrganization"
-                          value={formData.certificateOrganization || "Lapaas LMS"}
+                          value={formData.certificateOrganization || "Happy Life Academy"}
                           onChange={handleInputChange}
                           className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 dark:text-gray-200 focus:ring-2 focus:ring-blue-500"
-                          placeholder="Lapaas LMS"
+                          placeholder="Happy Life Academy"
                         />
                       </div>
                     </div>

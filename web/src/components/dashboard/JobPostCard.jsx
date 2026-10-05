@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom'
+import { formatBudget } from '../../utils/formatBudget'
 
 const JobPostCard = ({ job }) => {
   const navigate = useNavigate()
@@ -6,18 +7,6 @@ const JobPostCard = ({ job }) => {
   const getInitials = (name) => {
     if (!name) return '??'
     return name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2)
-  }
-
-  const formatBudget = (budget) => {
-    if (!budget) return 'N/A'
-    const { min, max, currency } = budget
-    
-    if (currency === 'LPA') {
-      return `${min} - ${max} LPA`
-    }
-
-    const symbol = currency === 'INR' ? '₹' : currency === 'USD' ? '$' : currency === 'EUR' ? '€' : currency
-    return `${symbol}${min} - ${symbol}${max}`
   }
 
 
