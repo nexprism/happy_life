@@ -5,6 +5,7 @@ import ChatMessage from '../components/dashboard/ChatMessage';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLanguage } from '../context/LanguageContext';
 import { connectSocket, fetchChatRooms, fetchMessages, sendMessageSocket, setActiveRoom, pinMessage, fetchCourseRooms, fetchMoreMessages, removeCourseParticipant, clearNotification } from '../redux/slices/chat';
+import authorizedFetch from '../utils/apiClient';
 
 const DashboardMessages = () => {
     const [activeTab, setActiveTab] = useState('chats');
@@ -18,13 +19,7 @@ const DashboardMessages = () => {
     const [isRecording, setIsRecording] = useState(false);
     const [recordingTime, setRecordingTime] = useState(0);
     const [volumes, setVolumes] = useState(new Array(30).fill(2));
-    const [messages, setMessages] = useState({
-        support: [
-            { id: 1, text: "👋 Welcome to Happy Life! How can we help you today?", sender: "Support Agent", time: "10:30 AM", isSent: false },
-            { id: 2, text: "I'm having some trouble with the course module.", sender: "You", time: "10:32 AM", isSent: true },
-            { id: 3, text: "Sure, could you send a screenshot of the issue?", sender: "Support Agent", time: "10:35 AM", isSent: false }
-        ]
-    });
+    const [messages, setMessages] = useState({});
 
     const fileInputRef = useRef(null);
     const scrollRef = useRef(null);
@@ -49,13 +44,7 @@ const DashboardMessages = () => {
     const selectedRoom = [...rooms, ...courseRooms].find(r => r._id === selectedChat);
     const isCourseGroup = courseRooms.some(r => r._id === selectedChat);
 
-    const chats = [
-        { id: 'prasad-1', initials: 'PH', name: 'Prasad Hol', lastMsg: 'You: hi', status: 'online' },
-        { id: 'sahil-1', initials: 'SK', name: 'Sahil Khanna', lastMsg: 'No messages yet', status: 'offline' },
-        { id: 'prasad-2', initials: 'PH', name: 'Prasad Hol', lastMsg: 'You: @Prasad Hol hii', status: 'online', unread: 3 },
-        { id: 'jondon', initials: 'JD', name: 'Jon Don', lastMsg: 'Jon Don: Socket chal rha hai', status: 'online' },
-        { id: 'support', initials: '🛠️', name: 'Support Team', lastMsg: '👋 Welcome! How can we help you?', status: 'online', unread: 1, isSupport: true, desc: '24/7 Available • Instant Response' }
-    ];
+
 
     const getRoomTime = (room) => {
         if (!room) return 0;
@@ -76,7 +65,7 @@ const DashboardMessages = () => {
                 || participants[0]
                 || { fullName: 'Conversation' };
 
-            const isSupportParticipant = other._id === '68e38debe4d3380f23ae42a3' || other.email === 'sahil@lapaas.com';
+            const isSupportParticipant = other.role === 'admin' || other.role === 'super_admin' || other._id === '68e38debe4d3380f23ae42a3' || other.email === 'sahil@lapaas.com';
             const isSupportRoom = !!r.isSupport || /support/i.test(r.name || '') || isSupportParticipant;
 
             let displayName = r.courseId?.title || r.name || other.fullName || other.email || 'Conversation';
@@ -143,18 +132,20 @@ const DashboardMessages = () => {
         } else {
             sidebarChats = sorted;
         }
-    } else if (!chatState.hasFetched && activeTab === 'chats') {
-        let sortedChats = [...chats];
-        if (filterTab === 'unread') {
-            sortedChats.sort((a, b) => {
-                const aUnread = (a.unread || 0) > 0 ? 1 : 0;
-                const bUnread = (b.unread || 0) > 0 ? 1 : 0;
-                return bUnread - aUnread;
-            });
-        }
-        sidebarChats = sortedChats;
+
     } else {
         sidebarChats = [];
+        if (activeTab === 'chats') {
+            sidebarChats.push({
+                id: 'support',
+                initials: '🛠️',
+                name: 'Support Team',
+                lastMsg: '👋 Welcome! How can we help you?',
+                status: 'online',
+                unread: 0,
+                isSupport: true
+            });
+        }
     }
 
     const filteredChats = sidebarChats.filter(chat => {
@@ -254,7 +245,9 @@ const DashboardMessages = () => {
         const allRooms = [...roomsFromStore, ...courseRoomsFromStore];
         let resolvedRoom = null;
 
-        if (selectedChat === 'support') {
+        const isSupportContext = !selectedChat || selectedChat === 'support';
+        
+        if (isSupportContext) {
             resolvedRoom = roomsFromStore.find(r =>
                 r.isSupport ||
                 /support/i.test(r.name || '') ||
@@ -270,6 +263,45 @@ const DashboardMessages = () => {
             const other = (resolvedRoom.participants || []).find(p => p._id !== myId);
             if (other?._id) {
                 payload.receiverId = other._id;
+            }
+        } else if (isSupportContext) {
+            try {
+                const token = localStorage.getItem('edrilla_token') || '';
+                const rawBase = import.meta.env.VITE_BASE_URL || 'https://happy-life-sx03.onrender.com';
+                const baseUrl = rawBase.endsWith('/') ? rawBase.slice(0, -1) : rawBase;
+                
+                const response = await fetch(`${baseUrl}/chat/room`, {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': token ? `Bearer ${token}` : '',
+                        'x-access-token': token
+                    },
+                    body: JSON.stringify({ receiverId: 'support' })
+                });
+                const data = await response.json();
+                
+                if (response.ok && data.roomId) {
+                    payload.roomId = data.roomId;
+                    const myId = authUser?._id;
+                    const otherId = (data.participants || []).find(p => p !== myId);
+                    if (otherId) payload.receiverId = otherId;
+                    
+                    // IMPORTANT: Update selectedChat so the UI switches to the real room
+                    setSelectedChat(data.roomId);
+                    dispatch(setActiveRoom(data.roomId));
+                    
+                    // Refresh rooms to show it in sidebar
+                    dispatch(fetchChatRooms());
+                } else {
+                    console.error("Failed to create support room", data);
+                    // Abort sending the message if room creation failed!
+                    return; 
+                }
+            } catch (err) {
+                console.error("Error creating support room:", err);
+                // Abort sending the message!
+                return;
             }
         }
 
@@ -837,12 +869,15 @@ const DashboardMessages = () => {
                                         (typeof senderId === 'string' && senderId.toLowerCase() === 'you')
                                     );
                                     console.debug(`[CHAT_DEBUG] Rendering Message #${idx}:`, { text: msg.message || msg.text, isSent, senderId, currentUserId, id: msg._id });
+                                    const currentChatObj = sidebarChats.find(c => c.id === selectedChat);
+                                    const isSupportChat = currentChatObj?.isSupport || currentChatObj?.name === 'Support Team' || selectedChat === 'support';
                                     return (
                                         <ChatMessage
                                             key={msg._id || msg.id || idx}
                                             msg={msg}
                                             isSent={isSent}
                                             onReply={(m) => setReplyingTo(m)}
+                                            isSupportChat={isSupportChat}
                                         />
                                     );
                                 })}

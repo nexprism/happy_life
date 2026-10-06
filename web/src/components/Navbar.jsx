@@ -11,7 +11,8 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 gsap.registerPlugin(ScrollTrigger)
 
 const Navbar = ({ isLoaded }) => {
-  const { token } = useSelector((state) => state.auth)
+  const { token, user } = useSelector((state) => state.auth)
+  const isAuthenticated = Boolean(token || user)
   const { theme } = useTheme()
   const { t } = useLanguage()
   const location = useLocation()
@@ -313,10 +314,10 @@ const Navbar = ({ isLoaded }) => {
 
             {/* Sign In / Dashboard Button */}
             <Link
-              to={token ? "/dashboard" : "/login"}
+              to={isAuthenticated ? "/dashboard" : "/login"}
               className="relative group bg-accent text-white font-bold px-4 md:px-5 py-2 rounded-full font-inter text-[10px] uppercase tracking-[0.15em] overflow-hidden transition-all duration-300 hover:scale-[1.04] active:scale-95 shadow-accent-soft flex items-center justify-center gap-1.5"
             >
-              <span className="relative z-10 font-black">{token ? t('dashboard') : t('signIn')}</span>
+              <span className="relative z-10 font-black">{isAuthenticated ? t('dashboard') : t('signIn')}</span>
               <div className="absolute inset-0 bg-white/25 -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out skew-x-12" />
             </Link>
 

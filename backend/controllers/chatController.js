@@ -34,13 +34,21 @@ export const createOrGetChatRoom = async (req, res) => {
         .json({ message: "Authentication failed: User not authenticated" });
     }
 
-    const { receiverId } = req.body;
+    let { receiverId } = req.body;
     const senderId = req.user._id;
-
-    //console.log('createOrGetChatRoom: Starting', { senderId, receiverId });
 
     if (!receiverId) {
       return res.status(400).json({ message: "Receiver ID required" });
+    }
+
+    if (receiverId === 'support') {
+      let admin = await User.findOne({ role: { $in: ['admin', 'super_admin'] } });
+      if (!admin) {
+         // Fallback if no admin is in DB, pick the first user or a dummy user
+         admin = await User.findOne({ _id: { $ne: senderId } });
+      }
+      if (!admin) return res.status(400).json({ message: "No support admin found" });
+      receiverId = admin._id.toString();
     }
 
     if (!mongoose.Types.ObjectId.isValid(receiverId)) {
@@ -100,7 +108,7 @@ export const getAllChatRooms = async (req, res) => {
 
     // Fetch all chat rooms for the user
     const rooms = await ChatRoom.find({ participants: userId })
-      .populate("participants", "fullName profilePicture")
+      .populate("participants", "fullName profilePicture email role")
       .lean();
 
     // Added: Calculate unread message count and last message for each room
@@ -2155,7 +2163,7 @@ export const createAllCourseChatRooms = async (req, res) => {
           student._id.toString()
         );
         const allParticipants = [
-          ...new Set([...enrolledUserIds, ...fixedUsers]),
+          ...new Set([...enrolledUserIds, ...adminUserIds]),
         ];
 
         const newParticipants = allParticipants.filter(

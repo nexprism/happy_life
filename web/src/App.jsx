@@ -44,6 +44,7 @@ import RefundPolicy from './pages/RefundPolicy'
 import { TrackerProvider } from './components/ActivityTracker'
 
 import GlobalChatButton from './components/dashboard/GlobalChatButton'
+import SecureWrapper from './components/SecureWrapper'
 // import Preloader from './components/Preloader'
 import Lenis from '@studio-freight/lenis'
 import gsap from 'gsap'
@@ -307,6 +308,7 @@ const AppContent = () => {
         className={`relative min-h-screen origin-right ${isCleanPage ? 'bg-dark' : ''} opacity-0 pointer-events-none`}
       >
         <main>
+          <SecureWrapper>
           <Routes>
             {/* Public Routes */}
             <Route path="/" element={<Home isLoaded={isLoaded} />} />
@@ -364,6 +366,7 @@ const AppContent = () => {
             <Route path="/dashboard-home" element={<Navigate to="/dashboard" replace />} />
 
           </Routes>
+          </SecureWrapper>
         </main>
         {!isCleanPage && <Footer />}
       </div>

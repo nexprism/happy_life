@@ -22,7 +22,7 @@ export const connectSocket = createAsyncThunk('chat/connectSocket', async (_, { 
       }
       dispatch(addMessage(normalized));
     });
-    socketService.on('messageSent', (msg) => dispatch(updateMessageStatus({ roomId: msg.roomId || msg.chatRoomId, messageId: msg._id, status: 'sent' })));
+    socketService.on('messageSent', (msg) => dispatch(addMessage(msg)));
     socketService.on('user_typing', (data) => dispatch(addTypingUser(data)));
     socketService.on('user_stopped_typing', (data) => dispatch(removeTypingUser(data)));
     socketService.on('user_online', (data) => dispatch(addOnlineUser(data.userId)));
@@ -203,7 +203,7 @@ export const sendMessageSocket = createAsyncThunk('chat/sendMessageSocket', asyn
 
     const data = await response.json();
     if (!response.ok) throw new Error(data.message || `Send failed (${response.status})`);
-    const savedMsg = data.data || data.message_obj || data.chat || null;
+    const savedMsg = data.data || data.message_obj || data.chat || data.newMessage || null;
     return savedMsg ? { ...savedMsg, isSent: true, status: 'sent' } : { ...optimisticMsg, status: 'sent' };
 
   } catch (error) {
