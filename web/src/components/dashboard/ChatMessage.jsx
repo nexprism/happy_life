@@ -119,7 +119,7 @@ const CustomAudioPlayer = ({ src }) => {
     );
 };
 
-const ChatMessage = ({ msg, isSent, onReply }) => {
+const ChatMessage = ({ msg, isSent, onReply, isSupportChat }) => {
     const dispatch = useDispatch();
     const [copied, setCopied] = useState(false);
     const [activeImageIndex, setActiveImageIndex] = useState(null);
@@ -131,9 +131,11 @@ const ChatMessage = ({ msg, isSent, onReply }) => {
     
     // sender can be an object {_id, fullName, email} or a plain string/ID
     const senderObj = msg?.sender;
-    const senderName = (typeof senderObj === 'object' && senderObj !== null)
+    const rawSenderName = (typeof senderObj === 'object' && senderObj !== null)
         ? (senderObj.fullName || senderObj.name || senderObj.email || 'User')
         : (senderObj || msg?.senderId || msg?.senderName || 'System');
+        
+    const senderName = (isSupportChat && !isSent) ? 'Support Team' : rawSenderName;
     const time = msg?.time || (msg?.createdAt ? new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '');
     const text = msg?.text || msg?.message || '';
     let attachments = msg?.attachments || msg?.files || [];
