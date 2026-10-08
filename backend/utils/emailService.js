@@ -3,11 +3,11 @@ import dotenv from "dotenv";
 dotenv.config();
 
 /**
- * EmailService handles sending different types of emails from different sender addresses.
+ * EmailService handles sending different types of emails from different sender addresses for Happy Life Astro.
  * 
- * Transactional: noreply@edrilla.com (process.env.TransactionalEmail / process.env.TransactionalEmailPass)
- * Founder/Casual: sahil@edrilla.com (process.env.FounderEmail / process.env.FounderEmailPass)
- * Support: support@edrilla.com (process.env.SupportEmail / process.env.SupportEmailPass)
+ * Transactional: noreply@happylifeastro.school (process.env.TransactionalEmail / process.env.TransactionalEmailPass)
+ * Founder/Casual: founder@happylifeastro.school (process.env.FounderEmail / process.env.FounderEmailPass)
+ * Support: support@happylifeastro.school (process.env.SupportEmail / process.env.SupportEmailPass)
  */
 class EmailService {
   constructor() {
@@ -57,15 +57,16 @@ class EmailService {
    * Helper to get the correct "from" field for each type of email.
    */
   getFrom(type = "transactional") {
+    const appName = process.env.EMAIL_SENDER_NAME || "Happy Life Astro";
     switch (type) {
       case "transactional":
-        return `"Edrilla" <${process.env.TransactionalEmail || "noreply@edrilla.com"}>`;
+        return `"${appName}" <${process.env.TransactionalEmail || "noreply@happylifeastro.school"}>`;
       case "founder":
-        return `"Sahil (Edrilla)" <${process.env.FounderEmail || "sahil@edrilla.com"}>`;
+        return `"Dr. Yogesh Sharma (${appName})" <${process.env.FounderEmail || "founder@happylifeastro.school"}>`;
       case "support":
-        return `"Edrilla Support" <${process.env.SupportEmail || "support@edrilla.com"}>`;
+        return `"${appName} Support" <${process.env.SupportEmail || "support@happylifeastro.school"}>`;
       default:
-        return `"Edrilla" <${process.env.TransactionalEmail || "noreply@edrilla.com"}>`;
+        return `"${appName}" <${process.env.TransactionalEmail || "noreply@happylifeastro.school"}>`;
     }
   }
 
@@ -86,18 +87,63 @@ class EmailService {
     const mailOptions = {
       from: this.getFrom("transactional"),
       to: email,
-      subject: 'Your OTP for Verification',
+      subject: 'Happy Life Astro - Your OTP for Verification',
       html: `
-        <div style="font-family: Arial, sans-serif; line-height: 1.5;">
-          <h2>OTP Verification</h2>
-          <p>Hello <strong>${userName}</strong>,</p>
-          <p>Your One-Time Password (OTP) for verification is:</p>
-          <h3 style="color: #007bff;">${otp}</h3>
-          <p>This OTP is valid for 10 minutes. Please use it to complete your verification.</p>
-          <p>If you didn’t request this OTP, please ignore this email or contact our support team.</p>
-          <hr />
-          <p style="font-size: 12px; color: #777;">This is an automated email, please do not reply.</p>
-        </div>
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>OTP Verification - Happy Life Astro</title>
+        </head>
+        <body style="margin: 0; padding: 0; background-color: #f8fafc; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+          <table role="presentation" style="width: 100%; border-collapse: collapse;">
+            <tr>
+              <td style="padding: 30px 10px;">
+                <table role="presentation" style="width: 100%; max-width: 550px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.08); border: 1px solid #e2e8f0;">
+                  <!-- Header -->
+                  <tr>
+                    <td style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); padding: 30px 40px; text-align: center;">
+                      <h1 style="color: #fbbf24; margin: 0; font-size: 24px; font-weight: 800; letter-spacing: 1px;">HAPPY LIFE ASTRO</h1>
+                      <p style="color: #94a3b8; margin: 6px 0 0 0; font-size: 13px; font-weight: 500;">Account Verification Code</p>
+                    </td>
+                  </tr>
+                  <!-- Content -->
+                  <tr>
+                    <td style="padding: 36px 40px; color: #334155;">
+                      <p style="margin: 0 0 16px 0; font-size: 16px; line-height: 1.5;">
+                        Hello <strong style="color: #0f172a;">${userName}</strong>,
+                      </p>
+                      <p style="margin: 0 0 24px 0; font-size: 15px; line-height: 1.6; color: #475569;">
+                        Please use the following One-Time Password (OTP) to complete your verification on Happy Life Astro:
+                      </p>
+                      
+                      <!-- OTP Box -->
+                      <div style="background: #f1f5f9; border: 2px dashed #cbd5e1; border-radius: 10px; padding: 20px; text-align: center; margin: 24px 0;">
+                        <span style="font-family: 'Courier New', Courier, monospace; font-size: 36px; font-weight: 800; letter-spacing: 8px; color: #2563eb;">${otp}</span>
+                        <p style="margin: 8px 0 0 0; font-size: 12px; color: #64748b;">Valid for 10 minutes</p>
+                      </div>
+
+                      <p style="margin: 24px 0 0 0; font-size: 13px; line-height: 1.5; color: #64748b;">
+                        If you didn't request this code, you can safely ignore this email or contact our support team.
+                      </p>
+                    </td>
+                  </tr>
+                  <!-- Footer -->
+                  <tr>
+                    <td style="background-color: #f8fafc; padding: 24px 40px; text-align: center; border-top: 1px solid #e2e8f0;">
+                      <p style="margin: 0; font-size: 12px; color: #94a3b8; line-height: 1.5;">
+                        This is an automated security message from <strong>Happy Life Astro</strong>.<br>
+                        Need help? Contact <a href="mailto:${process.env.SupportEmail || 'support@happylifeastro.school'}" style="color: #2563eb; text-decoration: none;">${process.env.SupportEmail || 'support@happylifeastro.school'}</a>
+                      </p>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
+        </body>
+        </html>
       `,
     };
 
@@ -115,7 +161,7 @@ class EmailService {
    * Send password reset email (Transactional)
    */
   async sendPasswordResetEmail(email, resetToken, userName) {
-    const resetUrl = `${process.env.FRONTEND_URL || "https://edrilla.com"
+    const resetUrl = `${process.env.FRONTEND_URL || "https://happylifeastro.school"
       }/reset-password?token=${resetToken}`;
 
     const mailOptions = {
@@ -128,7 +174,7 @@ class EmailService {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Password Reset - Edrilla</title>
+    <title>Password Reset - Happy Life Astro</title>
 </head>
 <body style="margin: 0; padding: 0; background-color: #f4f4f4; font-family: Arial, sans-serif;">
     <table role="presentation" style="width: 100%; border-collapse: collapse;">
@@ -138,9 +184,9 @@ class EmailService {
                     
                     <!-- Header with Logo -->
                     <tr>
-                        <td style="background-color: #93bb3d; padding: 30px 40px; text-align: center;">
-                            <img src="https://edrilla.com/logo.svg" alt="Edrilla Logo" style="height: 40px; width: auto; display: block; margin: 0 auto 15px auto;">
-                            <h1 style="color: #191a17; margin: 0; font-size: 24px; font-weight: bold;">Password Reset Request</h1>
+                        <td style="background-color: #2171B5; padding: 30px 40px; text-align: center;">
+                            <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: bold;">Happy Life Astro</h1>
+                            <p style="color: #e0e0e0; margin: 5px 0 0 0; font-size: 14px;">Password Reset Request</p>
                         </td>
                     </tr>
                     
@@ -148,18 +194,18 @@ class EmailService {
                     <tr>
                         <td style="padding: 40px; color: #ffffff;">
                             <p style="margin: 0 0 20px 0; font-size: 16px; line-height: 1.5;">
-                                Hello <strong style="color: #93bb3d;">${userName}</strong>,
+                                Hello <strong style="color: #60a5fa;">${userName}</strong>,
                             </p>
                             
                             <p style="margin: 0 0 25px 0; font-size: 16px; line-height: 1.5;">
-                                We received a request to reset your password for your Edrilla account. If you made this request, click the button below to create a new password.
+                                We received a request to reset your password for your Happy Life Astro account. If you made this request, click the button below to create a new password.
                             </p>
                             
                             <!-- Reset Button -->
                             <table role="presentation" style="margin: 30px 0;">
                                 <tr>
                                     <td style="text-align: center;">
-                                        <a href="${resetUrl}" style="display: inline-block; padding: 15px 30px; background-color: #93bb3d; color: #191a17; text-decoration: none; border-radius: 25px; font-weight: bold; font-size: 16px; text-align: center; transition: background-color 0.3s ease;">
+                                        <a href="${resetUrl}" style="display: inline-block; padding: 15px 30px; background-color: #2171B5; color: #ffffff; text-decoration: none; border-radius: 25px; font-weight: bold; font-size: 16px; text-align: center; transition: background-color 0.3s ease;">
                                             Reset My Password
                                         </a>
                                     </td>
@@ -172,12 +218,12 @@ class EmailService {
                                     If the button doesn't work, copy and paste this link into your browser:
                                 </p>
                                 <p style="margin: 0; word-break: break-all; font-size: 14px;">
-                                    <a href="${resetUrl}" style="color: #93bb3d; text-decoration: underline;">${resetUrl}</a>
+                                    <a href="${resetUrl}" style="color: #60a5fa; text-decoration: underline;">${resetUrl}</a>
                                 </p>
                             </div>
                             
                             <!-- Security Notice -->
-                            <div style="border-left: 4px solid #93bb3d; padding-left: 20px; margin: 25px 0;">
+                            <div style="border-left: 4px solid #2171B5; padding-left: 20px; margin: 25px 0;">
                                 <p style="margin: 0 0 10px 0; font-size: 14px; color: #ff9999; font-weight: bold;">
                                     ⏰ Important Security Notice
                                 </p>
@@ -194,9 +240,9 @@ class EmailService {
                     
                     <!-- Footer -->
                     <tr>
-                        <td style="background-color: #0f100e; padding: 30px 40px; text-align: center; border-top: 2px solid #93bb3d;">
-                            <p style="margin: 0 0 15px 0; color: #93bb3d; font-size: 18px; font-weight: bold;">
-                                Edrilla
+                        <td style="background-color: #0f100e; padding: 30px 40px; text-align: center; border-top: 2px solid #2171B5;">
+                            <p style="margin: 0 0 15px 0; color: #60a5fa; font-size: 18px; font-weight: bold;">
+                                Happy Life Astro
                             </p>
                             <p style="margin: 0; font-size: 12px; color: #888888; line-height: 1.4;">
                                 This is an automated email, please do not reply.<br>
@@ -215,7 +261,6 @@ class EmailService {
 
     try {
       const info = await this.getTransporter("transactional").sendMail(mailOptions);
-      //console.log("✅ Password reset email sent:", info.messageId);
       return { success: true, messageId: info.messageId };
     } catch (error) {
       console.error("❌ Error sending email:", error);
@@ -227,23 +272,22 @@ class EmailService {
    * Send order confirmation email (Transactional)
    */
   async sendOrderConfirmationEmail(email, name, password) {
-    console?.log("Sending order confirmation email to:", email);
     const mailOptions = {
       from: this.getFrom("transactional"),
       to: email,
       subject: "Course Enrollment Confirmation",
       html: `
       <div style="font-family: Arial, sans-serif; line-height: 1.5;">
-        <h2>Course Enrollment Confirmation</h2>
+        <h2>Happy Life Astro - Course Enrollment Confirmation</h2>
         <p>Hello <strong>${name}</strong>,</p>
-        <p>Thank you for enrolling in our course(s)! Your enrollment is now confirmed and you can start learning right away.</p>
+        <p>Thank you for enrolling in our course! Your enrollment is now confirmed and you can start learning right away.</p>
         ${
         password !== null && password !== undefined && password !== ''
           ? `
           <p>Your login details are as follows:</p>
           <p><strong>Email:</strong> ${email}</p>
           <p><strong>Password:</strong> ${password}</p>
-          <a href="${process.env.FRONTEND_URL || 'https://edrilla.com'}/login" style="padding: 10px 15px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">
+          <a href="${process.env.FRONTEND_URL || 'https://happylifeastro.school'}/login" style="padding: 10px 15px; background-color: #2171B5; color: white; border: none; border-radius: 5px; cursor: pointer; text-decoration: none;">
             Login to your account
           </a>
           `
@@ -252,14 +296,13 @@ class EmailService {
         <p>Once logged in, you can access your enrolled courses from your dashboard and begin your learning journey.</p>
         <p>If you have any questions or need assistance, feel free to contact our support team.</p>
         <hr />
-        <p style="font-size: 12px; color: #777;">This is an automated email, please do not reply.</p>
+        <p style="font-size: 12px; color: #777;">This is an automated email from Happy Life Astro, please do not reply.</p>
       </div>
       `,
     };
 
     try {
       const info = await this.getTransporter("transactional").sendMail(mailOptions);
-      //console.log("✅ Order confirmation email sent:", info.messageId);
       return { success: true, messageId: info.messageId };
     } catch (error) {
       console.error("❌ Error sending email:", error);
@@ -271,91 +314,70 @@ class EmailService {
 
   /**
    * Send enrollment mail (not order confirmation, just enrollment info)
-   * Uses the same design as the welcome mail (with login info if needed).
    */
   async sendEnrollmentMail(email, name, courseTitle) {
     const mailOptions = {
       from: this.getFrom("transactional"),
       to: email,
-      subject: "Welcome to Edrilla – Enrollment Successful!",
+      subject: "Welcome to Happy Life Astro – Enrollment Successful!",
       html: `
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Enrollment Successful - Edrilla</title>
+    <title>Enrollment Successful - Happy Life Astro</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Arial', sans-serif; background-color: #ffffff; color: #000000; line-height: 1.6; }
-        .email-container { max-width: 600px; margin: 0 auto; background-color: #ffffff; border: 2px solid #000000; }
-        .header { background-color: #000000; color: #ffffff; padding: 30px 40px; text-align: center; }
-        .logo { font-size: 32px; font-weight: bold; letter-spacing: 2px; margin-bottom: 10px; }
+        .email-container { max-width: 600px; margin: 0 auto; background-color: #ffffff; border: 2px solid #2171B5; }
+        .header { background-color: #1e293b; color: #ffffff; padding: 30px 40px; text-align: center; }
+        .logo { font-size: 28px; font-weight: bold; letter-spacing: 1px; margin-bottom: 5px; color: #60a5fa; }
         .tagline { font-size: 14px; font-weight: normal; opacity: 0.9; }
         .content { padding: 40px; background-color: #ffffff; }
         .greeting { font-size: 20px; font-weight: bold; margin-bottom: 25px; color: #000000; }
         .message-text { font-size: 16px; margin-bottom: 20px; color: #333333; }
-        .highlight-box { background-color: #f8f8f8; border-left: 4px solid #000000; padding: 20px; margin: 30px 0; }
+        .highlight-box { background-color: #f8fafc; border-left: 4px solid #2171B5; padding: 20px; margin: 30px 0; }
         .highlight-text { font-size: 16px; font-style: italic; color: #000000; }
-        .course-title { font-size: 18px; font-weight: bold; color: #000000; margin-bottom: 10px; }
-        .login-info { background-color: #f1f5f9; border-left: 4px solid #000; margin: 30px 0; padding: 20px; }
-        .download-section { text-align: center; margin: 40px 0; padding: 30px 20px; background-color: #000000; color: #ffffff; }
-        .download-title { font-size: 22px; font-weight: bold; margin-bottom: 15px; color: #ffffff; }
-        .download-subtitle { font-size: 16px; margin-bottom: 25px; opacity: 0.9; color: #ffffff; }
-        .download-buttons { justify-content: center; gap: 20px; }
-        .download-btn { display: inline-block; padding: 12px 25px; background-color: #ffffff; color: #000000; text-decoration: none; font-weight: bold; font-size: 16px; border: 2px solid #ffffff; transition: all 0.3s ease; }
-        .download-btn:hover { background-color: transparent; color: #ffffff; }
+        .course-title { font-size: 18px; font-weight: bold; color: #2171B5; margin-bottom: 10px; }
+        .download-section { text-align: center; margin: 40px 0; padding: 30px 20px; background-color: #1e293b; color: #ffffff; border-radius: 8px; }
+        .download-title { font-size: 20px; font-weight: bold; margin-bottom: 15px; color: #ffffff; }
+        .download-btn { display: inline-block; padding: 12px 25px; background-color: #2171B5; color: #ffffff; text-decoration: none; font-weight: bold; font-size: 16px; border-radius: 5px; }
         .signature { margin-top: 30px; padding-top: 20px; border-top: 1px solid #e0e0e0; }
         .signature-text { font-size: 16px; margin-bottom: 5px; }
         .signature-name { font-weight: bold; color: #000000; }
-        .footer { background-color: #000000; color: #ffffff; padding: 20px 40px; text-align: center; }
+        .footer { background-color: #0f172a; color: #ffffff; padding: 20px 40px; text-align: center; }
         .support-info { font-size: 14px; margin-bottom: 10px; }
-        .support-email { color: #ffffff; text-decoration: none; font-weight: bold; }
-        .support-email:hover { text-decoration: underline; }
-        @media (max-width: 640px) {
-            .email-container { margin: 0; border: none; }
-            .header, .content, .footer { padding: 20px; }
-            .logo { font-size: 28px; }
-            .download-buttons { flex-direction: column; align-items: flex-start; }
-            .download-btn { width: 200px; text-align: left; }
-        }
+        .support-email { color: #60a5fa; text-decoration: none; font-weight: bold; }
     </style>
 </head>
 <body>
     <div class="email-container">
         <div class="header">
-            <div class="logo">EDRILLA</div>
-            <div class="tagline">Course</div>
+            <div class="logo">HAPPY LIFE ASTRO</div>
+            <div class="tagline">Online Learning Platform</div>
         </div>
         <div class="content">
             <div class="greeting">Hi ${name},</div>
             <p class="message-text">Congratulations! You have been successfully enrolled in:</p>
             <div class="course-title">${courseTitle || "Your Course"}</div>
             <div class="highlight-box">
-                <p class="highlight-text">We're thrilled to have you join us. This course is designed to be hands-on: watch, practice, and connect with our community if you need help. Your learning journey starts now!</p>
+                <p class="highlight-text">We're thrilled to have you join us. Your learning journey starts now!</p>
             </div>
           
             <div class="download-section">
-                <div class="download-title">Start Learning Now</div>
-                <div class="download-subtitle">Download the Edrilla app or use the web platform</div>
-                <div class="download-buttons">
-                    <a href="https://play.google.com/store/apps/details?id=com.edrilla.app" class="download-btn" target="_blank">📱 Play Store</a>
-                    <a href="https://apps.apple.com/in/app/edrilla-business-booster/id6751890495" class="download-btn" target="_blank">
-                        <img src="https://img.icons8.com/ios-filled/50/000000/mac-os.png" alt="App Store" width="20" style="vertical-align:middle; margin-right:5px;">
-                        App Store
-                    </a>
-                    <a href="https://edrilla.com/login" class="download-btn" target="_blank">🌐 Web App</a>
-                </div>
+                <div class="download-title">Access Your Course</div>
+                <a href="${process.env.FRONTEND_URL || 'https://happylifeastro.school'}/dashboard" class="download-btn" target="_blank">Go to Student Dashboard</a>
             </div>
             <p class="message-text">If you have any questions or need assistance, our support team is here for you.</p>
             <div class="signature">
-                <p class="signature-text">Happy learning!</p>
-                <p class="signature-name">Sahil Khanna</p>
+                <p class="signature-text">Warm regards,</p>
+                <p class="signature-name">Happy Life Astro Team</p>
             </div>
         </div>
         <div class="footer">
             <p class="support-info">Need help? Contact us at</p>
-            <a href="mailto:support@edrilla.com" class="support-email">support@edrilla.com</a>
+            <a href="mailto:${process.env.SupportEmail || 'support@happylifeastro.school'}" class="support-email">${process.env.SupportEmail || 'support@happylifeastro.school'}</a>
         </div>
     </div>
 </body>
@@ -439,9 +461,9 @@ class EmailService {
   }
 
   /**
-   * Send job proposal email to job creator (job feature is user-to-user, not from Edrilla)
+   * Send job proposal email to job creator (job feature is user-to-user, not from platform)
    * This email is sent from the applicant to the job creator, using the applicant's email as the "from" address.
-   * Edrilla only relays the email, it is not a proposal to Edrilla.
+   * Happy Life Astro only relays the email, it is not a proposal to Happy Life Astro.
    */
   async sendJobProposalEmail(jobCreatorEmail, jobCreatorName, jobTitle, proposalDetails, applicant) {
     // applicant: { name, email }

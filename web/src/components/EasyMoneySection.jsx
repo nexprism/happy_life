@@ -80,10 +80,10 @@ const EasyMoneySection = () => {
         </div>
         {/* Bottom HUD */}
         <div className="absolute bottom-0 left-0 right-0 z-30 flex items-center justify-between px-5 py-3 bg-gradient-to-t from-dark/90 to-transparent pointer-events-none">
-          <span className="font-Montserrat text-[8px] text-description/80 tracking-widest italic">Agency Framework / Lapaas</span>
+          <span className="font-Montserrat text-[8px] text-description/80 tracking-widest italic">Astrology Framework / Happy Life Astro</span>
           <div className="flex items-center gap-2">
             <div className="w-1 h-1 bg-accent rounded-full" />
-            <span className="font-Montserrat text-[8px] text-accent tracking-[0.4em] uppercase">Sahil Khanna</span>
+            <span className="font-Montserrat text-[8px] text-accent tracking-[0.4em] uppercase">Happy Life Astro</span>
           </div>
         </div>
         {/* Scanline */}
@@ -91,8 +91,8 @@ const EasyMoneySection = () => {
         {/* iframe 16:9 */}
         <div className="relative w-full overflow-hidden border border-white/10 group-hover:border-accent/30 transition-colors duration-700" style={{ paddingTop: '56.25%' }}>
           <iframe
-            src="https://www.youtube.com/embed/-ijlKuChjuk?controls=0&modestbranding=1&rel=0&showinfo=0&fs=0&enablejsapi=1&origin=https%3A%2F%2Flapaas.com&widgetid=1&forigin=https%3A%2F%2Flapaas.com%2Fsolopreneur&aoriginsup=1&vf=1"
-            title="Making $2000/month is Easy – Blueprint Session"
+            src="https://www.youtube.com/embed/-ijlKuChjuk?controls=0&modestbranding=1&rel=0&showinfo=0&fs=0&enablejsapi=1"
+            title="Happy Life Astro Masterclass Session"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen className="absolute inset-0 w-full h-full" style={{ border: 'none' }}
           />
@@ -101,7 +101,7 @@ const EasyMoneySection = () => {
 
       {/* ══ DESCRIPTION ══ */}
       <p className="em-desc font-Montserrat text-sm text-description leading-[2.1] tracking-wide text-center max-w-3xl mx-auto mb-24">
-        Learn the exact formula Sahil Khanna perfected over 14 years of running a 150+ person agency. Now, with just three team members, he is successfully running a 7-figure business. It's the perfect formula to easily generate $2,000+ per month and achieve your financial goals.
+        Learn the exact astrological principles and comprehensive framework perfected through real-world consultation and practice. Master ancient wisdom tailored for the modern era and achieve your full potential.
       </p>
 
       {/* ═══ MORE THAN A COURSE ═══ */}

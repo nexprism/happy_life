@@ -40,7 +40,7 @@ function getWelcomeEmailHTML(name, email) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome to Edrilla Solopreneur</title>
+    <title>Welcome to Happy Life Astro</title>
     <style>
         * {
             margin: 0;
@@ -219,55 +219,45 @@ function getWelcomeEmailHTML(name, email) {
 <body>
     <div class="email-container">
         <div class="header">
-            <div class="logo">EDRILLA</div>
-            <div class="tagline">Solopreneur Course</div>
+            <div class="logo">HAPPY LIFE ASTRO</div>
+            <div class="tagline">Online Learning Platform</div>
         </div>
         
         <div class="content">
             <div class="greeting">Hi ${name},</div>
             
-            <p class="message-text">Thank you so much for joining us and purchasing the Solopreneur course! I'm really excited to have you on board, and I just wanted to share a few tips to get the best out of it.</p>
+            <p class="message-text">Thank you so much for joining us! We're excited to have you on board.</p>
             
             <div class="highlight-box">
-                <p class="highlight-text">We've designed this course so that you can practice live as you go. Think of it less like a Netflix binge and more like a hands-on journey: watch a bit, understand it, practice, and if you run into any problems, our community is right there to help you out.</p>
+                <p class="highlight-text">Your course is ready for you. Access all video lessons, study material, and community discussions directly from your student dashboard.</p>
             </div>
             
-            <p class="message-text">You'll get real skills this way, not just a movie-like experience. Inside our app, you'll find lots of features like the ability to hire or be hired, ask questions in the community, and get answers from experts.</p>
-            
-            <p class="message-text">Plus, whenever we have live events, you'll get a notification so you never miss out.</p>
-
-            <div class="highlight-box" style="background-color: #f1f5f9; border-left: 4px solid #000; margin: 30px 0;">
+            <div class="highlight-box" style="background-color: #f1f5f9; border-left: 4px solid #2171B5; margin: 30px 0;">
                 <p class="highlight-text" style="font-weight:bold;">Your Login Credentials:</p>
                 <p class="highlight-text">Email: <b>${email}</b></p>
-                <p class="highlight-text">Password: <b>student</b></p>
-                <p class="highlight-text" style="font-size:13px; color:#666;">(You can change your password after login.)</p>
+                <p class="highlight-text" style="font-size:13px; color:#666;">(Use the password created during checkout or reset password link.)</p>
             </div>
             
             <div class="download-section">
                 <div class="download-title">Ready to Start Learning?</div>
-                <div class="download-subtitle">Download the Edrilla app and access your course anywhere</div>
+                <div class="download-subtitle">Access your course on the web platform</div>
                <div class="download-buttons">
-  <a href="https://play.google.com/store/apps/details?id=com.edrilla.app" class="download-btn" target="_blank">📱 Play Store</a>
-  <a href="https://apps.apple.com/in/app/edrilla-business-booster/id6751890495" class="download-btn" target="_blank">
-    <img src="https://img.icons8.com/ios-filled/50/000000/mac-os.png" alt="App Store" width="20" style="vertical-align:middle; margin-right:5px;">
-    App Store
-  </a>
-  <a href="https://edrilla.com/login" class="download-btn" target="_blank">🌐 Web App</a>
+  <a href="${process.env.FRONTEND_URL || 'https://happylifeastro.school'}/login" class="download-btn" target="_blank">🌐 Web Portal</a>
 </div>
 
             </div>
             
-            <p class="message-text">I hope this course not only meets but exceeds your expectations. Thanks again for supporting us, and if you need anything, just let me know!</p>
+            <p class="message-text">If you have any questions or need assistance, feel free to reach out to our support team.</p>
             
             <div class="signature">
-                <p class="signature-text">Happy learning!</p>
-                <p class="signature-name">Sahil Khanna</p>
+                <p class="signature-text">Warm regards,</p>
+                <p class="signature-name">Happy Life Astro Team</p>
             </div>
         </div>
         
         <div class="footer">
             <p class="support-info">Need help? Contact us at</p>
-            <a href="mailto:support@edrilla.com" class="support-email">support@edrilla.com</a>
+            <a href="mailto:${process.env.SupportEmail || 'support@happylifeastro.school'}" class="support-email">${process.env.SupportEmail || 'support@happylifeastro.school'}</a>
         </div>
     </div>
 </body>
@@ -276,7 +266,7 @@ function getWelcomeEmailHTML(name, email) {
 }
 
 async function sendWelcomeEmail({ name, email }) {
-  const subject = "Welcome to Edrilla Solopreneur - Let's Start Your Journey!";
+  const subject = "Welcome to Happy Life Astro - Let's Start Your Journey!";
   const html = getWelcomeEmailHTML(name, email);
   
   await emailService.getTransporter("transactional").sendMail({

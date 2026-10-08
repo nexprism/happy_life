@@ -20,14 +20,30 @@ const Checkout = () => {
    const urlAcc = searchParams.get('acc')
    const urlAmount = searchParams.get('amount')
 
+   const isHexId = (val) => typeof val === 'string' && /^[0-9a-fA-F]{24}$/.test(val);
+
    const { currentCourse } = useSelector(state => state.courses)
-   const selectedPlan = location.state?.plan || (urlPlanId ? { id: urlPlanId, title: 'Selected Plan', price: urlAmount ? Number(urlAmount) : 3499 } : { id: '1year', title: '1 Year', price: 3499 })
    
    const course = (location.state?.course && location.state?.course.title)
       ? location.state.course
       : (currentCourse && (currentCourse._id === urlCourseId || currentCourse.id === urlCourseId)
          ? currentCourse
          : (location.state?.course || (urlCourseId ? { id: urlCourseId, _id: urlCourseId, title: 'Astrology Masterclass' } : {})))
+
+   const defaultCoursePrice = (course?.salePrice != null && Number(course.salePrice) > 0)
+      ? Number(course.salePrice)
+      : (course?.price != null && Number(course.price) > 0 ? Number(course.price) : (urlAmount ? Number(urlAmount) : 3499));
+
+   const rawPlan = location.state?.plan;
+   const validPlanId = isHexId(rawPlan?._id || rawPlan?.id)
+      ? (rawPlan?._id || rawPlan?.id)
+      : (isHexId(urlPlanId) ? urlPlanId : null);
+
+   const selectedPlan = rawPlan
+      ? { id: validPlanId, title: rawPlan.title || rawPlan.name || 'Selected Plan', price: Number(rawPlan.salePrice || rawPlan.price || defaultCoursePrice) }
+      : (validPlanId
+         ? { id: validPlanId, title: 'Selected Plan', price: urlAmount ? Number(urlAmount) : defaultCoursePrice }
+         : { id: null, title: 'Course Enrollment', price: defaultCoursePrice });
 
    const accParam = urlAcc || location.state?.acc || ''
 
@@ -124,15 +140,17 @@ const Checkout = () => {
       }
 
       try {
+         const planIdToSend = isHexId(selectedPlan?.id || selectedPlan?._id) ? (selectedPlan.id || selectedPlan._id) : undefined;
+
          const payload = {
             courseId: course._id || course.id || '',
             guestEmail: formData.email,
             guestName: formData.fullName,
             couponCode: formData.coupon || '',
             is_verify: Boolean(isVerified),
-            coursePlanId: selectedPlan.id || selectedPlan._id || ''
          }
 
+         if (planIdToSend) payload.coursePlanId = planIdToSend;
          if (accParam) payload.acc = accParam;
 
          const chkRes = await fetch(`${BASE_API}/checkout/check-order`, {
@@ -152,7 +170,7 @@ const Checkout = () => {
          }
 
          const razor = chkData?.razorpay || {}
-         const rKey = razor.key || settings?.RAZORPAY_KEY_ID || settings?.settings?.RAZORPAY_KEY_ID
+         const rKey = razor.key || settings?.RAZORPAY_KEY_ID || settings?.settings?.RAZORPAY_KEY_ID || import.meta.env.VITE_RAZORPAY_KEY_ID
          const order = razor.order || {}
          const rAmount = (order.amount != null) ? order.amount : Math.round(total * 100)
 
@@ -175,12 +193,12 @@ const Checkout = () => {
                      guestEmail: formData.email,
                      guestName: formData.fullName,
                      paymentProvider: 'razorpay',
-                     coursePlanId: selectedPlan.id || selectedPlan._id || '',
                      couponCode: formData.coupon || '',
                      company: formData.company,
                      gst: formData.gst
                   }
 
+                  if (planIdToSend) buyPayload.coursePlanId = planIdToSend;
                   if (accParam) buyPayload.acc = accParam;
 
                   await dispatch(buyNow(buyPayload)).unwrap()
@@ -204,6 +222,10 @@ const Checkout = () => {
          }
 
          const rzp = new window.Razorpay(options)
+         rzp.on('payment.failed', function (resp) {
+            console.error('Razorpay payment failed:', resp.error)
+            alert(resp.error?.description || 'Payment failed. Please try again.')
+         })
          rzp.open()
       } catch (err) {
          console.error('Order check failed', err)
