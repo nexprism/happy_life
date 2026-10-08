@@ -24,7 +24,7 @@ import fs from "fs";
 import path from "path";
 import PDFDocument from "pdfkit";
 import { renderHtmlToPdf } from "../utils/pdfRenderer.js";
-import getRazorpayInstance from "../config/razorpay.js";
+import getRazorpayInstance, { getRazorpayKeys, verifyRazorpaySignature } from "../config/razorpay.js";
 import axios from 'axios';
 import VideoLesson from '../models/video.js';
 import xlsx from "xlsx";
@@ -44,7 +44,7 @@ function renderInvoiceHtml(order, guestUser, company) {
   <html>
   <head>
     <meta charset="UTF-8" />
-    <title>Lapaas Invoice</title>
+    <title>Happy Life Astro Invoice</title>
     <style>
       * { 
         box-sizing: border-box; 
@@ -483,8 +483,8 @@ function renderInvoiceHtml(order, guestUser, company) {
       <header class="invoice-header">
         <div class="header-content">
           <div class="company-info">
-            <h1>Lapaas</h1>
-            <p class="company-tagline">Educational Excellence Platform</p>
+            <h1>Happy Life Astro</h1>
+            <p class="company-tagline">Online Learning & Astrology Platform</p>
           </div>
           <div class="invoice-details">
             <div class="invoice-number">Invoice #${order.orderNo}</div>
@@ -614,13 +614,13 @@ function renderInvoiceHtml(order, guestUser, company) {
       <footer class="invoice-footer">
         <div class="footer-content">
           <div class="footer-left">
-            <div class="footer-text">Thank you for choosing Lapaas! 🎓</div>
+            <div class="footer-text">Thank you for choosing Happy Life Astro! 🎓</div>
             <div class="support-info">Your trusted learning partner</div>
           </div>
           <div class="footer-right">
             <div class="footer-text">Need Support?</div>
             <div class="support-info">
-              Contact us at <a href="mailto:support@lapaas.com" class="support-email">support@lapaas.com</a>
+              Contact us at <a href="mailto:${process.env.SupportEmail || 'support@happylifeastro.school'}" class="support-email">${process.env.SupportEmail || 'support@happylifeastro.school'}</a>
             </div>
           </div>
         </div>
@@ -754,13 +754,7 @@ export const checkout = async (req, res) => {
       if (!paymentId) {
         return res.status(400).json({ message: "Payment ID is required for Razorpay" });
       }
-      const keySetting = await Setting.findOne({ key: "RAZORPAY_KEY_ID" });
-      const secretSetting = await Setting.findOne({ key: "RAZORPAY_KEY_SECRET" });
-      const apiKey = keySetting?.value;
-      const apiSecret = secretSetting?.value;
-      if (!apiKey || !apiSecret) {
-        return res.status(500).json({ message: "Razorpay credentials not found in settings" });
-      }
+      const { keyId: apiKey, keySecret: apiSecret } = await getRazorpayKeys();
       const expectedPaise = Math.round(grandTotal * 100);
       const url = `https://api.razorpay.com/v1/payments/${paymentId}`;
       const auth = Buffer.from(`${apiKey}:${apiSecret}`).toString("base64");
@@ -1615,28 +1609,34 @@ export const checkOrder = async (req, res) => {
       return res.status(400).json({ message: "Email not verified", is_valid: false, success: false, err: { email: "Please verify your email before proceeding" } });
     }
 
-    if (courseId && courseBundleId) {
+    // Validate and sanitize IDs
+    const validPlanId = (coursePlanId && mongoose.Types.ObjectId.isValid(coursePlanId)) ? coursePlanId : null;
+    const validCourseId = (courseId && mongoose.Types.ObjectId.isValid(courseId)) ? courseId : null;
+    const validBundleId = (courseBundleId && mongoose.Types.ObjectId.isValid(courseBundleId)) ? courseBundleId : null;
+
+    if (!validCourseId && !validBundleId && !validPlanId) {
+      return res.status(400).json({ message: "Valid Course, bundle, or plan ID is required", is_valid: false });
+    }
+
+    if (validCourseId && validBundleId) {
       return res.status(400).json({ message: "Provide either courseId or courseBundleId, not both", is_valid: false });
     }
 
     // Allow courseId+coursePlanId if plan belongs to course
-    if (
-      (courseId && courseBundleId) ||
-      (coursePlanId && courseBundleId)
-    ) {
-      return res.status(400).json({ message: "Provide either courseId/coursePlanId or courseBundleId, not both" });
+    if (validPlanId && validBundleId) {
+      return res.status(400).json({ message: "Provide either coursePlanId or courseBundleId, not both", is_valid: false });
     }
-    if (courseId && coursePlanId) {
+
+    if (validCourseId && validPlanId) {
       // Check if plan belongs to course
       const CoursePlan = (await import('../models/CoursePlan.js')).default;
-      const plan = await CoursePlan.findById(coursePlanId);
+      const plan = await CoursePlan.findById(validPlanId);
       if (!plan) {
-        return res.status(404).json({ message: "Course plan not found" });
+        return res.status(404).json({ message: "Course plan not found", is_valid: false });
       }
-      if (plan.courseId.toString() !== courseId.toString()) {
-        return res.status(400).json({ message: "Course plan does not belong to the specified course" });
+      if (plan.courseId.toString() !== validCourseId.toString()) {
+        return res.status(400).json({ message: "Course plan does not belong to the specified course", is_valid: false });
       }
-      // If valid, proceed and ignore courseId for item creation (use plan.courseId)
     }
 
     let guestUser = await User.findOne({ email: guestEmail });
@@ -1665,16 +1665,12 @@ export const checkOrder = async (req, res) => {
         }
       }
 
-      if (courseId) {
-        const course = await Course.findById(courseId);
+      if (validCourseId) {
+        const course = await Course.findById(validCourseId);
         if (!course) return res.status(404).json({ message: "Course not found", is_valid: false });
-        // ACCESS EXPIRY: nothing flips status automatically once accessExpiry
-        // passes (the pre('save') hook only runs on explicit save()), so a
-        // stale 'active' enrollment whose access has lapsed must not block a
-        // renewal purchase. Only a genuinely-unexpired enrollment counts.
         const existingEnrollment = await CourseEnrollment.findOne({
           userId: guestUser._id,
-          courseId: courseId,
+          courseId: validCourseId,
           status: "active",
           $or: [{ accessExpiry: null }, { accessExpiry: { $gt: new Date() } }],
         });
@@ -1688,27 +1684,21 @@ export const checkOrder = async (req, res) => {
     const razorpay = await getRazorpayInstance();
     let amount = 0;
 
-    if (coursePlanId) {
+    if (validPlanId) {
       const CoursePlan = (await import('../models/CoursePlan.js')).default;
-      const plan = await CoursePlan.findById(coursePlanId);
+      const plan = await CoursePlan.findById(validPlanId);
       if (!plan) return res.status(404).json({ message: "Course plan not found", is_valid: false });
-      // PRICING: CoursePlan.salePrice defaults to 0 in the schema and `0 !== undefined`,
-      // so the old check priced plans without an explicit sale price at ₹0. A sale
-      // price is only valid as a POSITIVE override — otherwise fall back to the
-      // regular price (mirrors the course pricing below and the cart checkout).
-      {
-        const sale = plan.salePrice != null ? Number(plan.salePrice) : 0;
-        amount = sale > 0 ? sale : Number(plan.price || 0);
-        if (!Number.isFinite(amount) || amount < 0) amount = 0;
-      }
-    } else if (courseId) {
-      const course = await Course.findById(courseId);
+      const sale = plan.salePrice != null ? Number(plan.salePrice) : 0;
+      amount = sale > 0 ? sale : Number(plan.price || 0);
+      if (!Number.isFinite(amount) || amount < 0) amount = 0;
+    } else if (validCourseId) {
+      const course = await Course.findById(validCourseId);
       if (!course) return res.status(404).json({ message: "Course not found", is_valid: false });
       amount = course.salePrice && parseFloat(course.salePrice) > 0
         ? parseFloat(course.salePrice)
         : parseFloat(course.price || 0);
-    } else if (courseBundleId) {
-      const bundle = await CourseBundle.findById(courseBundleId).populate("courses");
+    } else if (validBundleId) {
+      const bundle = await CourseBundle.findById(validBundleId).populate("courses");
       if (!bundle) return res.status(404).json({ message: "Bundle not found", is_valid: false });
       amount = parseFloat(bundle.price || 0);
     }
@@ -1746,14 +1736,14 @@ export const checkOrder = async (req, res) => {
 
       const order = await razorpay.orders.create(orderOptions);
 
-      const razorpayKeySetting = await Setting.findOne({ key: "RAZORPAY_KEY_ID" });
+      const { keyId: razorpayKey } = await getRazorpayKeys();
 
       // Fix: return amount in rupees (not paise)
       return res.status(200).json({
         success: true,
         is_valid: true,
         razorpay: {
-          key: razorpayKeySetting?.value,
+          key: razorpayKey,
           order: order,
           amount: amount, // amount in rupees
           currency: currency,
@@ -2351,31 +2341,33 @@ export const buyNow = async (req, res) => {
       return res.status(400).json({ message: "Payment ID is required for Razorpay" });
     }
 
-    // Validate required fields
-    if (!courseId && !courseBundleId && !coursePlanId) {
-      return res.status(400).json({ message: "Course, bundle, or plan ID is required" });
+    // Validate and sanitize IDs
+    const validPlanId = (coursePlanId && mongoose.Types.ObjectId.isValid(coursePlanId)) ? coursePlanId : null;
+    const validCourseId = (courseId && mongoose.Types.ObjectId.isValid(courseId)) ? courseId : null;
+    const validBundleId = (courseBundleId && mongoose.Types.ObjectId.isValid(courseBundleId)) ? courseBundleId : null;
+
+    if (!validCourseId && !validBundleId && !validPlanId) {
+      return res.status(400).json({ message: "Valid Course, bundle, or plan ID is required" });
     }
     if (!guestEmail) {
       return res.status(400).json({ message: "Guest email is required" });
     }
-    // Allow courseId+coursePlanId if plan belongs to course
-    if (
-      (courseId && courseBundleId) ||
-      (coursePlanId && courseBundleId)
-    ) {
-      return res.status(400).json({ message: "Provide either courseId/coursePlanId or courseBundleId, not both" });
+    if (validCourseId && validBundleId) {
+      return res.status(400).json({ message: "Provide either courseId or courseBundleId, not both" });
     }
-    if (courseId && coursePlanId) {
+    if (validPlanId && validBundleId) {
+      return res.status(400).json({ message: "Provide either coursePlanId or courseBundleId, not both" });
+    }
+    if (validCourseId && validPlanId) {
       // Check if plan belongs to course
       const CoursePlan = (await import('../models/CoursePlan.js')).default;
-      const plan = await CoursePlan.findById(coursePlanId);
+      const plan = await CoursePlan.findById(validPlanId);
       if (!plan) {
         return res.status(404).json({ message: "Course plan not found" });
       }
-      if (plan.courseId.toString() !== courseId.toString()) {
+      if (plan.courseId.toString() !== validCourseId.toString()) {
         return res.status(400).json({ message: "Course plan does not belong to the specified course" });
       }
-      // If valid, proceed and ignore courseId for item creation (use plan.courseId)
     }
 
     // if (!deviceId && !fcmToken) {
@@ -2441,13 +2433,10 @@ export const buyNow = async (req, res) => {
     let subTotal = 0;
     let courseIdsToEnroll = new Set();
 
-    if (coursePlanId) {
+    if (validPlanId) {
       const CoursePlan = (await import('../models/CoursePlan.js')).default;
-      const plan = await CoursePlan.findById(coursePlanId);
+      const plan = await CoursePlan.findById(validPlanId);
       if (!plan) return res.status(404).json({ message: "Course plan not found" });
-      // PRICING: same hardened sale-vs-regular resolution as checkOrder and the
-      // cart checkout — salePrice (schema default 0) only applies when it is a
-      // positive override; otherwise charge the regular plan price.
       const planSale = plan.salePrice != null ? Number(plan.salePrice) : 0;
       let planPrice = planSale > 0 ? planSale : Number(plan.price || 0);
       if (!Number.isFinite(planPrice) || planPrice < 0) planPrice = 0;
@@ -2460,8 +2449,8 @@ export const buyNow = async (req, res) => {
         currency: plan.currency || "INR",
       });
       courseIdsToEnroll.add(plan.courseId.toString());
-    } else if (courseId) {
-      const course = await Course.findById(courseId);
+    } else if (validCourseId) {
+      const course = await Course.findById(validCourseId);
       if (!course) return res.status(404).json({ message: "Course not found" });
       const price = course.salePrice && parseFloat(course.salePrice) > 0
         ? parseFloat(course.salePrice)
@@ -2474,8 +2463,8 @@ export const buyNow = async (req, res) => {
         currency: course.currency || "INR",
       });
       courseIdsToEnroll.add(course._id.toString());
-    } else if (courseBundleId) {
-      const bundle = await CourseBundle.findById(courseBundleId).populate("courses");
+    } else if (validBundleId) {
+      const bundle = await CourseBundle.findById(validBundleId).populate("courses");
       if (!bundle) return res.status(404).json({ message: "Bundle not found" });
       const price = parseFloat(bundle.price || 0);
       subTotal += price;
@@ -2525,13 +2514,7 @@ export const buyNow = async (req, res) => {
     // mirrors the main `checkout` handler's verification (grandTotal in paise,
     // amount/currency/status checks, capture, "already captured" tolerance).
     if (paymentProvider === "razorpay" && paymentId && grandTotal > 0) {
-      const keySetting = await Setting.findOne({ key: "RAZORPAY_KEY_ID" });
-      const secretSetting = await Setting.findOne({ key: "RAZORPAY_KEY_SECRET" });
-      const apiKey = keySetting?.value;
-      const apiSecret = secretSetting?.value;
-      if (!apiKey || !apiSecret) {
-        return res.status(500).json({ message: "Razorpay credentials not found in settings" });
-      }
+      const { keyId: apiKey, keySecret: apiSecret } = await getRazorpayKeys();
 
       const razorpayPaymentId = paymentId;
       const amount = Math.round(grandTotal * 100); // expected charge in paise (after coupon + GST)

@@ -303,15 +303,6 @@ const Navbar = ({ isLoaded }) => {
           </div>
 
           <div ref={buttonsWrapRef} className="flex items-center gap-2 sm:gap-3">
-            {/* Personality Test Button in Blue Accent */}
-            <Link
-              to="/courses"
-              className="hidden sm:flex relative group bg-accent text-white font-bold px-4 md:px-5 py-2 rounded-full font-inter text-[10px] uppercase tracking-[0.15em] overflow-hidden transition-all duration-300 hover:scale-[1.04] active:scale-95 shadow-accent-soft items-center justify-center"
-            >
-              <span className="relative z-10 font-black">PERSONALITY TEST</span>
-              <div className="absolute inset-0 bg-white/25 -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out skew-x-12" />
-            </Link>
-
             {/* Sign In / Dashboard Button */}
             <Link
               to={isAuthenticated ? "/dashboard" : "/login"}
@@ -417,7 +408,7 @@ const Navbar = ({ isLoaded }) => {
                 </div>
                 <div className="flex flex-col gap-2 items-center text-center w-full">
                   <p className="font-jetbrains text-[9px] tracking-[0.3em] sm:tracking-[0.6em] text-slate-500 uppercase italic whitespace-normal">Where Ambition Meets Execution</p>
-                  <p className="font-jetbrains text-[8px] tracking-[0.1em] sm:tracking-[0.2em] text-slate-400 uppercase whitespace-normal">© 2026 EDRILLA</p>
+                  <p className="font-jetbrains text-[8px] tracking-[0.1em] sm:tracking-[0.2em] text-slate-400 uppercase whitespace-normal">© 2026 HAPPY LIFE ASTRO</p>
                 </div>
               </div>
             </div>

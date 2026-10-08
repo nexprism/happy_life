@@ -79,7 +79,7 @@ courseRouter.post(
     { name: 'certificateImage', maxCount: 1 },
     { name: 'verticalCarouselImage', maxCount: 1 },
     { name: 'featuredImageBanner', maxCount: 1 },
-    // { name: 'demoVideo', maxCount: 1 }
+    { name: 'demoVideo', maxCount: 1 }
   ]),
 
   createCourse
@@ -135,6 +135,7 @@ courseRouter.put(
     { name: 'certificateImage', maxCount: 1 },
     { name: 'verticalCarouselImage', maxCount: 1 },
     { name: 'featuredImageBanner', maxCount: 1 },
+    { name: 'demoVideo', maxCount: 1 }
   ]),
   updateCourse
 );

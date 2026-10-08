@@ -7,6 +7,7 @@ import Setting from "../models/setting.js";
 import { generateOrderNumber } from "../utils/generateOrderNo.js";
 import axios from 'axios';
 import crypto from 'crypto';
+import { getRazorpayKeys, verifyRazorpaySignature } from "../config/razorpay.js";
 
 // GET /api/test-series - Fetch all active test series for the app
 export const getTestSeriesList = async (req, res) => {
@@ -272,14 +273,7 @@ export const testSeriesCheckoutInit = async (req, res) => {
       return res.status(400).json({ success: false, message: 'You have already purchased this Test Series.' });
     }
 
-    const keySetting = await Setting.findOne({ key: "RAZORPAY_KEY_ID" });
-    const secretSetting = await Setting.findOne({ key: "RAZORPAY_KEY_SECRET" });
-    const apiKey = keySetting?.value;
-    const apiSecret = secretSetting?.value;
-
-    if (!apiKey || !apiSecret) {
-      return res.status(500).json({ success: false, message: "Razorpay credentials not configured" });
-    }
+    const { keyId: apiKey, keySecret: apiSecret } = await getRazorpayKeys();
 
     const GST_RATE = await Setting.getGstRate().catch(() => 0.18);
     const tax = parseFloat((testSeries.price * GST_RATE).toFixed(2));
@@ -311,19 +305,14 @@ export const testSeriesCheckoutVerify = async (req, res) => {
     const { testSeriesId, razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
     const userId = req.user._id;
 
-    const secretSetting = await Setting.findOne({ key: "RAZORPAY_KEY_SECRET" });
-    const apiSecret = secretSetting?.value;
+    const isValidSignature = await verifyRazorpaySignature({
+      orderId: razorpay_order_id,
+      paymentId: razorpay_payment_id,
+      signature: razorpay_signature,
+    });
 
-    if (!apiSecret) {
-      return res.status(500).json({ success: false, message: 'Payment verification failed: secret missing' });
-    }
-
-    const hmac = crypto.createHmac("sha256", apiSecret);
-    hmac.update(`${razorpay_order_id}|${razorpay_payment_id}`);
-    const generatedSignature = hmac.digest("hex");
-
-    if (generatedSignature !== razorpay_signature) {
-      return res.status(400).json({ success: false, message: "Payment verification failed" });
+    if (!isValidSignature) {
+      return res.status(400).json({ success: false, message: "Payment verification failed: invalid signature" });
     }
 
     const testSeries = await TestSeries.findById(testSeriesId);

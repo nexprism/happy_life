@@ -201,7 +201,7 @@ export const createCourse = async (req, res) => {
       featuredImageBanner: req.files?.featuredImageBanner?.[0]?.path.replace(/\\/g, "/"),
       mentorImage: req.files?.mentorImage?.[0]?.path.replace(/\\/g, "/") || req.body.mentorImage,
       certificateImage: req.files?.certificateImage?.[0]?.path.replace(/\\/g, "/") || req.body.certificateImage,
-      demoVideo: req.body.demoVideo,
+      demoVideo: req.files?.demoVideo?.[0]?.path ? req.files.demoVideo[0].path.replace(/\\/g, "/") : req.body.demoVideo || "",
       seoMetaDescription: req.body.seoMetaDescription,
       seoContent: req.body.seoContent,
       // Parse comma-separated arrays
@@ -1526,6 +1526,11 @@ export const updateCourse = async (req, res) => {
       featuredImageBanner: req.files?.featuredImageBanner?.[0]?.path.replace(/\\/g, "/"),
       mentorImage: req.files?.mentorImage?.[0]?.path.replace(/\\/g, "/") || req.body.mentorImage,
       certificateImage: req.files?.certificateImage?.[0]?.path.replace(/\\/g, "/") || req.body.certificateImage,
+      demoVideo: req.files?.demoVideo?.[0]?.path
+        ? req.files.demoVideo[0].path.replace(/\\/g, "/")
+        : req.body.demoVideo !== undefined
+          ? req.body.demoVideo
+          : undefined,
 
       level: parseArray(req.body.level),
       languages: parseArray(req.body.languages),

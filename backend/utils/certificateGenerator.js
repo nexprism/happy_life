@@ -57,7 +57,7 @@ export const generateCertificatePDF = async ({ template, certificateData }) => {
     const cX = (text, size) => cx - (text.length * size * 0.3);
 
     // ---- TOP SECTION ----
-    page.drawText('EDRILLA', { x: cX('EDRILLA', 18), y: 760, size: 18, color: navy, font: bf });
+    page.drawText('HAPPY LIFE ASTRO', { x: cX('HAPPY LIFE ASTRO', 18), y: 760, size: 18, color: navy, font: bf });
     page.drawLine({ start: { x: cx - 50, y: 750 }, end: { x: cx + 50, y: 750 }, thickness: 0.5, color: green });
 
     // ---- CERTIFICATE TITLE ----
@@ -106,7 +106,7 @@ export const generateCertificatePDF = async ({ template, certificateData }) => {
     // ---- FOOTER ----
     page.drawLine({ start: { x: cx - 80, y: 160 }, end: { x: cx + 80, y: 160 }, thickness: 0.4, color: green });
 
-    const vTxt = 'Verify at lms.rocket-soft.org';
+    const vTxt = 'Verify at happylifeastro.school';
     page.drawText(vTxt, { x: cX(vTxt, 7), y: 145, size: 7, color: light, font: f });
 
     const vn = certificateData.serial_number || '';

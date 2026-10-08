@@ -7,6 +7,8 @@ import User from '../models/user.js';
 import UserService from './userService.js';
 import emailService from '../utils/emailService.js';
 import { renderHtmlToPdf } from '../utils/pdfRenderer.js';
+import { getRazorpayKeys } from '../config/razorpay.js';
+import axios from 'axios';
 
 const userService = new UserService();
 
@@ -254,39 +256,46 @@ class EventService {
       const tax = parseFloat((subTotal * GST_RATE).toFixed(2));
       const total = parseFloat(subTotal) + parseFloat(tax);
 
-      // // Razorpay payment capture logic for paid events
-      // if (event.price > 0 && ticketData.paymentId && ticketData.paymentId !== 'FREE_EVENT') {
-      //   // Fetch Razorpay credentials from settings
-      //   const keySetting = await Setting.findOne({ key: "RAZORPAY_KEY_ID" });
-      //   const secretSetting = await Setting.findOne({ key: "RAZORPAY_KEY_SECRET" });
-      //   const apiKey = keySetting?.value;
-      //   const apiSecret = secretSetting?.value;
-      //   if (!apiKey || !apiSecret) {
-      //     throw new Error("Razorpay credentials not found in settings");
-      //   }
-      //   const razorpayPaymentId = ticketData.paymentId;
-      //   const amount = Math.round(total * 100); // amount in paise
-      //   if (amount <= 0) {
-      //     throw new Error('Invalid order amount for Razorpay payment capture.');
-      //   }
-      //   const currency = 'INR';
-      //   const url = `https://api.razorpay.com/v1/payments/${razorpayPaymentId}/capture`;
-      //   const auth = Buffer.from(`${apiKey}:${apiSecret}`).toString('base64');
-      //   const headers = {
-      //     'Content-Type': 'application/json',
-      //     'Authorization': `Basic ${auth}`,
-      //   };
-      //   const postData = { amount, currency };
-      //   const axios = (await import('axios')).default;
-      //   try {
-      //     const razorpayRes = await axios.post(url, postData, { headers });
-      //     if (razorpayRes.status !== 200 && razorpayRes.status !== 201) {
-      //       throw new Error('Failed to capture payment with Razorpay.');
-      //     }
-      //   } catch (err) {
-      //     throw new Error('Failed to capture payment with Razorpay: ' + (err.response?.data?.error?.description || err.message));
-      //   }
-      // }
+      // Razorpay payment verification and capture logic for paid events
+      if (ticketPrice > 0 && ticketData.paymentId && ticketData.paymentId !== 'FREE_EVENT') {
+        const { keyId: apiKey, keySecret: apiSecret } = await getRazorpayKeys();
+        const razorpayPaymentId = ticketData.paymentId;
+        const expectedPaise = Math.round(total * 100);
+        if (expectedPaise <= 0) {
+          throw new Error('Invalid order amount for Razorpay payment capture.');
+        }
+        const currency = 'INR';
+        const url = `https://api.razorpay.com/v1/payments/${razorpayPaymentId}`;
+        const auth = Buffer.from(`${apiKey}:${apiSecret}`).toString('base64');
+        const headers = {
+          'Content-Type': 'application/json',
+          'Authorization': `Basic ${auth}`,
+        };
+
+        try {
+          const paymentRes = await axios.get(url, { headers, timeout: 15000 });
+          const payment = paymentRes.data || {};
+
+          if (payment.currency && payment.currency !== currency) {
+            throw new Error("Payment currency mismatch.");
+          }
+          if (typeof payment.amount === "number" && payment.amount < expectedPaise) {
+            throw new Error("Paid amount does not match event registration amount.");
+          }
+          if (!["authorized", "captured"].includes(payment.status)) {
+            throw new Error(`Payment not completed (status: ${payment.status || "unknown"}).`);
+          }
+
+          if (payment.status === "authorized") {
+            await axios.post(`${url}/capture`, { amount: expectedPaise, currency }, { headers, timeout: 15000 });
+          }
+        } catch (err) {
+          const desc = err.response?.data?.error?.description || err.message;
+          if (!desc || !desc.includes("already been captured")) {
+            throw new Error('Failed to verify/capture payment with Razorpay: ' + desc);
+          }
+        }
+      }
 
       // Create invoice
       const invoiceData = {

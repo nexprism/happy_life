@@ -65,7 +65,7 @@ const DashboardMessages = () => {
                 || participants[0]
                 || { fullName: 'Conversation' };
 
-            const isSupportParticipant = other.role === 'admin' || other.role === 'super_admin' || other._id === '68e38debe4d3380f23ae42a3' || other.email === 'sahil@lapaas.com';
+            const isSupportParticipant = other.role === 'admin' || other.role === 'super_admin' || other.email === 'happylifereport@gmail.com' || other.email === 'support@happylifeastro.school';
             const isSupportRoom = !!r.isSupport || /support/i.test(r.name || '') || isSupportParticipant;
 
             let displayName = r.courseId?.title || r.name || other.fullName || other.email || 'Conversation';

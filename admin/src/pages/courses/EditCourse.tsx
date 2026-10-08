@@ -167,47 +167,181 @@ const FileUpload = ({
   );
 };
 
-// YouTube URL Input Component (unchanged)
-type YouTubeUrlInputProps = {
-  label: string;
-  value: string;
-  onChange: React.ChangeEventHandler<HTMLInputElement>;
-  error?: string;
-};
-
-const YouTubeUrlInput = ({
-  label,
-  value,
-  onChange,
+// Demo Video Input Component (Supports Local Video File Upload & YouTube/Video URL)
+const DemoVideoInput = ({
+  videoType,
+  setVideoType,
+  videoUrl,
+  setVideoUrl,
+  videoFile,
+  setVideoFile,
+  currentVideoUrl,
+  baseUrl,
   error,
-}: YouTubeUrlInputProps) => {
+}: {
+  videoType: "file" | "url";
+  setVideoType: (type: "file" | "url") => void;
+  videoUrl: string;
+  setVideoUrl: (url: string) => void;
+  videoFile: File | null;
+  setVideoFile: (file: File | null) => void;
+  currentVideoUrl?: string;
+  baseUrl?: string;
+  error?: string;
+}) => {
+  const [fileError, setFileError] = useState("");
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] || null;
+    if (file) {
+      if (!file.type.startsWith("video/")) {
+        setFileError("Please upload a valid video file (.mp4, .webm, .mov, etc.)");
+        return;
+      }
+      if (file.size > 200 * 1024 * 1024) {
+        setFileError("Video size must be less than 200MB");
+        return;
+      }
+      setFileError("");
+      setVideoFile(file);
+    }
+  };
+
+  const getEmbedUrl = (url: string) => {
+    if (!url) return null;
+    const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=|shorts\/))([\w-]{11})/i);
+    return match ? `https://www.youtube.com/embed/${match[1]}` : null;
+  };
+
+  const embedUrl = getEmbedUrl(videoUrl);
+
   return (
-    <div className="space-y-2">
-      <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 flex items-center gap-2">
-        <Video className="w-4 h-4 text-blue-600" />
-        {label}
-      </label>
-      <input
-        type="text"
-        value={value}
-        onChange={onChange}
-        className={`w-full border dark:text-gray-200 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent ${error ? "border-red-400" : "border-gray-300 dark:border-gray-600"
-          }`}
-        placeholder="Enter YouTube URL (e.g., https://www.youtube.com/watch?v=xyz)"
-      />
-      {error && <p className="mt-1 text-xs text-red-600">{error}</p>}
-      {typeof value === "string" && value && (
-        <div className="mt-3">
-          <iframe
-            width="100%"
-            height="200"
-            src={value?.replace("watch?v=", "embed/")}
-            title="YouTube video preview"
-            style={{ border: 0 }}
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-            className="rounded-lg"
+    <div className="space-y-4 p-5 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/40">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <label className="text-sm font-semibold text-gray-800 dark:text-gray-200 flex items-center gap-2">
+          <Video className="w-5 h-5 text-blue-600" />
+          Course Demo Video (Optional)
+        </label>
+        <div className="inline-flex rounded-lg bg-gray-200 dark:bg-gray-700 p-1">
+          <button
+            type="button"
+            onClick={() => setVideoType("file")}
+            className={`px-3 py-1 text-xs font-medium rounded-md transition-all ${
+              videoType === "file"
+                ? "bg-white dark:bg-gray-800 text-blue-600 dark:text-blue-400 shadow-sm"
+                : "text-gray-600 dark:text-gray-300 hover:text-gray-900"
+            }`}
+          >
+            Upload Local Video
+          </button>
+          <button
+            type="button"
+            onClick={() => setVideoType("url")}
+            className={`px-3 py-1 text-xs font-medium rounded-md transition-all ${
+              videoType === "url"
+                ? "bg-white dark:bg-gray-800 text-blue-600 dark:text-blue-400 shadow-sm"
+                : "text-gray-600 dark:text-gray-300 hover:text-gray-900"
+            }`}
+          >
+            YouTube / Video URL
+          </button>
+        </div>
+      </div>
+
+      {videoType === "file" ? (
+        <div className="space-y-3">
+          <div className="border-2 border-dashed rounded-xl p-6 text-center border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800">
+            <input
+              type="file"
+              accept="video/*"
+              onChange={handleFileChange}
+              className="hidden"
+              id="edit-demo-video-file-upload"
+            />
+            <label htmlFor="edit-demo-video-file-upload" className="cursor-pointer">
+              <Upload className="w-10 h-10 mx-auto mb-2 text-blue-500" />
+              <p className="text-sm text-gray-700 dark:text-gray-300 font-medium">
+                Click to browse local video file
+              </p>
+              <p className="text-xs text-gray-500 mt-1">MP4, WebM, MOV, MKV (up to 200MB)</p>
+            </label>
+          </div>
+
+          {(fileError || error) && (
+            <p className="text-xs text-red-600">{fileError || error}</p>
+          )}
+
+          {videoFile && (
+            <div className="mt-3 space-y-2">
+              <div className="flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-900/30 rounded-xl border border-blue-200 dark:border-blue-800">
+                <div className="flex items-center gap-3">
+                  <PlayCircle className="w-5 h-5 text-blue-600" />
+                  <span className="text-sm font-medium text-gray-800 dark:text-gray-200">
+                    {videoFile.name} ({(videoFile.size / 1024 / 1024).toFixed(2)} MB)
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setVideoFile(null)}
+                  className="text-xs text-red-600 hover:text-red-700 font-medium p-1"
+                >
+                  Remove
+                </button>
+              </div>
+              <video
+                controls
+                src={URL.createObjectURL(videoFile)}
+                className="w-full max-h-64 rounded-xl bg-black shadow"
+              />
+            </div>
+          )}
+
+          {!videoFile && currentVideoUrl && (currentVideoUrl.startsWith("uploads/") || currentVideoUrl.startsWith("/")) && (
+            <div className="mt-3">
+              <p className="text-xs text-gray-500 mb-2 font-medium">Current Demo Video:</p>
+              <video
+                controls
+                src={baseUrl ? `${baseUrl}/${currentVideoUrl.replace(/^\//, '')}` : currentVideoUrl}
+                className="w-full max-h-64 rounded-xl bg-black shadow"
+              />
+            </div>
+          )}
+        </div>
+      ) : (
+        <div className="space-y-3">
+          <input
+            type="text"
+            value={videoUrl}
+            onChange={(e) => setVideoUrl(e.target.value)}
+            className={`w-full border rounded-xl px-4 py-3 text-gray-900 dark:text-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 ${
+              error ? "border-red-400" : "border-gray-200 dark:border-gray-600"
+            }`}
+            placeholder="e.g. https://www.youtube.com/watch?v=... or https://youtu.be/... or direct video URL"
           />
+          {error && <p className="text-xs text-red-600">{error}</p>}
+          {videoUrl && embedUrl && (
+            <div className="mt-3">
+              <iframe
+                width="100%"
+                height="220"
+                src={embedUrl}
+                title="Demo Video Preview"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                className="rounded-xl shadow"
+              />
+            </div>
+          )}
+          {videoUrl && !embedUrl && (
+            <div className="mt-3">
+              <video
+                controls
+                src={videoUrl.startsWith("http") ? videoUrl : baseUrl ? `${baseUrl}/${videoUrl.replace(/^\//, '')}` : videoUrl}
+                className="w-full max-h-64 rounded-xl bg-black shadow"
+              />
+            </div>
+          )}
         </div>
       )}
     </div>
@@ -225,7 +359,7 @@ const EditCourse = () => {
     loading,
     error,
     data: courseData,
-  } = useSelector((state) => state.course);
+  } = useSelector((state: any) => state.course);
 
   // Tab state
   const [activeTab, setActiveTab] = useState("basic");
@@ -233,13 +367,15 @@ const EditCourse = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false); // For mobile sidebar toggle
 
   // Course state (unchanged)
-  const [selectedTags, setSelectedTags] = useState([]);
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [customTag, setCustomTag] = useState("");
-  const [thumbnailFile, setThumbnailFile] = useState(null);
-  const [coverImageFile, setCoverImageFile] = useState(null);
-  const [verticalCarouselImageFile, setVerticalCarouselImageFile] = useState(null);
-  const [featuredImageBannerFile, setFeaturedImageBannerFile] = useState(null);
+  const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
+  const [coverImageFile, setCoverImageFile] = useState<File | null>(null);
+  const [verticalCarouselImageFile, setVerticalCarouselImageFile] = useState<File | null>(null);
+  const [featuredImageBannerFile, setFeaturedImageBannerFile] = useState<File | null>(null);
   const [demoVideoUrl, setDemoVideoUrl] = useState("");
+  const [demoVideoFile, setDemoVideoFile] = useState<File | null>(null);
+  const [demoVideoType, setDemoVideoType] = useState<"file" | "url">("file");
   const [description, setDescription] = useState("");
   const [seoContent, setSeoContent] = useState("");
   const [modules, setModules] = useState([]);
@@ -352,37 +488,45 @@ const EditCourse = () => {
     "Web Development",
   ];
 
-  // Validation schema (unchanged)
   const validateForm = (
-    formData,
-    description,
-    seoContent,
-    selectedTags,
-    files,
-    demoVideoUrl
+    formData: any,
+    description: string,
+    seoContent: string,
+    selectedTags: string[],
+    files: any,
+    demoVideoUrl: string,
+    demoVideoType: "file" | "url"
   ) => {
-    const errors = {};
+    const errors: any = {};
 
-    if (!formData.title.trim()) {
+    if (!formData.title || !formData.title.trim()) {
       errors.title = "Course title is required";
     } else if (formData.title.length > 100) {
       errors.title = "Title must be less than 100 characters";
     }
 
-    if (!formData.price) {
-      errors.price = "Price is required";
-    } else if (isNaN(formData.price) || formData.price < 0) {
-      errors.price = "Price must be a non-negative number";
-    } else if (formData.price > 100000) {
-      errors.price = "Price cannot exceed 100,000";
+    if (formData.price !== undefined && formData.price !== null && String(formData.price).trim() !== "") {
+      if (isNaN(Number(formData.price)) || Number(formData.price) < 0) {
+        errors.price = "Price must be a non-negative number";
+      } else if (Number(formData.price) > 1000000) {
+        errors.price = "Price cannot exceed 1,000,000";
+      }
     }
 
-    if (formData.seoMetaDescription.length > 160) {
+    if (formData.salePrice && String(formData.salePrice).trim() !== "") {
+      if (isNaN(Number(formData.salePrice)) || Number(formData.salePrice) < 0) {
+        errors.salePrice = "Sale price must be a non-negative number";
+      } else if (Number(formData.salePrice) > 1000000) {
+        errors.salePrice = "Sale price cannot exceed 1,000,000";
+      }
+    }
+
+    if (formData.seoMetaDescription && formData.seoMetaDescription.length > 160) {
       errors.seoMetaDescription =
         "Meta description must be less than 160 characters";
     }
 
-    if (seoContent.length > 10000) {
+    if (seoContent && seoContent.length > 10000) {
       errors.seoContent = "SEO content must be less than 10,000 characters";
     }
 
@@ -390,19 +534,18 @@ const EditCourse = () => {
       errors.thumbnailFile = "Thumbnail image is required";
     }
 
-    if (
-      demoVideoUrl &&
-      !/^https?:\/\/(www\.)?youtube\.com\/watch\?v=[\w-]{11}$/.test(
-        demoVideoUrl
-      )
-    ) {
-      errors.demoVideoUrl = "Please enter a valid YouTube URL";
+    if (demoVideoType === "url" && demoVideoUrl && demoVideoUrl.trim() !== "") {
+      const isYoutube = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?|shorts)\/|.*[?&]v=)|youtu\.be\/)([\w-]{11})/i.test(demoVideoUrl);
+      const isUrl = /^https?:\/\/.+/i.test(demoVideoUrl) || /^\/.+/i.test(demoVideoUrl);
+      if (!isYoutube && !isUrl) {
+        errors.demoVideoUrl = "Please enter a valid YouTube or video URL";
+      }
     }
 
     if (selectedTags.length === 0) {
       errors.tags = "At least one tag is required";
-    } else if (selectedTags.length > 5) {
-      errors.tags = "Maximum 5 tags allowed";
+    } else if (selectedTags.length > 10) {
+      errors.tags = "Maximum 10 tags allowed";
     }
 
     return errors;
@@ -736,24 +879,49 @@ const EditCourse = () => {
   const handleSubmit = async (e, isDraft = false) => {
     e.preventDefault();
 
-    const files = { thumbnailFile, coverImageFile, verticalCarouselImageFile, featuredImageBannerFile };
+    const files = {
+      thumbnailFile,
+      coverImageFile,
+      verticalCarouselImageFile,
+      featuredImageBannerFile,
+      demoVideoFile,
+    };
     const errors = validateForm(
       formData,
       description,
       seoContent,
       selectedTags,
       files,
-      demoVideoUrl
+      demoVideoUrl,
+      demoVideoType
     );
 
     console?.log('Validation errors:', errors);
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors);
+
+      // Auto-switch to the first tab that has an error
+      if (errors.title || errors.description) {
+        setActiveTab("basic");
+      } else if (errors.categoryId || errors.subCategoryId || errors.duration) {
+        setActiveTab("details");
+      } else if (errors.thumbnailFile || errors.demoVideoUrl || errors.demoVideoFile) {
+        setActiveTab("media");
+      } else if (errors.price || errors.salePrice) {
+        setActiveTab("pricing");
+      } else if (errors.tags) {
+        setActiveTab("tags");
+      } else if (errors.seoMetaDescription || errors.seoContent) {
+        setActiveTab("seo");
+      }
+
+      const errorList = Object.values(errors).map((err) => `• ${err}`).join("\n");
       setPopup({
         isVisible: true,
-        message: "Please fix the errors in the form",
+        message: `Please complete the following required fields:\n\n${errorList}`,
         type: "error",
       });
+      window.scrollTo({ top: 0, behavior: "smooth" });
       return;
     }
 
@@ -827,7 +995,13 @@ const EditCourse = () => {
     submitFormData.set("seoContent", seoContent);
     submitFormData.set("tags", JSON.stringify(selectedTags));
     submitFormData.set("level", formData.level || "beginner");
-    submitFormData.set("demoVideo", demoVideoUrl);
+    if (demoVideoType === "file" && demoVideoFile) {
+      submitFormData.set("demoVideo", demoVideoFile);
+    } else if (demoVideoType === "url" && demoVideoUrl) {
+      submitFormData.set("demoVideo", demoVideoUrl);
+    } else if (!demoVideoFile && !demoVideoUrl) {
+      submitFormData.set("demoVideo", "");
+    }
 
     // Handle mentor image file separately if uploaded
     if (formData.mentorImageFile) {
@@ -1292,11 +1466,22 @@ const EditCourse = () => {
                         icon={Image}
                       />
                     </div>
-                    <YouTubeUrlInput
-                      label="Demo Video URL"
-                      value={demoVideoUrl}
-                      onChange={(e) => setDemoVideoUrl(e.target.value)}
-                      error={formErrors.demoVideoUrl}
+                    <DemoVideoInput
+                      videoType={demoVideoType}
+                      setVideoType={setDemoVideoType}
+                      videoUrl={demoVideoUrl}
+                      setVideoUrl={(url) => {
+                        setDemoVideoUrl(url);
+                        setFormErrors((prev: any) => ({ ...prev, demoVideoUrl: "" }));
+                      }}
+                      videoFile={demoVideoFile}
+                      setVideoFile={(file) => {
+                        setDemoVideoFile(file);
+                        setFormErrors((prev: any) => ({ ...prev, demoVideoFile: "" }));
+                      }}
+                      currentVideoUrl={formData.demoVideo}
+                      baseUrl={baseUrl}
+                      error={formErrors.demoVideoUrl || formErrors.demoVideoFile}
                     />
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       {formData.thumbnail && !thumbnailFile && (

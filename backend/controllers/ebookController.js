@@ -5,6 +5,7 @@ import Setting from "../models/setting.js";
 import { generateOrderNumber } from "../utils/generateOrderNo.js";
 import axios from 'axios';
 import crypto from 'crypto';
+import { getRazorpayKeys, verifyRazorpaySignature } from "../config/razorpay.js";
 
 // GET /api/ebooks - Fetch all active ebooks
 export const getEbooks = async (req, res) => {
@@ -97,14 +98,7 @@ export const ebookCheckoutInit = async (req, res) => {
     }
 
     // Fetch Razorpay credentials
-    const keySetting = await Setting.findOne({ key: "RAZORPAY_KEY_ID" });
-    const secretSetting = await Setting.findOne({ key: "RAZORPAY_KEY_SECRET" });
-    const apiKey = keySetting?.value;
-    const apiSecret = secretSetting?.value;
-
-    if (!apiKey || !apiSecret) {
-      return res.status(500).json({ success: false, message: "Razorpay credentials not configured" });
-    }
+    const { keyId: apiKey, keySecret: apiSecret } = await getRazorpayKeys();
 
     // GST logic (optional based on your standard flow, using 0% here for simplicity, can be updated)
     const GST_RATE = await Setting.getGstRate().catch(() => 0.18);
@@ -146,17 +140,13 @@ export const ebookCheckoutVerify = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Ebook not found' });
     }
 
-    const secretSetting = await Setting.findOne({ key: "RAZORPAY_KEY_SECRET" });
-    const apiSecret = secretSetting?.value;
+    const isValidSignature = await verifyRazorpaySignature({
+      orderId: razorpay_order_id,
+      paymentId: razorpay_payment_id,
+      signature: razorpay_signature,
+    });
 
-    if (!apiSecret) {
-      return res.status(500).json({ success: false, message: "Razorpay credentials not configured" });
-    }
-
-    const body = razorpay_order_id + "|" + razorpay_payment_id;
-    const expectedSignature = crypto.createHmac('sha256', apiSecret).update(body.toString()).digest('hex');
-
-    if (expectedSignature !== razorpay_signature) {
+    if (!isValidSignature) {
       return res.status(400).json({ success: false, message: "Invalid payment signature" });
     }
 

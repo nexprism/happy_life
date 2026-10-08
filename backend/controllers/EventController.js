@@ -1,5 +1,5 @@
 import EventService from '../service/EventService.js';
-import getRazorpayInstance from '../config/razorpay.js';
+import getRazorpayInstance, { getRazorpayKeys } from '../config/razorpay.js';
 import Setting from '../models/setting.js';
 import User from '../models/user.js';
 import Event from '../models/Event.js';
@@ -324,14 +324,13 @@ export const checkRegisterForEvent = async (req, res) => {
       };
       const order = await razorpay.orders.create(orderOptions);
 
-      //console.log("Razorpay Order Created:", order);
-      const razorpayKeySetting = await Setting.findOne({ key: "RAZORPAY_KEY_ID" });
+      const { keyId: razorpayKey } = await getRazorpayKeys();
 
       return res.status(200).json({
         success: true,
         is_valid: true,
         razorpay: {
-          key: razorpayKeySetting?.value,
+          key: razorpayKey,
           order: order,
           amount: total,
           currency: currency,

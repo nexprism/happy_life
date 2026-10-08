@@ -7,6 +7,10 @@ export default defineConfig({
     react({ jsxRuntime: 'automatic' }),
     tailwindcss(),
   ],
+  server: {
+    host: true,
+    port: 5173,
+  },
   define: {
     global: 'globalThis'
   },

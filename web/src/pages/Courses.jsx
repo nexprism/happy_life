@@ -425,8 +425,8 @@ const Courses = () => {
           await loadRazorpayScript()
 
           const options = {
-            key: checkData.razorpay.key,
-            amount: checkData.razorpay.amount,
+            key: checkData.razorpay.key || import.meta.env.VITE_RAZORPAY_KEY_ID,
+            amount: checkData.razorpay.order?.amount || Math.round((checkData.razorpay.amount || 0) * 100),
             currency: checkData.razorpay.currency || 'INR',
             name: 'Happy Life',
             description: `Registration: ${activeEventModal.title}`,

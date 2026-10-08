@@ -73,7 +73,7 @@ const PopupAlert: React.FC<PopupAlertProps> = ({
             {type === "success" ? "Success" : type === "error" ? "Warning" : "Notice"}
           </h3>
         </div>
-        <p className="text-gray-600 mb-6">{message}</p>
+        <div className="text-gray-600 mb-6 text-sm whitespace-pre-line leading-relaxed">{message}</div>
         <div className="flex gap-3">
           {showConfirm ? (
             <>

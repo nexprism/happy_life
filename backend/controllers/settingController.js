@@ -1,5 +1,18 @@
 import Setting from '../models/setting.js';
 
+const SENSITIVE_SETTING_KEYS = new Set([
+  'RAZORPAY_KEY_SECRET',
+  'JWT_ACCESS_SECRET',
+  'JWT_SECRET',
+  'SMTP_PASS',
+  'TransactionalEmailPass',
+  'FounderEmailPass',
+  'SupportEmailPass',
+  'OPENAI_API_KEY',
+  'VIDEOCYPHER_API_KEY',
+  'VDOCIPHER_API_KEY'
+]);
+
 export const getSettings = async (req, res) => {
   try {
     // Validate Content-Type
@@ -14,16 +27,22 @@ export const getSettings = async (req, res) => {
       return res.status(400).json({ message: "Keys must be a non-empty array" });
     }
 
-    //console.log("Requested keys:", keys); // Debug log
+    // Filter out sensitive keys for unauthenticated requests
+    const isAdminUser = req.user && req.user.role === 'admin';
+    const allowedKeys = isAdminUser ? keys : keys.filter(k => !SENSITIVE_SETTING_KEYS.has(k));
 
     // Fetch settings for the provided keys
-    const settings = await Setting.find({ key: { $in: keys } }).select('key value description');
+    const settings = await Setting.find({ key: { $in: allowedKeys } }).select('key value description');
 
     // Create a response object mapping keys to values
     const result = {};
     keys.forEach(key => {
-      const setting = settings.find(s => s.key === key);
-      result[key] = setting ? setting.value : null; // Return null if key not found
+      if (SENSITIVE_SETTING_KEYS.has(key) && !isAdminUser) {
+        result[key] = null;
+      } else {
+        const setting = settings.find(s => s.key === key);
+        result[key] = setting ? setting.value : null; // Return null if key not found
+      }
     });
 
     return res.status(200).json({
@@ -39,12 +58,18 @@ export const getSettings = async (req, res) => {
 
 export const getAllSettings = async (req, res) => {
   try {
+    const isAdminUser = req.user && req.user.role === 'admin';
+
     // Fetch all settings
     const settings = await Setting.find().select('key value description');
 
     // Create a response object mapping keys to values
     const result = {};
     settings.forEach(setting => {
+      if (SENSITIVE_SETTING_KEYS.has(setting.key) && !isAdminUser) {
+        // Exclude secret keys from public responses
+        return;
+      }
       result[setting.key] = setting.value;
     });
 

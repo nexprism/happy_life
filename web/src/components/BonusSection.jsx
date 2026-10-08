@@ -10,7 +10,7 @@ const bonuses = [
     price: "20,000/-",
   },
   {
-    title: "1 Year Complimentary Access To All Lapaas Beta Tools",
+    title: "1 Year Complimentary Access To All Happy Life Astro Beta Tools",
     price: "4,999/-",
   },
   {
