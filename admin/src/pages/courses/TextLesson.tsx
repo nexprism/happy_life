@@ -197,9 +197,7 @@ const TextLessonPage: React.FC = () => {
                   className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                 >
                   <option value="English">English</option>
-                  <option value="Spanish">Spanish</option>
-                  <option value="French">French</option>
-                  <option value="German">German</option>
+                  <option value="Hindi">Hindi</option>
                 </select>
               </div>
               <div>

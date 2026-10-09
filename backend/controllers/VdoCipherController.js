@@ -1,5 +1,8 @@
 import VdoCipherService from '../service/VdoCipherService.js';
 import SecurityService from '../service/SecurityService.js';
+import Enrollment from '../models/Enrollment.js';
+import CourseEnrollment from '../models/CourseEnrollment.js';
+import Lesson from '../models/Lesson.js';
 
 class VdoCipherController {
     async generatePlayback(req, res) {
@@ -8,18 +11,58 @@ class VdoCipherController {
             const { lessonId, videoId } = req.body;
             const userId = req?.user?._id;
             const userEmail = req?.user?.email;
+            const userRole = req?.user?.role;
 
             // Check user security status
             const securityStatus = await SecurityService.checkUserSecurityStatus(userId);
             if (securityStatus.isBlocked) {
                 return res.status(403).json({ 
+                    success: false,
                     error: 'Access temporarily restricted due to security concerns' 
                 });
             }
 
             // Validate required parameters
             if (!videoId) {
-                return res.status(400).json({ error: 'Video ID is required' });
+                return res.status(400).json({ success: false, error: 'Video ID is required' });
+            }
+
+            // Entitlement & Access Control Verification
+            const isPrivileged = ['admin', 'super_admin', 'instructor'].includes(userRole);
+            if (!isPrivileged && courseId) {
+                // Check if lesson is free preview
+                let isFreeAccess = false;
+                if (lessonId) {
+                    const lesson = await Lesson.findById(lessonId).select('accessibility').lean();
+                    if (lesson && lesson.accessibility === 'free') {
+                        isFreeAccess = true;
+                    }
+                }
+
+                if (!isFreeAccess) {
+                    // Verify active enrollment in Enrollment or CourseEnrollment
+                    const now = new Date();
+                    const activeEnrollment = await Enrollment.findOne({
+                        userId,
+                        courseId,
+                        isActive: true,
+                        $or: [
+                            { accessEnd: null },
+                            { accessEnd: { $gte: now } }
+                        ]
+                    }).lean() || await CourseEnrollment.findOne({
+                        userId,
+                        courseId,
+                        status: 'active'
+                    }).lean();
+
+                    if (!activeEnrollment) {
+                        return res.status(403).json({
+                            success: false,
+                            error: 'Active enrollment is required to access this course video.'
+                        });
+                    }
+                }
             }
 
             // Pass only analytics fields (no rtext type)

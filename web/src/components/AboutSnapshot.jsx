@@ -83,18 +83,18 @@ const AboutSnapshot = () => {
                </div>
                
                <h2 className="snapshot-text text-4xl md:text-5xl font-black text-slate-900 leading-[1.1] mb-6">
-                  Your Ultimate Guide to <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 to-amber-700">Banking Success.</span>
+                  Your Ultimate Guide to <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 to-amber-700">Astrological Mastery.</span>
                </h2>
                
                <p className="snapshot-text text-lg text-slate-600 mb-8 leading-relaxed font-medium">
-                  Bankers Grade is a premier online educational platform designed exclusively for banking professionals. Whether you're aiming for career advancement or preparing for crucial promotional exams, we provide the tools you need to succeed.
+                  Happy Life Astro is a premier online educational platform designed to empower learners with authentic Vedic Astrology, Vastu, Numerology, and spiritual wisdom. Transform your life and guide others with clarity and confidence.
                </p>
 
                <ul className="snapshot-text space-y-4 mb-10">
                   {[
-                     "Tailored preparation for IBPS, SBI CBO, JAIIB & more",
-                     "Live & recorded video classes by industry experts",
-                     "Comprehensive study resources and practice tests"
+                     "Comprehensive Vedic Astrology, Vastu & Numerology courses",
+                     "Live interactive workshops & masterclasses by Dr. Yogesh Sharma",
+                     "Verified certifications, personalized mentorship & study guides"
                   ].map((item, index) => (
                      <li key={index} className="flex items-center gap-3 text-slate-700 font-medium">
                         <div className="flex-shrink-0 w-6 h-6 rounded-full bg-green-100 text-green-600 flex items-center justify-center">

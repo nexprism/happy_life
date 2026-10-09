@@ -41,7 +41,7 @@ class NotificationService {
             },
             android: {
                 notification: {
-                    channelId: "Bankers Grade",
+                    channelId: "Happy Life Astro",
                 },
             },
             apns: {

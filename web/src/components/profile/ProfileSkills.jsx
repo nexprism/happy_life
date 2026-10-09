@@ -112,7 +112,12 @@ const ProfileSkills = () => {
                      <div className="flex gap-4 opacity-0 group-hover:opacity-100 transition-opacity">
                         {doc.Doc && (
                            <a 
-                              href={`https://happy-life-sx03.onrender.com/uploads/${doc.Doc}`} 
+                              href={(() => {
+                                 if (doc.Doc.startsWith('http')) return doc.Doc;
+                                 const rawBase = import.meta.env.VITE_BASE_URL || import.meta.env.VITE_API_BASE || 'https://happy-life-sx03.onrender.com';
+                                 const baseUrl = rawBase.replace(/\/api\/v1\/?$/, '');
+                                 return `${baseUrl}/uploads/${doc.Doc}`;
+                              })()} 
                               target="_blank" 
                               rel="noreferrer"
                               className="text-accent hover:text-white transition-colors"

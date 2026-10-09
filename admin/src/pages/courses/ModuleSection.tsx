@@ -1203,14 +1203,14 @@ const LessonEditor = ({
       {/* Content Modal */}
       <Modal
         isOpen={showContentModal}
-        onClose={() => setShowContentModal(false)}
-        title={`${hasExistingContent ? "Edit" : "Create"} ${currentConfig?.label
-          } Content`}
-        maxWidth={lesson?.type === "quiz" ? "none" : "6xl"}
+        onClose={() => {
+          setShowContentModal(false);
+          setOpenLessonData(null);
+        }}
+        showCloseButton={false}
+        className="max-w-4xl w-full mx-auto p-0 overflow-hidden !rounded-2xl bg-transparent shadow-none"
       >
-        <div className="space-y-6">
-          {/* Lesson Info Header */}
-
+        <div className="w-full">
           {/* Content Form */}
           {renderContentModal()}
         </div>

@@ -267,10 +267,6 @@ export default function EditAssignmentForm({
                   disabled
                 >
                   <option value="English">English</option>
-                  <option value="Spanish">Spanish</option>
-                  <option value="French">French</option>
-                  <option value="German">German</option>
-                  <option value="Mandarin">Mandarin</option>
                   <option value="Hindi">Hindi</option>
                 </select>
               </div>

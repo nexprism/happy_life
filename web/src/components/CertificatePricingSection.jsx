@@ -50,14 +50,23 @@ const CertificatePricingSection = ({ course }) => {
       return () => ctx.revert()
    }, [])
 
-   // Use API plans if available, otherwise fallback
-   const apiPlans = course?.plans?.length > 0 ? course.plans.map(p => ({
-      id: p._id,
-      title: p.name || `${p.duration} ${p.durationType}`,
-      price: p.salePrice || p.price,
-      subtitle: p.description || 'Full Access Protocol'
-   })) : [
-      { id: '1year', title: '1 Year', price: course?.salePrice || course?.price || 3499, subtitle: 'Standard Access' }
+   // Use API plans if available, otherwise dynamically resolve from course pricing
+   const dynamicCoursePrice = (course?.salePrice && Number(course.salePrice) > 0)
+      ? Number(course.salePrice)
+      : (course?.price && Number(course.price) > 0 ? Number(course.price) : 1999);
+
+   const apiPlans = course?.plans?.length > 0 ? course.plans.map(p => {
+      const pSale = p.salePrice && Number(p.salePrice) > 0 ? Number(p.salePrice) : null;
+      const pPrice = p.price && Number(p.price) > 0 ? Number(p.price) : null;
+      const planPrice = pSale || pPrice || dynamicCoursePrice;
+      return {
+         id: p._id,
+         title: p.name || `${p.duration || 1} ${p.durationType || 'Year'}`,
+         price: planPrice,
+         subtitle: p.description || 'Full Access Protocol'
+      };
+   }) : [
+      { id: '1year', title: '1 Year Full Access', price: dynamicCoursePrice, subtitle: 'Standard Access' }
    ];
 
    useEffect(() => {

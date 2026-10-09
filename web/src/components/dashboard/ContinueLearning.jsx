@@ -12,13 +12,16 @@ const ContinueLearning = () => {
 
   if (!lastSession) return null;
 
-  // Find thumbnail from activeCourses
-  const activeCourse = dashData?.activeCourses?.find(c => c.courseId === lastSession.courseId)
-  const thumbnail = activeCourse?.thumbnail 
-    ? `${import.meta.env.VITE_IMAGE_URL || 'https://happy-life-sx03.onrender.com'}/${activeCourse.thumbnail}` 
+  // Find thumbnail from activeCourses or lastSession
+  const activeCourse = dashData?.activeCourses?.find(c => 
+    String(c.courseId?._id || c.courseId) === String(lastSession.courseId?._id || lastSession.courseId)
+  )
+  const rawThumb = lastSession.thumbnail || activeCourse?.thumbnail 
+  const thumbnail = rawThumb 
+    ? (rawThumb.startsWith('http') ? rawThumb : `${import.meta.env.VITE_IMAGE_URL || import.meta.env.VITE_BASE_URL || 'https://happy-life-sx03.onrender.com'}/${rawThumb.startsWith('/') ? rawThumb.slice(1) : rawThumb}`) 
     : bannerImg
 
-  const percentage = Math.round(lastSession.completionPercentage || 0)
+  const percentage = Math.min(100, Math.max(0, Math.round(lastSession.completionPercentage || 0)))
 
   return (
     <div className="relative w-full h-full min-h-[360px] rounded-3xl overflow-hidden group border border-card-border shadow-card flex flex-col justify-end">
@@ -44,10 +47,10 @@ const ContinueLearning = () => {
 
       {/* Main Content (Bottom Aligned) */}
       <div className="relative z-10 p-8 pt-20 w-full">
-         <p className="font-inter text-[10px] text-accent font-bold uppercase tracking-widest mb-2">
+         <p className="font-inter text-[10px] text-accent-secondary font-bold uppercase tracking-widest mb-2">
             {t('continueLearning')}
          </p>
-         <h3 className="font-inter text-3xl md:text-4xl text-white font-black leading-tight tracking-tight max-w-2xl group-hover:text-cyan-400 transition-colors">
+         <h3 className="font-inter text-3xl md:text-4xl text-white font-black leading-tight tracking-tight max-w-2xl group-hover:text-accent-secondary transition-colors">
             {lastSession.videoTitle} {lastSession.lessonTitle ? `- ${lastSession.lessonTitle}` : ''}
          </h3>
          

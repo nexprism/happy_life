@@ -16,7 +16,7 @@ const RefundPolicy = () => {
         
         <div className="refund-animate space-y-6 text-base leading-relaxed">
           <p>
-            Thank you for choosing Bankers Grade for your banking exam preparation. We strive to provide the highest quality educational content. Please read our refund policy carefully.
+            Thank you for enrolling in Happy Life Astro courses and consultations. We strive to provide the highest quality astrology and Vedic wisdom education. Please read our refund policy carefully.
           </p>
           
           <h2 className="text-xl font-bold text-amber-600 mt-6">1. Digital Products</h2>

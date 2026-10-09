@@ -227,27 +227,34 @@ const DashboardCourses = () => {
           ) : error ? (
             <div className="col-span-full text-center py-20 text-red-600 font-montserrat font-bold">{t('failedToLoad')}</div>
           ) : filteredCourses && filteredCourses.length > 0 ? (
-            filteredCourses.map((item) => (
-              <CourseCard 
-                key={item._id || item.id} 
-                item={{
-                  id: item._id || item.id,
-                  title: item.title,
-                  category: item.category?.name || item.category || 'COURSE',
-                  description: item.shortDescription || item.description,
-                  price: item.salePrice ? `₹${item.salePrice}` : item.price ? `₹${item.price}` : 'FREE',
-                  image: (() => {
-                      const thumb = item.thumbnail;
-                      if (!thumb) return '/herocard.png';
-                      if (thumb.startsWith('http')) return thumb;
-                      const rawBase = import.meta.env.VITE_BASE_URL || import.meta.env.VITE_API_BASE || 'https://happy-life-sx03.onrender.com';
-                      const baseUrl = rawBase.replace(/\/api\/v1\/?$/, '');
-                      return `${baseUrl}${thumb.startsWith('/') ? '' : '/'}${thumb}`;
-                  })(),
-                  isNew: true,
-                }} 
-              />
-            ))
+            filteredCourses.map((item) => {
+              const hasSale = Boolean(item.salePrice && item.price && Number(item.salePrice) < Number(item.price));
+              const activePrice = item.salePrice ? `₹${item.salePrice}` : (item.price ? `₹${item.price}` : 'FREE');
+              const originalPrice = hasSale ? `₹${item.price}` : null;
+
+              return (
+                <CourseCard 
+                  key={item._id || item.id} 
+                  item={{
+                    id: item._id || item.id,
+                    title: item.title,
+                    category: item.category?.name || item.categoryId?.name || item.category || 'COURSE',
+                    description: item.shortDescription || item.description,
+                    price: activePrice,
+                    originalPrice: originalPrice,
+                    image: (() => {
+                        const thumb = item.thumbnail;
+                        if (!thumb) return '/herocard.png';
+                        if (thumb.startsWith('http')) return thumb;
+                        const rawBase = import.meta.env.VITE_BASE_URL || import.meta.env.VITE_API_BASE || 'https://happy-life-sx03.onrender.com';
+                        const baseUrl = rawBase.replace(/\/api\/v1\/?$/, '');
+                        return `${baseUrl}${thumb.startsWith('/') ? '' : '/'}${thumb}`;
+                    })(),
+                    isNew: true,
+                  }} 
+                />
+              );
+            })
           ) : (
             <div className="col-span-full text-center py-20 text-slate-500 font-montserrat font-medium">{t('noCoursesAvailable')}</div>
           )}

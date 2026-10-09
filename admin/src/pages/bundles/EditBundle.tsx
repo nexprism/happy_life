@@ -553,7 +553,6 @@ const EditBundleForm = () => {
                         >
                             <option value="English">English</option>
                             <option value="Hindi">Hindi</option>
-                            <option value="Spanish">Spanish</option>
                         </select>
                     </div>
                     <div>

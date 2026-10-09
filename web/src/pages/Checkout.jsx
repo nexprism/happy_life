@@ -32,17 +32,27 @@ const Checkout = () => {
 
    const defaultCoursePrice = (course?.salePrice != null && Number(course.salePrice) > 0)
       ? Number(course.salePrice)
-      : (course?.price != null && Number(course.price) > 0 ? Number(course.price) : (urlAmount ? Number(urlAmount) : 3499));
+      : (course?.price != null && Number(course.price) > 0 ? Number(course.price) : (urlAmount ? Number(urlAmount) : 1999));
 
    const rawPlan = location.state?.plan;
    const validPlanId = isHexId(rawPlan?._id || rawPlan?.id)
       ? (rawPlan?._id || rawPlan?.id)
       : (isHexId(urlPlanId) ? urlPlanId : null);
 
+   const planPrice = (() => {
+      if (rawPlan) {
+         const s = rawPlan.salePrice && Number(rawPlan.salePrice) > 0 ? Number(rawPlan.salePrice) : null;
+         const p = rawPlan.price && Number(rawPlan.price) > 0 ? Number(rawPlan.price) : null;
+         return s || p || defaultCoursePrice;
+      }
+      if (urlAmount && Number(urlAmount) > 0) return Number(urlAmount);
+      return defaultCoursePrice;
+   })();
+
    const selectedPlan = rawPlan
-      ? { id: validPlanId, title: rawPlan.title || rawPlan.name || 'Selected Plan', price: Number(rawPlan.salePrice || rawPlan.price || defaultCoursePrice) }
+      ? { id: validPlanId, title: rawPlan.title || rawPlan.name || 'Selected Plan', price: planPrice }
       : (validPlanId
-         ? { id: validPlanId, title: 'Selected Plan', price: urlAmount ? Number(urlAmount) : defaultCoursePrice }
+         ? { id: validPlanId, title: 'Selected Plan', price: planPrice }
          : { id: null, title: 'Course Enrollment', price: defaultCoursePrice });
 
    const accParam = urlAcc || location.state?.acc || ''

@@ -6,12 +6,11 @@ import DashboardController from '../controllers/dashboardController.js';
 
 const router = express.Router();
 
-// GET /api/v1/dashboard/ - admin dashboard overview (admin only)
+// GET /api/v1/dashboard/ - user dashboard overview
 router.get(
   '/',
   accessTokenAutoRefresh,
   passport.authenticate('jwt', { session: false }),
-  isAdmin,
   DashboardController.getDashboard
 );
 

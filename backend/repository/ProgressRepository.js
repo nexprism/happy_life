@@ -27,21 +27,22 @@ class ProgressRepository {
     }
   }
 
-  async updateProgress(userId, lessonId,courseId, updateData) {
+  async updateProgress(userId, lessonId, courseId, updateData) {
     try {
+      // Set last video played and update enrollment
+      if (courseId) {
+        await CourseEnrollment.findOneAndUpdate(
+          { userId, courseId },
+          { 
+            lastVideoPlayed: lessonId,
+            ...(updateData.completed && { $addToSet: { completedLessons: lessonId } })
+          },
+          { new: true }
+        ).catch(() => {});
+      }
 
-      //set last video played for set continuity for course learning
-     const courseupdate =  await CourseEnrollment.findOneAndUpdate(
-        { userId, courseId },
-        { lastVideoPlayed: lessonId },
-        { new: true }
-      );
-
-      //console.log(`last play video updated for user ${userId}, course ${courseId}`, courseupdate); 
-
-      //console.log(`Updating progress for user ${userId}, lesson ${lessonId}`, updateData);
       const progress = await LessonProgress.findOneAndUpdate(
-        { userId, lessonId ,courseId },
+        { userId, lessonId, ...(courseId && { courseId }) },
         { 
           ...updateData,
           lastUpdatedAt: new Date()
@@ -49,10 +50,24 @@ class ProgressRepository {
         { 
           new: true, 
           upsert: true,
-          runValidators: true
+          setDefaultsOnInsert: true
         }
       );
-      //console.log(`Progress updated for user ${userId}, lesson ${lessonId}`, progress);
+
+      // If lesson completed, award XP
+      if (updateData.completed || (updateData.progressPercentage && updateData.progressPercentage >= 80)) {
+        try {
+          const { updateLeaderboard } = await import('../service/leaderboardService.js');
+          await updateLeaderboard({
+            userId,
+            action: 'complete_lesson',
+            referenceType: 'lesson',
+            referenceId: lessonId,
+            remark: 'Lesson completed'
+          }).catch(() => {});
+        } catch (e) {}
+      }
+
       return progress;
     } catch (error) {
       throw new Error(`Failed to update progress: ${error.message}`);
@@ -61,23 +76,54 @@ class ProgressRepository {
 
   async markCompleted(userId, lessonId, completionData = {}) {
     try {
-      return await LessonProgress.findOneAndUpdate(
+      const courseId = completionData.courseId;
+      const progress = await LessonProgress.findOneAndUpdate(
         { userId, lessonId },
         {
-          completed: true,
-          completedAt: new Date(),
-          completionPercentage: completionData.completionPercentage || 100,
-          ...(completionData.watchTime && { 
-            watchTime: completionData.watchTime 
-          }),
-          lastUpdatedAt: new Date()
+          $set: {
+            completed: true,
+            completedAt: new Date(),
+            completionPercentage: completionData.completionPercentage || 100,
+            progressPercentage: completionData.completionPercentage || 100,
+            ...(completionData.watchTime && { 
+              watchTime: completionData.watchTime 
+            }),
+            lastUpdatedAt: new Date()
+          },
+          $setOnInsert: {
+            ...(courseId && { courseId }),
+            videoType: 'direct'
+          }
         },
         { 
           new: true, 
           upsert: true,
-          runValidators: true
+          setDefaultsOnInsert: true
         }
       );
+
+      if (courseId) {
+        await CourseEnrollment.findOneAndUpdate(
+          { userId, courseId },
+          { 
+            $addToSet: { completedLessons: lessonId },
+            $set: { lastVideoPlayed: lessonId }
+          }
+        ).catch(() => {});
+      }
+
+      try {
+        const { updateLeaderboard } = await import('../service/leaderboardService.js');
+        await updateLeaderboard({
+          userId,
+          action: 'complete_lesson',
+          referenceType: 'lesson',
+          referenceId: lessonId,
+          remark: 'Lesson completed'
+        }).catch(() => {});
+      } catch (e) {}
+
+      return progress;
     } catch (error) {
       throw new Error(`Failed to mark as completed: ${error.message}`);
     }

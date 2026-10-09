@@ -13,10 +13,6 @@ class UserRepository extends CrudRepository {
     super(User);
     this.CourseEnrollment = CourseEnrollment;
     this.Certificate = Certificate;
-    // Register Enrollment model if not already registered
-    if (!mongoose.models.Enrollment) {
-      mongoose.model('Enrollment', CourseEnrollment.schema);
-    }
   }
 
   // Find a user by data and aggregate enrolled courses using $lookup

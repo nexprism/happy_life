@@ -31,7 +31,8 @@ const courseCurriculum = [
 
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchCourseDetail } from '../redux/slices/courseSlice';
-import { fetchLessonsStatus } from '../redux/slices/dripSlice';
+import { fetchLessonsStatus, setLessonStatus } from '../redux/slices/dripSlice';
+import socketService from '../services/socketService';
 
 const DashboardCoursePlayer = () => {
     const { id } = useParams();
@@ -50,6 +51,8 @@ const DashboardCoursePlayer = () => {
     const [isObscured, setIsObscured] = useState(false);
     const [securityWarning, setSecurityWarning] = useState('');
     const containerRef = useRef(null);
+    const syncProgressRef = useRef(null);
+    const lastVideoSyncTimeRef = useRef(0);
     const { trackEvent } = useTracker();
 
     console.log('Current Course Data:', currentCourse);
@@ -131,9 +134,11 @@ const DashboardCoursePlayer = () => {
                     // User clicked inside the video player iframe; do not obscure
                     return;
                 }
-                setIsObscured(true);
-                if (reportIncidentRef.current) reportIncidentRef.current('SCREEN_OBSCURED', { reason: 'window_blur' });
-            }, 50);
+                if (document.hidden) {
+                    setIsObscured(true);
+                    if (reportIncidentRef.current) reportIncidentRef.current('SCREEN_OBSCURED', { reason: 'window_blur' });
+                }
+            }, 100);
         };
         const handleFocus = () => setIsObscured(false);
 
@@ -290,6 +295,19 @@ const DashboardCoursePlayer = () => {
         }
     };
 
+    const isDirectVideoUrl = (url) => {
+        if (!url || typeof url !== 'string') return false;
+        const clean = url.toLowerCase().split('?')[0];
+        if (clean.endsWith('.mp4') || clean.endsWith('.webm') || clean.endsWith('.ogg') || clean.endsWith('.mkv') || clean.endsWith('.mov')) {
+            return true;
+        }
+        if (url.includes('/video/upload/') || url.includes('res.cloudinary.com')) {
+            return true;
+        }
+        if (url.includes('blob:')) return true;
+        return false;
+    };
+
     const getVideoSrc = (lesson) => {
         if (!lesson) return '';
         
@@ -311,30 +329,162 @@ const DashboardCoursePlayer = () => {
                 return `https://player.vdocipher.com/v2/?otp=${video.vdoCipherPlayback.otp}&playbackInfo=${video.vdoCipherPlayback.playbackInfo}`;
             }
             if (video.sourcePlatform === 'youtube') {
-                return `https://www.youtube.com/embed/${decVideoId || decVideoUrl?.split('v=')[1] || decSecureUrl?.split('v=')[1]}?modestbranding=1&rel=0&controls=1&showinfo=0&fs=1`;
+                const ytId = decVideoId || decVideoUrl?.split('v=')[1]?.split('&')[0] || decSecureUrl?.split('v=')[1]?.split('&')[0] || decVideoUrl?.split('youtu.be/')[1]?.split('?')[0] || decVideoUrl;
+                const origin = typeof window !== 'undefined' ? encodeURIComponent(window.location.origin) : '';
+                return `https://www.youtube.com/embed/${ytId}?enablejsapi=1&origin=${origin}&modestbranding=1&rel=0&controls=1&showinfo=0&fs=1`;
             }
             if (video.sourcePlatform === 'vimeo') {
                 const url = decSecureUrl || decVideoUrl || video.embedUrl || '';
                 if (url.includes('player.vimeo.com/video/')) {
                     const separator = url.includes('?') ? '&' : '?';
-                    return `${url}${separator}title=0&byline=0&portrait=0&dnt=1`;
+                    return `${url}${separator}api=1&title=0&byline=0&portrait=0&dnt=1`;
                 }
                 const cleanId = decVideoId || url.replace(/^https?:\/\/(?:www\.)?vimeo\.com\//, '').split('?')[0];
-                return `https://player.vimeo.com/video/${cleanId}?title=0&byline=0&portrait=0&dnt=1`;
+                return `https://player.vimeo.com/video/${cleanId}?api=1&title=0&byline=0&portrait=0&dnt=1`;
             }
             if (decVideoUrl) return decVideoUrl;
             if (decSecureUrl) return decSecureUrl;
         }
         
-        // Handle legacy schema
+        // Handle direct fileUrl or legacy schema
+        if (lesson.fileUrl) return lesson.fileUrl;
         if (lesson.video && lesson.video.url) {
             return lesson.video.url;
         }
+        if (lesson.source) return lesson.source;
         
         return '';
     };
 
     const videoSrc = getVideoSrc(selectedLesson);
+
+    // Automatic video progress sync effect (Handles YouTube, Vimeo, VdoCipher postMessages & active watching ticker)
+    useEffect(() => {
+        if (!selectedLesson || !user) return;
+        const lid = selectedLesson._id || selectedLesson.id;
+        if (!lid) return;
+
+        const lessonDuration = (selectedLesson.duration ? Number(selectedLesson.duration) * 60 : 0) || 
+                               selectedLesson.videoLessons?.[0]?.duration || 
+                               300;
+
+        let accumulatedTime = 0;
+        const currentInitialProgress = dripStatuses[lid]?.progress || 0;
+        if (currentInitialProgress > 0) {
+            accumulatedTime = (currentInitialProgress / 100) * lessonDuration;
+        }
+
+        const syncProgress = async (pct, currentTime, duration, isComplete = false) => {
+            const roundedPct = Math.min(100, Math.max(0, Math.round(pct * 10) / 10));
+            const prevProgress = dripStatuses[lid]?.progress || 0;
+
+            if (roundedPct < prevProgress && !isComplete) return;
+
+            // 1. Instant Redux update for real-time progress bar UI in curriculum index
+            dispatch(setLessonStatus({
+                lessonId: lid,
+                status: {
+                    progress: Math.max(prevProgress, roundedPct),
+                    unlocked: true,
+                    completed: isComplete || roundedPct >= 80
+                }
+            }));
+
+            // 2. Sync to Backend
+            try {
+                const targetCourseId = currentCourse?._id || id;
+                const videoId = selectedLesson?.videoLessons?.[0]?._id || selectedLesson?.videoLessons?.[0]?.id || selectedLesson?.videoId || lid;
+
+                await authorizedFetch(`/courses/${targetCourseId}/lessons/${lid}/progress`, {
+                    method: 'PATCH',
+                    body: JSON.stringify({
+                        progressPercentage: roundedPct,
+                        currentTime: Math.round(currentTime),
+                        duration: Math.round(duration),
+                        watchTime: Math.round(currentTime),
+                        completed: isComplete || roundedPct >= 80
+                    })
+                });
+
+                if (socketService?.socket?.connected) {
+                    socketService.socket.emit('video-progress', {
+                        videoId,
+                        userId: user._id || user.id,
+                        currentTime: Math.round(currentTime),
+                        duration: Math.round(duration),
+                        courseId: targetCourseId,
+                        lessonId: lid
+                    });
+                }
+
+                if ((isComplete || roundedPct >= 80) && !dripStatuses[lid]?.completed) {
+                    await authorizedFetch(`/${targetCourseId}/${lid}/complete`, { method: 'POST' });
+                    refreshStatuses();
+                }
+            } catch (err) {
+                console.warn('[Progress] Sync error:', err);
+            }
+        };
+
+        syncProgressRef.current = syncProgress;
+
+        // Window message listener for YouTube / Vimeo / VdoCipher postMessage events
+        const handlePostMessage = (event) => {
+            try {
+                let data = event.data;
+                if (typeof data === 'string') {
+                    try { data = JSON.parse(data); } catch (e) {}
+                }
+                if (!data) return;
+
+                // YouTube IFrame API messages
+                if (data.event === 'infoDelivery' && data.info) {
+                    const { currentTime, duration, playerState } = data.info;
+                    if (duration && currentTime !== undefined) {
+                        const pct = (currentTime / duration) * 100;
+                        syncProgress(pct, currentTime, duration, playerState === 0 || pct >= 95);
+                    }
+                }
+
+                // Vimeo messages
+                if (data.event === 'timeupdate' && data.data) {
+                    const { percent, seconds, duration } = data.data;
+                    const dur = duration || lessonDuration;
+                    const pct = (percent != null ? percent * 100 : (seconds / dur) * 100);
+                    syncProgress(pct, seconds, dur, pct >= 95);
+                }
+                if (data.event === 'ended') {
+                    syncProgress(100, lessonDuration, lessonDuration, true);
+                }
+
+                // VdoCipher messages
+                if (data.type === 'timeupdate' && data.currentTime !== undefined) {
+                    const { currentTime, duration } = data;
+                    const dur = duration || lessonDuration;
+                    const pct = (currentTime / dur) * 100;
+                    syncProgress(pct, currentTime, dur, pct >= 95);
+                }
+                if (data.type === 'ended' || data.event === 'ended') {
+                    syncProgress(100, lessonDuration, lessonDuration, true);
+                }
+            } catch (e) {}
+        };
+
+        window.addEventListener('message', handlePostMessage);
+
+        // Fallback ticker: smoothly increments progress as student watches the video
+        const intervalId = setInterval(() => {
+            if (document.hidden) return; // Only tick when user is actively on the tab
+            accumulatedTime += 5;
+            const computedPct = Math.min(100, (accumulatedTime / lessonDuration) * 100);
+            syncProgress(computedPct, accumulatedTime, lessonDuration, computedPct >= 95);
+        }, 5000);
+
+        return () => {
+            window.removeEventListener('message', handlePostMessage);
+            clearInterval(intervalId);
+        };
+    }, [selectedLesson?._id || selectedLesson?.id, currentCourse?._id, user?._id]);
 
     if (detailLoading) {
         return (
@@ -400,20 +550,61 @@ const DashboardCoursePlayer = () => {
                             onContextMenu={(e) => e.preventDefault()}
                         >
                             <div className="w-full h-full bg-black relative flex items-center justify-center overflow-hidden">
-                                {selectedLesson.type === 'video' || (selectedLesson.videoLessons?.length > 0) ? (
+                                {selectedLesson.type === 'video' || (selectedLesson.videoLessons?.length > 0) || selectedLesson.type === 'video-lesson' || selectedLesson.fileUrl ? (
                                     videoSrc ? (
-                                        <iframe 
-                                            src={videoSrc} 
-                                            className={`w-full h-full border-0 absolute inset-0 z-0 transition-all duration-300 ${isObscured ? 'opacity-0 pointer-events-none filter blur-xl' : 'opacity-100'}`}
-                                            allowFullScreen
-                                            allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
-                                            title={selectedLesson.title}
-                                            onError={() => {
-                                                if (reportIncidentRef.current) {
-                                                    reportIncidentRef.current('VDOCIPHER_PLAYER_ERROR', { error: 'Failed to initialize VdoPlayer' });
-                                                }
-                                            }}
-                                        />
+                                        isDirectVideoUrl(videoSrc) ? (
+                                            <video 
+                                                src={videoSrc}
+                                                controls
+                                                playsInline
+                                                className={`w-full h-full object-contain absolute inset-0 z-0 transition-all duration-300 ${isObscured ? 'opacity-0 pointer-events-none filter blur-xl' : 'opacity-100'}`}
+                                                onTimeUpdate={(e) => {
+                                                    const cur = e.target.currentTime;
+                                                    const dur = e.target.duration || ((selectedLesson.duration ? selectedLesson.duration * 60 : 0) || 300);
+                                                    if (dur > 0) {
+                                                        const pct = (cur / dur) * 100;
+                                                        const lid = selectedLesson._id || selectedLesson.id;
+                                                        dispatch(setLessonStatus({
+                                                            lessonId: lid,
+                                                            status: { progress: Math.round(pct), unlocked: true }
+                                                        }));
+
+                                                        const now = Date.now();
+                                                        if (now - lastVideoSyncTimeRef.current > 4000) {
+                                                            lastVideoSyncTimeRef.current = now;
+                                                            if (syncProgressRef.current) {
+                                                                syncProgressRef.current(pct, cur, dur, pct >= 95);
+                                                            }
+                                                        }
+                                                    }
+                                                }}
+                                                onEnded={async () => {
+                                                    const lid = selectedLesson._id || selectedLesson.id;
+                                                    const targetCourseId = currentCourse?._id || id;
+                                                    dispatch(setLessonStatus({
+                                                        lessonId: lid,
+                                                        status: { progress: 100, unlocked: true, completed: true }
+                                                    }));
+                                                    try {
+                                                        await authorizedFetch(`/${targetCourseId}/${lid}/complete`, { method: 'POST' });
+                                                        refreshStatuses();
+                                                    } catch (e) {}
+                                                }}
+                                            />
+                                        ) : (
+                                            <iframe 
+                                                src={videoSrc} 
+                                                className={`w-full h-full border-0 absolute inset-0 z-0 transition-all duration-300 ${isObscured ? 'opacity-0 pointer-events-none filter blur-xl' : 'opacity-100'}`}
+                                                allowFullScreen
+                                                allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
+                                                title={selectedLesson.title}
+                                                onError={() => {
+                                                    if (reportIncidentRef.current) {
+                                                        reportIncidentRef.current('VDOCIPHER_PLAYER_ERROR', { error: 'Failed to initialize VdoPlayer' });
+                                                    }
+                                                }}
+                                            />
+                                        )
                                     ) : (
                                         <div className="text-center space-y-4 z-10 relative">
                                             <div className="w-16 h-16 bg-red-500/10 text-red-500 border border-red-500/20 rounded-full flex items-center justify-center mx-auto">

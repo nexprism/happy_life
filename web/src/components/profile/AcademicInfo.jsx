@@ -172,7 +172,12 @@ const AcademicInfo = () => {
                         <div className="flex gap-2">
                            {doc.Doc && (
                               <a 
-                                 href={`https://happy-life-sx03.onrender.com/uploads/${doc.Doc}`} 
+                                 href={(() => {
+                                    if (doc.Doc.startsWith('http')) return doc.Doc;
+                                    const rawBase = import.meta.env.VITE_BASE_URL || import.meta.env.VITE_API_BASE || 'https://happy-life-sx03.onrender.com';
+                                    const baseUrl = rawBase.replace(/\/api\/v1\/?$/, '');
+                                    return `${baseUrl}/uploads/${doc.Doc}`;
+                                 })()} 
                                  target="_blank" 
                                  rel="noreferrer"
                                  className="p-2.5 bg-amber-100 border border-amber-300 text-amber-900 hover:bg-amber-400 hover:text-slate-950 transition-all rounded-lg"

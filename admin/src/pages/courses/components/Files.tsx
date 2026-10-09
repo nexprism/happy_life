@@ -351,11 +351,7 @@ export default function FileUploadForm({
 
   const languages = [
     "English",
-    "Spanish",
-    "French",
-    "German",
-    "Chinese",
-    "Japanese",
+    "Hindi",
   ];
   
   const fileTypes = [
@@ -733,9 +729,9 @@ export default function FileUploadForm({
 
   return (
     <>
-      <div className="bg-white lg:w-[800px]  rounded-2xl max-w-4xl w-full mx-auto shadow-2xl max-h-[700px] overflow-scroll">
+      <div className="bg-white w-full rounded-2xl shadow-xl flex flex-col max-h-[85vh] overflow-hidden">
         {/* Header */}
-        <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-6 text-white">
+        <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-6 text-white shrink-0">
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-white bg-opacity-20 rounded-lg flex items-center justify-center">
@@ -762,7 +758,7 @@ export default function FileUploadForm({
         </div>
 
         {/* Content */}
-        <div className="p-6 space-y-6 pb-36">
+        <div className="p-6 space-y-6 overflow-y-auto flex-1">
           {/* Debug info - remove this after testing */}
           {console.log("Debug - isEditMode:", isEditMode, "fetchedFile:", fetchedFile, "currentFileData:", currentFileData)}
           
@@ -1012,7 +1008,7 @@ export default function FileUploadForm({
         </div>
 
         {/* Footer */}
-        <div className="bg-gray-50 px-6 py-4 fixed bottom-0 w-full flex justify-between items-center">
+        <div className="bg-gray-50 px-6 py-4 border-t border-gray-200 flex justify-between items-center shrink-0">
           <div className="text-sm text-gray-600">
             * Required fields
           </div>

@@ -1219,9 +1219,9 @@ export const getMyEnrollments = async (req, res) => {
       for (const module of c.modules) {
         if (!module || !module.lessons) continue;
         for (const lesson of module.lessons) {
-          if (lesson.type === 'video-lesson') totalItems++;
-          if (lesson.type === 'quiz') totalItems++;
-          if (lesson.type === 'assignment') totalItems++;
+          if (['video-lesson', 'video', 'text', 'quiz', 'assignment', 'external_link'].includes(lesson.type) || lesson.type) {
+            totalItems++;
+          }
         }
       }
       totalsMap.set(c._id.toString(), totalItems);
@@ -1304,6 +1304,7 @@ export const getMyEnrollments = async (req, res) => {
 
           populatedEnrollments.push({
             ...enrollment,
+            progressPercentage: progress,
             iscompleted,
             course,
             certificate,
@@ -1374,6 +1375,7 @@ export const getMyEnrollments = async (req, res) => {
           }
           populatedEnrollments.push({
             ...enrollment,
+            progressPercentage: course?.overallProgress || 0,
             iscompleted,
             course,
             coursePlan: plan,

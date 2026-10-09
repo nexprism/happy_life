@@ -34,6 +34,12 @@ router.patch('/courses/:courseId/lessons/:lessonId/progress',
   updateLessonProgress
 );
 
+router.put('/courses/:courseId/lessons/:lessonId/progress',
+  accessTokenAutoRefresh,
+  passport.authenticate('jwt', { session: false }),
+  updateLessonProgress
+);
+
 router.post('/:courseId/:lessonId/complete',
   accessTokenAutoRefresh,
   passport.authenticate('jwt', { session: false }),

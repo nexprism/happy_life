@@ -1,6 +1,6 @@
 import React, { useRef } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { updateUserProfile } from '../../redux/slices/profileSlice'
+import { updateUserProfile, fetchUserProfile } from '../../redux/slices/profileSlice'
 import { useLanguage } from '../../context/LanguageContext'
 
 const ProfileSidebar = ({ compact = false }) => {
@@ -13,6 +13,15 @@ const ProfileSidebar = ({ compact = false }) => {
     fileInputRef.current?.click()
   }
 
+  const getProfileImage = (pic) => {
+    if (!pic || pic === 'default-profile.png') return null
+    if (pic.startsWith('http') || pic.startsWith('blob:')) return pic
+    const rawBase = import.meta.env.VITE_BASE_URL || import.meta.env.VITE_API_BASE || 'https://happy-life-sx03.onrender.com'
+    const baseUrl = rawBase.replace(/\/api\/v1\/?$/, '')
+    const cleanPath = pic.startsWith('/') ? pic : `/uploads/${pic}`
+    return `${baseUrl}${cleanPath}`
+  }
+
   const handleFileChange = async (e) => {
     const file = e.target.files?.[0]
     if (file) {
@@ -21,12 +30,17 @@ const ProfileSidebar = ({ compact = false }) => {
       
       try {
         await dispatch(updateUserProfile(formData)).unwrap()
-        alert('Profile picture updated!')
+        dispatch(fetchUserProfile())
       } catch (err) {
         alert(`Update failed: ${err}`)
       }
     }
   }
+
+  const avatarUrl = getProfileImage(user?.profilePicture)
+  const coursesCount = user?.enrollments?.length || user?.enrolledCourses?.length || 0
+  const postsCount = user?.postsCount || user?.forumPosts?.length || 0
+  const certificatesCount = user?.certificatesCount || user?.documentation?.length || user?.qualifications?.length || 0
 
   return (
     <div className="space-y-8 h-fit">
@@ -45,10 +59,10 @@ const ProfileSidebar = ({ compact = false }) => {
             className={`relative w-24 h-24 bg-slate-100 border border-slate-200 rounded-2xl flex items-center justify-center group overflow-hidden cursor-pointer transition-all shadow-sm ${updateLoading ? 'opacity-50 pointer-events-none' : 'hover:border-amber-400'}`}
          >
             {/* Avatar Protocol */}
-            {user?.profilePicture ? (
+            {avatarUrl ? (
                <img 
-                  src={user.profilePicture.startsWith('http') ? user.profilePicture : `https://happy-life-sx03.onrender.com/uploads/${user.profilePicture}`} 
-                  alt={user.fullName} 
+                  src={avatarUrl} 
+                  alt={user?.fullName || 'User Profile'} 
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
                />
             ) : (
@@ -86,9 +100,9 @@ const ProfileSidebar = ({ compact = false }) => {
       {/* High-Density Stats Cluster */}
       <div className="grid grid-cols-1 gap-2.5 pt-4 border-t border-slate-100">
          {[
-            { label: t('coursesStat') || 'Courses', value: user?.enrolledCourses?.length || '0', icon: 'M12 2L2 7l10 5l10-5l-10-5z M2 17l10 5l10-5 M2 12l10 5l10-5' },
-            { label: t('postsStat') || 'Posts', value: '00', icon: 'M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z' },
-            { label: t('certificatesStat') || 'Certificates', value: user?.qualifications?.length || '0', icon: 'M12 15l-2 5l2 2l2-2l-2-5z M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z' },
+            { label: t('coursesStat') || 'Courses', value: coursesCount, icon: 'M12 2L2 7l10 5l10-5l-10-5z M2 17l10 5l10-5 M2 12l10 5l10-5' },
+            { label: t('postsStat') || 'Posts', value: postsCount, icon: 'M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z' },
+            { label: t('certificatesStat') || 'Certificates', value: certificatesCount, icon: 'M12 15l-2 5l2 2l2-2l-2-5z M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z' },
          ].map((stat, i) => (
             <div key={i} className="flex justify-between items-center p-4 bg-slate-50 border border-slate-200/80 hover:bg-amber-50/50 hover:border-amber-300/60 rounded-xl transition-all group overflow-hidden relative">
                <div className="space-y-1 relative z-10">

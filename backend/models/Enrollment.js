@@ -40,4 +40,4 @@ enrollmentSchema.pre('validate', function(next) {
 enrollmentSchema.index({ userId: 1, courseId: 1 }, { unique: true, partialFilterExpression: { courseId: { $exists: true } } });
 enrollmentSchema.index({ userId: 1, CourseBundleId: 1 }, { unique: true, partialFilterExpression: { CourseBundleId: { $exists: true } } });
 
-export default mongoose.model('Enrollment', enrollmentSchema);
+export default mongoose.models.Enrollment || mongoose.model('Enrollment', enrollmentSchema);
