@@ -313,10 +313,10 @@ const TextLessonEditor = ({
 
   return (
     <>
-      <div className="w-full max-w-7xl mx-auto max-h-[600px]">
+      <div className="w-full max-w-5xl mx-auto">
         {/* Enhanced Header - Responsive */}
-        <div className="bg-white rounded-xl md:rounded-2xl shadow-lg md:shadow-xl border border-gray-100 overflow-hidden">
-          <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-4 sm:p-6 text-white">
+        <div className="bg-white rounded-xl md:rounded-2xl shadow-lg md:shadow-xl border border-gray-100 overflow-hidden flex flex-col max-h-[85vh]">
+          <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-4 sm:p-6 text-white shrink-0">
             <div className="flex sm:flex-row items-center sm:items-center justify-between gap-4">
               <div className="flex items-center gap-3 sm:gap-4">
                 <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white bg-opacity-20 rounded-lg sm:rounded-xl flex items-center justify-center">
@@ -343,7 +343,7 @@ const TextLessonEditor = ({
           </div>
 
           {/* Content - Responsive */}
-          <div className="p-4 sm:p-6 lg:p-8 space-y-6 sm:space-y-8 !pb-24 max-h-[700px] overflow-scroll">
+          <div className="p-4 sm:p-6 lg:p-8 space-y-6 sm:space-y-8 overflow-y-auto flex-1">
             {/* Mobile/Tablet responsive grid */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
               {/* Left Column */}
@@ -559,7 +559,7 @@ const TextLessonEditor = ({
           </div>
 
           {/* Enhanced Footer - Responsive */}
-          <div className="bg-gradient-to-r from-gray-50 to-slate-50 px-4 fixed bottom-0 w-full sm:px-6 lg:px-8 py-4 sm:py-6 border-t border-gray-200">
+          <div className="bg-gradient-to-r from-gray-50 to-slate-50 px-4 sm:px-6 lg:px-8 py-4 sm:py-6 border-t border-gray-200 shrink-0">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div className="text-sm text-gray-600 order-2 sm:order-1">
                 <span className="text-red-500">*</span> Required fields

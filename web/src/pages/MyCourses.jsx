@@ -23,9 +23,11 @@ const MyCourses = () => {
   const filteredEnrollments = useMemo(() => {
     return enrollments.filter(item => {
       if (!item.course) return false // Hide legacy/deleted courses from curriculum view
+      const progress = item.course?.overallProgress ?? item.progressPercentage ?? 0
+      const isCompleted = item.iscompleted || progress >= 100
       if (activeFilter === 'ALL COURSES') return true
-      if (activeFilter === 'IN PROGRESS') return item.progressPercentage < 100
-      if (activeFilter === 'COMPLETED') return item.iscompleted || item.progressPercentage === 100
+      if (activeFilter === 'IN PROGRESS') return !isCompleted
+      if (activeFilter === 'COMPLETED') return isCompleted
       return true
     })
   }, [enrollments, activeFilter])
@@ -33,8 +35,9 @@ const MyCourses = () => {
   // Statistics
   const activeCount = useMemo(() => enrollments.filter(item => item.status === 'active' && item.course).length, [enrollments])
   const avgProgress = useMemo(() => {
-    return enrollments.length > 0 
-      ? Math.round(enrollments.reduce((acc, item) => acc + (item.progressPercentage || 0), 0) / enrollments.length) 
+    const valid = enrollments.filter(item => item.course)
+    return valid.length > 0 
+      ? Math.round(valid.reduce((acc, item) => acc + (item.course?.overallProgress ?? item.progressPercentage ?? 0), 0) / valid.length) 
       : 0
   }, [enrollments])
 
@@ -160,11 +163,17 @@ const MyCourses = () => {
                    <div className="p-7 flex flex-col flex-grow space-y-6 z-10 relative">
                       <div className="space-y-4">
                          {/* Status Badge */}
-                         <div className="inline-flex items-center gap-2 bg-amber-100 border border-amber-300/80 px-3.5 py-1 rounded-full">
-                            <span className="font-jetbrains text-[10px] text-amber-900 font-black uppercase tracking-wider leading-none">
-                               {item.iscompleted ? 'Completed' : 'In Progress'}
-                            </span>
-                         </div>
+                         {(() => {
+                            const courseProgress = Math.min(100, Math.max(0, Math.round(item.course?.overallProgress ?? item.progressPercentage ?? 0)))
+                            const isCompleted = item.iscompleted || courseProgress >= 100
+                            return (
+                               <div className={`inline-flex items-center gap-2 px-3.5 py-1 rounded-full border ${isCompleted ? 'bg-green-100 border-green-300 text-green-900' : 'bg-amber-100 border-amber-300/80 text-amber-900'}`}>
+                                  <span className="font-jetbrains text-[10px] font-black uppercase tracking-wider leading-none">
+                                     {isCompleted ? 'Completed' : 'In Progress'}
+                                  </span>
+                               </div>
+                            )
+                         })()}
   
                          <h2 className="font-newsreader italic text-2xl md:text-3xl text-slate-900 group-hover:text-amber-600 transition-colors duration-300 leading-tight font-bold tracking-tight line-clamp-2">
                             {item.course?.title}
@@ -202,23 +211,28 @@ const MyCourses = () => {
                       </div>
   
                       {/* Progress Area */}
-                      <div className="space-y-2 pt-2 mt-auto">
-                         <div className="flex justify-between items-center font-jetbrains text-xs font-bold tracking-widest uppercase">
-                            <span className="text-slate-500">Progress</span>
-                            <span className="text-slate-900 font-black">{Math.round(item.progressPercentage || 0)}%</span>
-                         </div>
-                         <div className="h-2 bg-slate-100 rounded-full relative overflow-hidden">
-                            <div 
-                               className="absolute top-0 left-0 h-full bg-amber-500 transition-all duration-1000 ease-out rounded-full" 
-                               style={{ width: `${item.progressPercentage || 0}%` }} 
-                            />
-                         </div>
-                      </div>
+                      {(() => {
+                         const courseProgress = Math.min(100, Math.max(0, Math.round(item.course?.overallProgress ?? item.progressPercentage ?? 0)))
+                         return (
+                            <div className="space-y-2 pt-2 mt-auto">
+                               <div className="flex justify-between items-center font-jetbrains text-xs font-bold tracking-widest uppercase">
+                                  <span className="text-slate-500">Progress</span>
+                                  <span className="text-slate-900 font-black">{courseProgress}%</span>
+                               </div>
+                               <div className="h-2 bg-slate-100 rounded-full relative overflow-hidden">
+                                  <div 
+                                     className="absolute top-0 left-0 h-full bg-amber-500 transition-all duration-1000 ease-out rounded-full" 
+                                     style={{ width: `${courseProgress}%` }} 
+                                  />
+                               </div>
+                            </div>
+                         )
+                      })()}
   
                       {/* Action Link */}
                       <div className="pt-2">
                          <button 
-                            onClick={() => navigate(`/dashboard/course/${item.courseId}`)}
+                            onClick={() => navigate(`/dashboard/course/${item.courseId || item.course?._id || item._id}`)}
                             className="w-full py-3.5 bg-accent text-slate-950 font-jetbrains text-xs font-black uppercase tracking-[0.3em] hover:scale-[1.02] active:scale-95 transition-all rounded-full shadow-accent-soft text-center"
                          >
                             Continue Learning

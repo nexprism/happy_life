@@ -70,7 +70,7 @@ export const updateLessonProgress = async (req, res) => {
 
     //console.log(`Updating progress for user ${userId}, lesson ${lessonId}`, updateData);
 
-    const progress = await progressService.updateLessonProgress(userId, lessonId, updateData);
+    const progress = await progressService.updateLessonProgress(userId, lessonId, courseId, updateData);
 
     res.status(200).json({
       success: true,
@@ -105,10 +105,10 @@ export const updateLessonProgressDirect = async (userId, lessonId, courseId, upd
 export const completeLessonProgress = async (req, res) => {
   try {
     const { courseId, lessonId } = req.params;
-    const userId = req.user.id;
-    const completionData = req.body;
+    const userId = req.user?._id || req.user?.id;
+    const completionData = req.body || {};
 
-    const progress = await progressService.completeLessonProgress(userId, lessonId, completionData);
+    const progress = await progressService.completeLessonProgress(userId, lessonId, { ...completionData, courseId });
 
     res.status(200).json({
       success: true,

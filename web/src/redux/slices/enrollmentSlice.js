@@ -1,25 +1,15 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import authorizedFetch from '../../utils/apiClient';
 
 const BASE_URL = import.meta.env.VITE_BASE_URL || 'https://happy-life-sx03.onrender.com';
 
 // ── Thunks ───────────────────────────────────────────────────────────────────
 export const fetchMyEnrollments = createAsyncThunk(
   'enrollment/fetchMyEnrollments',
-  async (_, { getState, rejectWithValue }) => {
+  async (_, { rejectWithValue }) => {
     try {
-      const { auth } = getState();
-      const token = auth.token || localStorage.getItem('edrilla_token');
-      
-      if (!token) {
-        return rejectWithValue('No authentication token found');
-      }
-
-      const res = await fetch(`${BASE_URL}/checkout/my-enrollments`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
+      const res = await authorizedFetch('/checkout/my-enrollments', {
+        method: 'GET'
       });
 
       const data = await res.json();

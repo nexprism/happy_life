@@ -16,6 +16,8 @@ const DashboardHeader = () => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const { user } = useSelector(state => state.auth)
+  const { user: profileUser } = useSelector(state => state.profile)
+  const currentUser = profileUser || user
   const { theme, toggleTheme } = useTheme()
   const { t } = useLanguage()
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
@@ -36,6 +38,17 @@ const DashboardHeader = () => {
       dispatch(fetchNotifications({ page: 1, limit: 5 }))
     })
   }
+
+  const getProfileImage = (pic) => {
+    if (!pic || pic === 'default-profile.png') return null
+    if (pic.startsWith('http') || pic.startsWith('blob:')) return pic
+    const rawBase = import.meta.env.VITE_BASE_URL || import.meta.env.VITE_API_BASE || 'https://happy-life-sx03.onrender.com'
+    const baseUrl = rawBase.replace(/\/api\/v1\/?$/, '')
+    const cleanPath = pic.startsWith('/') ? pic : `/uploads/${pic}`
+    return `${baseUrl}${cleanPath}`
+  }
+
+  const avatarUrl = getProfileImage(currentUser?.profilePicture)
 
   const navItems = [
     { key: 'dashboard', name: (t('dashboard') || 'DASHBOARD').toUpperCase(), path: '/dashboard' },
@@ -344,8 +357,12 @@ const DashboardHeader = () => {
             onClick={() => { setShowProfileMenu(!showProfileMenu); setShowNotifications(false); }}
             className="flex items-center gap-3 pl-3 border-l border-slate-200 group cursor-pointer"
           >
-            <div className="w-9 h-9 rounded-full bg-accent text-slate-950 flex items-center justify-center font-jetbrains text-xs font-black shadow-sm group-hover:scale-105 transition-all">
-              {getInitials(user?.fullName || user?.name)}
+            <div className="w-9 h-9 rounded-full bg-accent text-slate-950 flex items-center justify-center font-jetbrains text-xs font-black shadow-sm group-hover:scale-105 transition-all overflow-hidden border border-amber-300">
+              {avatarUrl ? (
+                <img src={avatarUrl} alt={currentUser?.fullName || 'User'} className="w-full h-full object-cover" />
+              ) : (
+                getInitials(currentUser?.fullName || currentUser?.name)
+              )}
             </div>
           </div>
 
@@ -353,8 +370,8 @@ const DashboardHeader = () => {
           <div className={`absolute top-14 right-0 w-56 bg-white border border-slate-200 rounded-2xl p-4 shadow-2xl transition-all duration-300 origin-top
               ${showProfileMenu ? 'opacity-100 scale-100 translate-y-0 visible' : 'opacity-0 scale-95 -translate-y-2 invisible pointer-events-none'}`}>
             <div className="mb-4 pb-3 border-b border-slate-100">
-              <p className="font-newsreader italic text-lg text-slate-900 leading-none mb-1">{user?.fullName || user?.name || 'Protocol User'}</p>
-              <p className="font-jetbrains text-[8px] text-amber-600 tracking-[0.2em] font-black uppercase">RANK {user?.rank || '#--'} {t('rankCarrier')}</p>
+              <p className="font-newsreader italic text-lg text-slate-900 leading-none mb-1">{currentUser?.fullName || currentUser?.name || 'Protocol User'}</p>
+              <p className="font-jetbrains text-[8px] text-amber-600 tracking-[0.2em] font-black uppercase">RANK {currentUser?.rank || currentUser?.leaderboard?.rank || '#--'} {t('rankCarrier')}</p>
             </div>
             <div className="space-y-1">
               {[

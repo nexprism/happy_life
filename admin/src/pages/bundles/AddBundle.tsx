@@ -517,9 +517,6 @@ const AddBundleForm = () => {
               <option className="dark:text-black" value="Hindi">
                 Hindi
               </option>
-              <option className="dark:text-black" value="Spanish">
-                Spanish
-              </option>
             </select>
           </div>
 

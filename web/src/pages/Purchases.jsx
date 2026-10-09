@@ -82,8 +82,8 @@ const Purchases = () => {
                      <div className="col-span-2 font-jetbrains text-xs text-slate-700 uppercase tracking-widest font-black">ID</div>
                      <div className="col-span-5 font-jetbrains text-xs text-slate-700 uppercase tracking-widest font-black">{t('moduleArchive') || 'Module Archive'}</div>
                      <div className="col-span-2 font-jetbrains text-xs text-slate-700 uppercase tracking-widest font-black text-center">{t('acquisition') || 'Acquisition'}</div>
-                     <div className="col-span-1 font-jetbrains text-xs text-slate-700 uppercase tracking-widest font-black text-right">{t('amount') || 'Amount'}</div>
-                     <div className="col-span-2 font-jetbrains text-xs text-slate-700 uppercase tracking-widest font-black text-right">{t('actions') || 'Actions'}</div>
+                     <div className="col-span-3 font-jetbrains text-xs text-slate-700 uppercase tracking-widest font-black text-right">{t('amount') || 'Amount'}</div>
+                     {/* <div className="col-span-2 font-jetbrains text-xs text-slate-700 uppercase tracking-widest font-black text-right">{t('actions') || 'Actions'}</div> */}
                   </div>
 
                   {/* Loading Overlay */}
@@ -145,12 +145,12 @@ const Purchases = () => {
                         </div>
 
                         {/* Amount Paid */}
-                        <div className="col-span-1 font-jetbrains text-sm text-slate-900 font-black text-right tracking-tight">
+                        <div className="col-span-3 font-jetbrains text-sm text-slate-900 font-black text-right tracking-tight">
                            {item.pricePaid !== undefined ? `₹${item.pricePaid.toLocaleString()}` : 'FREE'}
                         </div>
 
                         {/* Actions */}
-                        <div className="col-span-2 flex justify-end gap-3 transition-all duration-500">
+                        {/* <div className="col-span-2 flex justify-end gap-3 transition-all duration-500">
                            {item.certificate ? (
                               <a 
                                 href={`https://happy-life-sx03.onrender.com/${item.certificate.certificate_url}`} 
@@ -164,7 +164,7 @@ const Purchases = () => {
                               <button className="font-jetbrains text-xs font-bold text-amber-800 hover:text-slate-950 uppercase tracking-wider transition-colors px-3 py-1.5 rounded-full bg-slate-100 border border-slate-200">{t('receipt') || 'Receipt'}</button>
                            )}
                            <button className="font-jetbrains text-xs font-bold text-slate-400 hover:text-red-600 uppercase tracking-wider transition-colors">{t('refund') || 'Refund'}</button>
-                        </div>
+                        </div> */}
                      </div>
                   ))}
                </div>

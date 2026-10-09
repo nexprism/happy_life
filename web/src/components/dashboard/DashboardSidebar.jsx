@@ -104,7 +104,7 @@ const DashboardSidebar = () => {
                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" stroke="currentColor" strokeWidth="2" />
             </svg>
             <p className="font-newsreader italic text-3xl md:text-4xl text-slate-900 font-bold leading-none">
-              {stats.enrolledCourses || '0'}
+              {dashData?.activeCoursesCount ?? stats.activeCourses ?? stats.enrolledCourses ?? (dashData?.activeCourses?.length || 0)}
             </p>
             <p className="font-jetbrains text-[10px] text-slate-500 uppercase tracking-wider font-bold">{t('activeCoursesCount')}</p>
          </div>
@@ -115,7 +115,7 @@ const DashboardSidebar = () => {
                <path d="M8.21 13.89L7 23l5-3 5 3-1.21-9.12" stroke="currentColor" strokeWidth="2" />
             </svg>
             <p className="font-newsreader italic text-3xl md:text-4xl text-slate-900 font-bold leading-none">
-               {stats.certificatesEarned || '0'}
+               {dashData?.certificatesCount ?? stats.certificatesEarned ?? '0'}
             </p>
             <p className="font-jetbrains text-[10px] text-slate-500 uppercase tracking-wider font-bold">{t('certificatesEarned')}</p>
          </div>
@@ -136,7 +136,7 @@ const DashboardSidebar = () => {
                <path d="M22 4L12 14.01l-3-3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
             <p className="font-newsreader italic text-3xl md:text-4xl text-slate-900 font-bold leading-none">
-               {stats.completedCourses || '0'}
+               {stats.completedLessons ?? stats.completedCourses ?? dashData?.completedCoursesCount ?? '0'}
             </p>
             <p className="font-jetbrains text-[10px] text-slate-500 uppercase tracking-wider font-bold">{t('completedModules')}</p>
          </div>

@@ -47,7 +47,7 @@ const SecureWrapper = ({ children }) => {
             }
         };
 
-        // 4. Focus/Blur trick to deter Snipping Tool (Windows+Shift+S / Cmd+Shift+4 steal focus)
+        // 4. Focus/Blur handling - Only hide content when tab/window is hidden (document.hidden)
         const handleVisibilityChange = () => {
             if (document.hidden) {
                 setIsBlurred(true);
@@ -56,9 +56,17 @@ const SecureWrapper = ({ children }) => {
             }
         };
 
-        // Some snipping tools trigger blur
+        // Window blur: Ignore blur events when user clicks into iframes (e.g. YouTube, Vimeo, video players)
         const handleBlur = () => {
-            setIsBlurred(true);
+            setTimeout(() => {
+                if (document.activeElement?.tagName === 'IFRAME') {
+                    // User clicked inside a video player iframe; do not blur
+                    return;
+                }
+                if (document.hidden) {
+                    setIsBlurred(true);
+                }
+            }, 100);
         };
         const handleFocus = () => {
             setIsBlurred(false);

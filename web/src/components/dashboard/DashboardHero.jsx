@@ -12,13 +12,13 @@ const DashboardHero = () => {
   const activeCourses = dashData?.activeCourses || []
   const completionRate = activeCourses.length > 0 
     ? Math.round(activeCourses.reduce((acc, curr) => acc + (curr.progress || 0), 0) / activeCourses.length)
-    : 0
+    : (dashData?.profile?.stats?.completionRate || 0)
 
   const currentXP = dashData?.profile?.stats?.xp || 0
-  const currentLevel = dashData?.profile?.stats?.level || 'Expert'
+  const currentLevel = dashData?.profile?.stats?.level || (currentXP >= 5000 ? 'Expert' : currentXP >= 1500 ? 'Advanced' : currentXP >= 500 ? 'Intermediate' : 'Beginner')
   
-  const circumference = 2 * Math.PI * 45; // radius 45
-  const strokeDashoffset = circumference - (completionRate / 100) * circumference;
+  const circumference = 2 * Math.PI * 35; // radius 35
+  const strokeDashoffset = circumference - (Math.min(100, Math.max(0, completionRate)) / 100) * circumference;
 
   return (
     <div className="relative h-full min-h-[360px] p-8 md:p-10 border border-slate-200/80 bg-white rounded-2xl shadow-sm overflow-hidden flex flex-col justify-between group">

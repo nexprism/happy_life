@@ -1,6 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-
-const BASE_URL = import.meta.env.VITE_BASE_URL || 'https://happy-life-sx03.onrender.com';
+import authorizedFetch from '../../utils/apiClient';
 
 // Helper: simple concurrency limiter
 const runWithConcurrency = async (items, worker, concurrency = 5) => {
@@ -26,43 +25,34 @@ export const fetchLessonsStatus = createAsyncThunk(
   'drip/fetchLessonsStatus',
   async ({ userId, lessons }, thunkAPI) => {
     if (!Array.isArray(lessons) || lessons.length === 0) return {};
-    const state = thunkAPI.getState();
-    const token = state?.auth?.token || null;
 
     const worker = async (lesson) => {
       const targetId = lesson._id || lesson.id || lesson;
       const targetType = 'lesson';
 
-      // POST check-unlock-conditions (include auth if available)
-      const postHeaders = { 'Content-Type': 'application/json' };
-      if (token) postHeaders['Authorization'] = `Bearer ${token}`;
+      // POST check-unlock-conditions
       let checkResp = {};
       try {
-        checkResp = await fetch(`${BASE_URL}/drip/check-unlock-conditions`, {
+        const res = await authorizedFetch('/drip/check-unlock-conditions', {
           method: 'POST',
-          headers: postHeaders,
           body: JSON.stringify({ userId, targetId, targetType }),
-        }).then((r) => r.json());
+        });
+        if (res.ok) checkResp = await res.json();
       } catch (e) {
         checkResp = {};
       }
 
       // GET progress
-      const progressUrl = `${BASE_URL}/courses/${lesson.courseId || lesson.course || ''}/lessons/${targetId}/progress`;
+      const courseId = lesson.courseId || lesson.course || '';
+      const progressPath = `/courses/${courseId}/lessons/${targetId}/progress`;
       let progressResp = null;
       try {
-        const getHeaders = {};
-        if (token) getHeaders['Authorization'] = `Bearer ${token}`;
-        const p = await fetch(progressUrl, { method: 'GET', headers: getHeaders });
+        const p = await authorizedFetch(progressPath, { method: 'GET' });
         if (p.ok) progressResp = await p.json();
       } catch (e) {
         progressResp = null;
       }
 
-      // Progress endpoint may return different shapes. Normalize common patterns:
-      // - { progress: 10 }
-      // - { percentage: 10 }
-      // - { success: true, data: { progressPercentage: 9.35, watchTime, sessionId, ... } }
       let progress = 0;
       if (progressResp) {
         if (typeof progressResp.progress === 'number') progress = progressResp.progress;
@@ -73,27 +63,19 @@ export const fetchLessonsStatus = createAsyncThunk(
           progress = progressResp.progressPercentage;
         }
       }
-      // API may return `canUnlock`, `unlocked` or `allowed`.
-      const unlocked = (checkResp?.canUnlock === true) || (checkResp?.unlocked === true) || (checkResp?.allowed === true) || false;
 
-      // Debug log to help trace mismatches between lesson IDs and responses
-      try {
-        // eslint-disable-next-line no-console
-        console.debug('[drip] lesson', targetId, { progress, unlocked, rawCheck: checkResp, rawProgress: progressResp });
-      } catch (e) {}
+      const unlocked = (checkResp?.canUnlock === true) || (checkResp?.unlocked === true) || (checkResp?.allowed === true) || (checkResp?.isLocked === false) || false;
+      const completed = progress >= 80 || progressResp?.data?.completed || false;
 
-      // Return normalized status
-      return { lessonId: targetId, progress, unlocked, rawCheck: checkResp, rawProgress: progressResp };
+      return { lessonId: targetId, progress, unlocked, completed };
     };
 
-    // Run with limited concurrency to avoid freezing the UI
     const results = await runWithConcurrency(lessons, worker, 6);
 
-    // Normalize into map
     const map = {};
     results.forEach((r) => {
       if (r && r.status === 'fulfilled' && r.value) {
-        map[r.value.lessonId] = { progress: r.value.progress, unlocked: r.value.unlocked };
+        map[r.value.lessonId] = { progress: r.value.progress, unlocked: r.value.unlocked, completed: r.value.completed };
       }
     });
 

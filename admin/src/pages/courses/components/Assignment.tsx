@@ -324,10 +324,10 @@ export default function AddAssignmentForm({
 
   return (
     <>
-      <div className="w-full max-w-7xl mx-auto  max-h-[700px]">
+      <div className="w-full max-w-5xl mx-auto">
         {/* Enhanced Header - Responsive */}
-        <div className="bg-white rounded-xl md:rounded-2xl shadow-lg md:shadow-xl border border-gray-100 overflow-hidden">
-          <div className="bg-gradient-to-r from-purple-600 to-indigo-600 p-4 sm:p-6 text-white">
+        <div className="bg-white rounded-xl md:rounded-2xl shadow-lg md:shadow-xl border border-gray-100 overflow-hidden flex flex-col max-h-[85vh]">
+          <div className="bg-gradient-to-r from-purple-600 to-indigo-600 p-4 sm:p-6 text-white shrink-0">
             <div className="flex sm:flex-row items-center sm:items-center justify-between gap-4">
               <div className="flex items-center gap-3 sm:gap-4">
                 <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white bg-opacity-20 rounded-lg sm:rounded-xl flex items-center justify-center">
@@ -354,7 +354,7 @@ export default function AddAssignmentForm({
           </div>
 
           {/* Content - Responsive */}
-          <div className="p-4 sm:p-6 lg:p-8 space-y-6 !pb-36 sm:space-y-8 max-h-[600px] overflow-y-auto">
+          <div className="p-4 sm:p-6 lg:p-8 space-y-6 sm:space-y-8 overflow-y-auto flex-1">
             {error && (
               <div className="bg-gradient-to-r from-red-50 to-rose-50 border-2 border-red-200 rounded-xl p-4 flex items-center gap-3">
                 <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0" />
@@ -648,7 +648,7 @@ export default function AddAssignmentForm({
           </div>
 
           {/* Enhanced Footer - Responsive */}
-          <div className="bg-gradient-to-r from-gray-50 fixed bottom-0 w-full to-slate-50 px-4 sm:px-6 lg:px-8 py-4 sm:py-6 border-t border-gray-200">
+          <div className="bg-gradient-to-r from-gray-50 to-slate-50 px-4 sm:px-6 lg:px-8 py-4 sm:py-6 border-t border-gray-200 shrink-0">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div className="text-sm text-gray-600 order-2 sm:order-1">
                 <span className="text-red-500">*</span> Required fields

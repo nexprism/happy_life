@@ -51,9 +51,16 @@ const CourseCard = ({ item, className = '', variant = 'course', onRegister }) =>
         <div className="flex items-center justify-between pt-6 border-t border-border mt-auto">
           {variant === 'course' ? (
             <>
-              <span className="font-montserrat text-[13px] text-normal tracking-widest font-bold">
-                {item.price}
-              </span>
+              <div className="flex items-baseline gap-2">
+                <span className="font-montserrat text-[13px] text-normal tracking-widest font-bold">
+                  {item.price}
+                </span>
+                {item.originalPrice && (
+                  <span className="font-montserrat text-[11px] text-description/60 line-through tracking-wider">
+                    {item.originalPrice}
+                  </span>
+                )}
+              </div>
               <div className="w-5 h-5 flex items-center justify-center border border-accent/30 rounded-full group-hover:bg-accent group-hover:border-accent transition-all duration-500 overflow-hidden">
                 <svg 
                   width="10" 

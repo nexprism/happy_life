@@ -854,20 +854,27 @@ const Courses = () => {
             ) : error ? (
               <div className="col-span-full text-center py-20 text-red-500 font-montserrat">{t('failedToLoad')}</div>
             ) : filteredCourses.length > 0 ? (
-              filteredCourses.map((item) => (
-                <CourseCard
-                  key={item._id || item.id}
-                  item={{
-                    id: item._id || item.id,
-                    title: item.title,
-                    category: item.categoryId?.name || item.category?.name || item.category || 'COURSE',
-                    description: item.shortDescription || item.description,
-                    price: item.salePrice ? `₹${item.salePrice}` : item.price ? `₹${item.price}` : 'FREE',
-                    image: getImageUrl(item.thumbnail),
-                    isNew: true,
-                  }}
-                />
-              ))
+              filteredCourses.map((item) => {
+                const hasSale = Boolean(item.salePrice && item.price && Number(item.salePrice) < Number(item.price));
+                const activePrice = item.salePrice ? `₹${item.salePrice}` : (item.price ? `₹${item.price}` : 'FREE');
+                const originalPrice = hasSale ? `₹${item.price}` : null;
+
+                return (
+                  <CourseCard
+                    key={item._id || item.id}
+                    item={{
+                      id: item._id || item.id,
+                      title: item.title,
+                      category: item.categoryId?.name || item.category?.name || item.category || 'COURSE',
+                      description: item.shortDescription || item.description,
+                      price: activePrice,
+                      originalPrice: originalPrice,
+                      image: getImageUrl(item.thumbnail),
+                      isNew: true,
+                    }}
+                  />
+                );
+              })
             ) : (
               <div className="col-span-full text-center py-20 text-description font-montserrat">{t('noCoursesAvailable')}</div>
             )}

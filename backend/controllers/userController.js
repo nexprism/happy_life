@@ -343,10 +343,12 @@ export const getMyProfile = async (req, res) => {
           documentation: user.documentation,
           bio: user.bio,
           phone: user.phone,
+          location: user.location,
           address: user.address,
           company: user.company, // <-- add company object
           skills: user.skills, // ✅ Correctly added here
           education: user.education, // ✅ Correctly added here
+          enrollments: user.enrollments || [],
           createdAt: user.createdAt,
           updatedAt: user.updatedAt,
           personality: personality ? {
@@ -607,6 +609,7 @@ export const updateProfile = async (req, res) => {
       "fullName",
       "bio",
       "phone",
+      "location",
       "address",
       "education",
       "skills",
@@ -617,7 +620,7 @@ export const updateProfile = async (req, res) => {
     let oldImagePath;
 
     for (const field of allowedFields) {
-      if (req.body[field]) {
+      if (req.body[field] !== undefined) {
         updateData[field] = req.body[field];
       }
     }
@@ -636,6 +639,24 @@ export const updateProfile = async (req, res) => {
     }
 
     const currentUser = await userService.getUserById(userId);
+
+    // Parse company if passed as string, object, or separate fields
+    if (req.body.company) {
+      if (typeof req.body.company === 'string') {
+        try {
+          updateData.company = JSON.parse(req.body.company);
+        } catch (e) {
+          updateData.company = { name: req.body.company };
+        }
+      } else if (typeof req.body.company === 'object') {
+        updateData.company = req.body.company;
+      }
+    } else if (req.body.companyName !== undefined || req.body.gstNumber !== undefined) {
+      updateData.company = {
+        name: req.body.companyName !== undefined ? req.body.companyName : (currentUser?.company?.name || ''),
+        gstNumber: req.body.gstNumber !== undefined ? req.body.gstNumber : (currentUser?.company?.gstNumber || null),
+      };
+    }
 
     // Handle profile picture
     if (req.files?.profilePicture?.[0]) {
@@ -684,7 +705,7 @@ export const updateProfile = async (req, res) => {
 
     if (req.body.address) {
       try {
-        updateData.address = JSON.parse(req.body.address);
+        updateData.address = typeof req.body.address === 'string' ? JSON.parse(req.body.address) : req.body.address;
       } catch (e) {
         return res.status(400).json({
           success: false,
@@ -743,6 +764,7 @@ export const updateProfile = async (req, res) => {
       profilePicture: updatedUser.profilePicture,
       bio: updatedUser.bio,
       phone: updatedUser.phone,
+      location: updatedUser.location,
       address: updatedUser.address,
       company: updatedUser.company, // <-- add company object
       education: updatedUser.education,
@@ -1109,6 +1131,19 @@ export const getUserById = async (req, res) => {
     } catch (e) {
       console.error('Error fetching personality submission:', e);
     }
+
+    let certificatesCount = 0;
+    try {
+      const Certificate = (await import('../models/Certificate.js')).default;
+      certificatesCount = await Certificate.countDocuments({ user_id: user._id, status: 'issued' });
+    } catch (e) {}
+
+    let postsCount = 0;
+    try {
+      const ForumPost = (await import('../models/ForumPost.js')).default;
+      postsCount = await ForumPost.countDocuments({ userId: user._id });
+    } catch (e) {}
+
     return res.status(200).json({
       success: true,
       message: "✅ User retrieved successfully",
@@ -1116,6 +1151,8 @@ export const getUserById = async (req, res) => {
         user: {
           ...userResponse,
           leaderboard, // <-- Add leaderboard to response
+          certificatesCount,
+          postsCount,
           personality: personality ? {
             resultType: personality.resultType,
             scores: personality.scores,
@@ -2225,14 +2262,34 @@ export const sendOtpviaemail = async (req, res) => {
       });
     }
 
-    // Generate 6-digit OTP
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
-
     // Connect to Redis
     const redis = await initRedis();
 
+    // Rate limit cooldown (60 seconds between resends to prevent email flooding)
+    if (redis) {
+      const cooldownKey = `otp_cooldown:${email}`;
+      const inCooldown = await redis.get(cooldownKey);
+      if (inCooldown) {
+        return res.status(429).json({
+          success: false,
+          is_exist: user ? true : false,
+          is_verify: user ? user.is_verify : false,
+          message: "Please wait 60 seconds before requesting another OTP.",
+          data: {},
+          err: { message: "Resend cooldown active" },
+        });
+      }
+      await redis.setEx(cooldownKey, 60, "1");
+    }
+
+    // Generate 6-digit OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
     // Store OTP in Redis with 10-minute expiration
-    await redis.setEx(`otp:${email}`, 600, otp);
+    if (redis) {
+      await redis.setEx(`otp:${email}`, 600, otp);
+      await redis.del(`otp_attempts:${email}`); // Reset attempts on new OTP
+    }
 
     // Send OTP email
     try {
@@ -2412,29 +2469,50 @@ export const verifyOtpviaemail = async (req, res) => {
     // Connect to Redis
     const redis = await initRedis();
 
-    // Get stored OTP
-    const storedOtp = await redis.get(`otp:${email}`);
+    if (redis) {
+      // Track failed verification attempts
+      const attemptKey = `otp_attempts:${email}`;
+      const attempts = await redis.incr(attemptKey);
+      if (attempts === 1) {
+        await redis.expire(attemptKey, 600); // 10 min window
+      }
+      if (attempts > 5) {
+        await redis.del(`otp:${email}`);
+        await redis.del(attemptKey);
+        return res.status(429).json({
+          success: false,
+          message: "Too many failed attempts. Please request a new OTP.",
+          data: {},
+          err: { message: "Max OTP verification attempts exceeded" },
+        });
+      }
 
-    if (!storedOtp) {
-      return res.status(400).json({
-        success: false,
-        message: "OTP is invalid or expired",
-        data: {},
-        err: { message: "Invalid or expired OTP" },
-      });
+      // Get stored OTP
+      const storedOtp = await redis.get(`otp:${email}`);
+
+      if (!storedOtp) {
+        return res.status(400).json({
+          success: false,
+          message: "OTP is invalid or expired",
+          data: {},
+          err: { message: "Invalid or expired OTP" },
+        });
+      }
+
+      if (storedOtp !== otp.toString()) {
+        const remaining = Math.max(0, 5 - attempts);
+        return res.status(400).json({
+          success: false,
+          message: `Invalid OTP. ${remaining} attempt${remaining === 1 ? '' : 's'} remaining.`,
+          data: {},
+          err: { message: "OTP mismatch" },
+        });
+      }
+
+      // Delete OTP and attempts from Redis after successful verification
+      await redis.del(`otp:${email}`);
+      await redis.del(attemptKey);
     }
-
-    if (storedOtp !== otp.toString()) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid OTP",
-        data: {},
-        err: { message: "OTP mismatch" },
-      });
-    }
-
-    // Delete OTP from Redis after successful verification
-    await redis.del(`otp:${email}`);
 
     return res.status(200).json({
       success: true,

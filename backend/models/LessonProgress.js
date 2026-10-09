@@ -83,8 +83,8 @@ const lessonProgressSchema = new mongoose.Schema({
   },
   videoType: {
     type: String,
-    enum: ['vdocipher', 'youtube', 'direct'],
-    required: true,
+    enum: ['vdocipher', 'videocypher', 'youtube', 'vimeo', 'direct', 'video', 'video-lesson', 'text', 'quiz', 'assignment', 'other'],
+    default: 'direct',
     lowercase: true,
     trim: true
   },

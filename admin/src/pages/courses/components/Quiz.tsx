@@ -964,7 +964,7 @@ const Quiz = ({
           </div>
 
           {/* Enhanced Footer - Responsive */}
-          <div className="bg-gradient-to-r from-gray-50 to-slate-50 fixed bottom-0 w-full px-4 sm:px-6 lg:px-8 py-4 sm:py-6 border-t border-gray-200">
+          <div className="bg-gradient-to-r from-gray-50 to-slate-50 px-4 sm:px-6 lg:px-8 py-4 sm:py-6 border-t border-gray-200 shrink-0">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div className="text-sm text-gray-600 order-2 sm:order-1">
                 <span className="text-red-500">*</span> Required fields

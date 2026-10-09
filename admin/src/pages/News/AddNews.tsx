@@ -726,9 +726,6 @@ export default function AddNews() {
                 className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none transition-colors dark:bg-gray-700 dark:border-gray-600 dark:text-white"
               >
                 <option value="en">English</option>
-                <option value="es">Spanish</option>
-                <option value="fr">French</option>
-                <option value="de">German</option>
                 <option value="hi">Hindi</option>
               </select>
             </div>

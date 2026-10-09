@@ -972,11 +972,8 @@ const CreateCertificateTemplate = () => {
                       <option className="dark:text-black" value="EN">
                         English
                       </option>
-                      <option className="dark:text-black" value="ES">
-                        Spanish
-                      </option>
-                      <option className="dark:text-black" value="FR">
-                        French
+                      <option className="dark:text-black" value="HI">
+                        Hindi
                       </option>
                     </select>
                   </div>

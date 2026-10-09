@@ -325,9 +325,6 @@ const EditFilterModal: React.FC<{
                   <option value="">Select Language</option>
                   <option value="English">English</option>
                   <option value="Hindi">Hindi</option>
-                  <option value="Spanish">Spanish</option>
-                  <option value="French">French</option>
-                  <option value="German">German</option>
                 </select>
               </div>
 
@@ -934,9 +931,6 @@ const FilterList: React.FC = () => {
                 </option>
                 <option className="dark:text-black" value="Hindi">
                   Hindi
-                </option>
-                <option className="dark:text-black" value="Spanish">
-                  Spanish
                 </option>
               </select>
             </div>

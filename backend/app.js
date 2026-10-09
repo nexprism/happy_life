@@ -72,13 +72,21 @@ const authLimiter = rateLimit({
   legacyHeaders: false,
 });
 
+// Disable X-Powered-By header to prevent technology fingerprinting (Finding F01)
+app.disable("x-powered-by");
+
 // Middlewares
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 app.use(passport.initialize());
 app.use(helmet({
-  crossOriginResourcePolicy: false,
+  crossOriginResourcePolicy: false, // Allow cross-origin asset serving
+  frameguard: { action: 'sameorigin' }, // Protect against clickjacking
+  hsts: { maxAge: 31536000, includeSubDomains: true }, // 1-year HSTS
+  noSniff: true, // X-Content-Type-Options: nosniff
+  referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
+  hidePoweredBy: true,
 }));
 
 // Increase body parser limits and timeouts for large file uploads
@@ -109,10 +117,26 @@ app.use((req, res, next) => {
   next();
 });
 
-// Debug (optional)
-
 // API Routes
 app.use("/", routes);
+
+// Global 404 handler for unmatched API routes
+app.use((req, res) => {
+  res.status(404).json({
+    success: false,
+    message: "Endpoint not found",
+  });
+});
+
+// Global sanitized error handler (prevents leaking internal stack traces / server paths)
+app.use((err, req, res, next) => {
+  console.error("Unhandled Application Error:", err.message);
+  const statusCode = err.statusCode || err.status || 500;
+  res.status(statusCode).json({
+    success: false,
+    message: process.env.NODE_ENV === "production" ? "An internal error occurred. Please try again later." : (err.message || "Internal server error"),
+  });
+});
 
 export default app;
 

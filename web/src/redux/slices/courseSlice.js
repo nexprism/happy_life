@@ -79,15 +79,20 @@ const courseSlice = createSlice({
         // The API returns { data: { data: [courses], total: ... } }
         const rawCourses = action.payload?.data?.data || action.payload?.data || action.payload?.results || action.payload || [];
         state.courses = rawCourses.map(course => {
-          let salePrice = course.salePrice;
-          let price = course.price;
-          
-          if (salePrice && typeof salePrice === 'object' && salePrice.$numberDecimal) {
-            salePrice = salePrice.$numberDecimal;
-          }
-          if (price && typeof price === 'object' && price.$numberDecimal) {
-            price = price.$numberDecimal;
-          }
+          const extractNum = (val) => {
+            if (val === null || val === undefined) return null;
+            if (typeof val === 'object' && val.$numberDecimal !== undefined) {
+              val = val.$numberDecimal;
+            }
+            const num = Number(val);
+            return (!isNaN(num) && num > 0) ? num : null;
+          };
+
+          const priceNum = extractNum(course.price);
+          const saleNum = extractNum(course.salePrice);
+
+          const price = priceNum ? String(priceNum) : null;
+          const salePrice = (saleNum && (!priceNum || saleNum < priceNum)) ? String(saleNum) : null;
           
           let description = course.description || '';
           if (typeof description === 'string') {
@@ -133,16 +138,20 @@ const courseSlice = createSlice({
         const course = action.payload?.data?.course || action.payload?.data || action.payload;
         
         if (course) {
-          // Normalize prices
-          let salePrice = course.salePrice;
-          let price = course.price;
-          
-          if (salePrice && typeof salePrice === 'object' && salePrice.$numberDecimal) {
-            salePrice = salePrice.$numberDecimal;
-          }
-          if (price && typeof price === 'object' && price.$numberDecimal) {
-            price = price.$numberDecimal;
-          }
+          const extractNum = (val) => {
+            if (val === null || val === undefined) return null;
+            if (typeof val === 'object' && val.$numberDecimal !== undefined) {
+              val = val.$numberDecimal;
+            }
+            const num = Number(val);
+            return (!isNaN(num) && num > 0) ? num : null;
+          };
+
+          const priceNum = extractNum(course.price);
+          const saleNum = extractNum(course.salePrice);
+
+          const price = priceNum ? String(priceNum) : null;
+          const salePrice = (saleNum && (!priceNum || saleNum < priceNum)) ? String(saleNum) : null;
           
           // Strip HTML from descriptions if they are strings
           let description = course.description;

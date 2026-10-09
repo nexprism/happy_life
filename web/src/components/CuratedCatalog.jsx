@@ -201,20 +201,36 @@ const CuratedCatalog = () => {
         ) : error ? (
           <div className="col-span-full text-center py-20 text-red-500/40 font-jetbrains uppercase text-[10px] tracking-widest">Archive Offline</div>
         ) : courses && courses.length > 0 ? (
-          courses.slice(0, 6).map((item) => (
-            <CourseCard 
-              key={item._id || item.id} 
-              item={{
-                id: item._id || item.id,
-                title: item.title,
-                category: item.category?.name || item.category || 'COURSE',
-                description: item.shortDescription || item.description,
-                price: item.salePrice ? `₹${item.salePrice}` : item.price ? `₹${item.price}` : 'FREE',
-                image: item.thumbnail ? `https://happy-life-sx03.onrender.com/${item.thumbnail}` : '/herocard.png',
-                isNew: true,
-              }} 
-            />
-          ))
+          courses.slice(0, 6).map((item) => {
+            const hasSale = Boolean(item.salePrice && item.price && Number(item.salePrice) < Number(item.price));
+            const activePrice = item.salePrice ? `₹${item.salePrice}` : (item.price ? `₹${item.price}` : 'FREE');
+            const originalPrice = hasSale ? `₹${item.price}` : null;
+
+            const getCardImage = (thumb) => {
+              if (!thumb) return '/herocard.png';
+              const normalized = String(thumb).replace(/\\/g, '/');
+              if (/^https?:\/\//i.test(normalized)) return normalized;
+              const rawBase = import.meta.env.VITE_BASE_URL || import.meta.env.VITE_API_BASE || 'https://happy-life-sx03.onrender.com';
+              const baseUrl = rawBase.replace(/\/api\/v1\/?$/, '');
+              return normalized.startsWith('/') ? `${baseUrl}${normalized}` : `${baseUrl}/${normalized}`;
+            };
+
+            return (
+              <CourseCard 
+                key={item._id || item.id} 
+                item={{
+                  id: item._id || item.id,
+                  title: item.title,
+                  category: item.category?.name || item.categoryId?.name || item.category || 'COURSE',
+                  description: item.shortDescription || item.description,
+                  price: activePrice,
+                  originalPrice: originalPrice,
+                  image: getCardImage(item.thumbnail),
+                  isNew: true,
+                }} 
+              />
+            );
+          })
         ) : (
           <div className="col-span-full text-center py-20 text-description font-montserrat">NO COURSES AVAILABLE</div>
         )}
