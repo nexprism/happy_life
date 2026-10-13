@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react'
+﻿import React, { useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/all'
 import comparisonImg from '../assets/images/comparision_img.webp'
@@ -146,7 +146,7 @@ const ComparisonSection = ({ course, section }) => {
       {/* SOLOPRENEUR INTRO */}
       <div className="mb-24 text-center space-y-8">
         <div className="space-y-4">
-          <h2 className="solo-heading font-newsreader mb-2 italic text-[clamp(2rem,6vw,5.5rem)] text-slate-900 font-extralight leading-tight">
+          <h2 className="solo-heading font-montserrat mb-2 text-slate-900 text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] transition-colors">
             What is a <span className="text-[#2171B5] underline-lime">{sanitize(course?.title) || 'Solopreneur'}?</span>
           </h2>
           <p className="solo-heading font-montserrat pb-4 text-[#2171B5] text-[14px] md:text-xs font-semibold max-w-md mx-auto leading-[2.2] tracking-widest uppercase">
@@ -154,13 +154,13 @@ const ComparisonSection = ({ course, section }) => {
           </p>
 
           {targetSection?.description?.blocks ? (
-            <div className="solo-heading font-jetbrains text-xs md:text-sm text-slate-600 max-w-4xl mx-auto leading-[2] tracking-wide space-y-4">
+            <div className="solo-heading font-montserrat text-xs md:text-sm text-slate-600 max-w-4xl mx-auto leading-[2] tracking-wide space-y-4">
               {targetSection.description.blocks.map((block, bi) => (
                 <p key={bi}>{sanitizeDisplay(block.data?.text || '').replace(/&nbsp;/g, ' ')}</p>
               ))}
             </div>
           ) : (
-            <div className="solo-heading font-jetbrains text-xs md:text-sm text-slate-600 max-w-4xl mx-auto leading-[2] tracking-wide">
+            <div className="solo-heading font-montserrat text-xs md:text-sm text-slate-600 max-w-4xl mx-auto leading-[2] tracking-wide">
               {sanitizeDisplay(course.comparisonText || "Use AI, Freelancers and tools to automate high margin agency business without pressure of hiring. This offers flexible hours and allows you to work from anywhere.")}
             </div>
           )}
@@ -177,7 +177,7 @@ const ComparisonSection = ({ course, section }) => {
           {/* LIVE badge */}
           <div className="absolute top-6 left-6 z-20 flex items-center gap-2 bg-slate-900/80 backdrop-blur-sm px-4 py-2 border border-white/10 rounded-lg">
             <div className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse" />
-            <span className="font-jetbrains text-[9px] text-white tracking-[0.4em] uppercase font-bold">LIVE</span>
+            <span className="font-montserrat text-[9px] text-white tracking-[0.4em] uppercase font-bold">LIVE</span>
           </div>
 
           <img
@@ -198,21 +198,21 @@ const ComparisonSection = ({ course, section }) => {
       {/* Divider */}
       <div className="flex items-center gap-8 mb-16 opacity-80">
         <div className="flex-1 h-[1px] bg-slate-200" />
-        <span className="font-jetbrains text-[9px] text-slate-400 tracking-[0.4em] uppercase font-bold shrink-0">Program Comparison / Matrix</span>
+        <span className="font-montserrat text-[9px] text-slate-400 tracking-[0.4em] uppercase font-bold shrink-0">Program Comparison / Matrix</span>
         <div className="flex-1 h-[1px] bg-slate-200" />
       </div>
 
       {/* COMPARISON HEADER */}
       <div className="grid grid-cols-2 gap-8 lg:gap-16 md:mb-12 text-center border-b border-slate-200 pb-8">
         <div className="space-y-1">
-          <span className="font-jetbrains text-[10px] text-slate-400 tracking-[0.3em] uppercase font-bold">Status / Outdated</span>
-          <h3 className="font-newsreader italic text-2xl md:text-3xl lg:text-5xl text-slate-700 font-extralight tracking-tight">
+          <span className="font-montserrat text-[10px] text-slate-400 tracking-[0.3em] uppercase font-bold">Status / Outdated</span>
+          <h3 className="font-montserrat text-2xl md:text-3xl lg:text-5xl text-slate-700 font-bold tracking-tight">
             {sanitizeDisplay(course.comparisonSection?.leftTitle || "Traditional Program")}
           </h3>
         </div>
         <div className="space-y-1">
-          <span className="font-jetbrains text-[10px] text-[#2171B5] tracking-[0.3em] uppercase font-bold">Status / Optimal</span>
-          <h3 className="font-newsreader italic text-2xl md:text-3xl lg:text-5xl text-[#2171B5] font-normal tracking-tight">
+          <span className="font-montserrat text-[10px] text-[#2171B5] tracking-[0.3em] uppercase font-bold">Status / Optimal</span>
+          <h3 className="font-montserrat text-2xl md:text-3xl lg:text-5xl text-[#2171B5] font-bold tracking-tight">
             {sanitizeDisplay(course.comparisonSection?.rightTitle || "Our Program")}
           </h3>
         </div>
@@ -254,7 +254,7 @@ const ComparisonSection = ({ course, section }) => {
             className="feature-card border border-slate-200/80 bg-white p-6 md:p-8 rounded-2xl shadow-sm hover:shadow-md hover:border-[#2171B5]/50 relative group transition-all duration-300 h-full flex flex-col justify-start min-h-[140px]"
           >
             <div className="absolute top-3 right-4 select-none pointer-events-none">
-              <span className="font-jetbrains text-3xl md:text-4xl font-black text-[#2171B5]/20 group-hover:text-[#2171B5]/40 transition-colors">
+              <span className="font-montserrat text-3xl md:text-4xl font-black text-[#2171B5]/20 group-hover:text-[#2171B5]/40 transition-colors">
                 {String(i + 1).padStart(2, '0')}
               </span>
             </div>
@@ -270,7 +270,7 @@ const ComparisonSection = ({ course, section }) => {
 
       {/* BOTTOM CTA */}
       <div className="cta-reveal text-center space-y-8">
-        <h4 className="font-newsreader italic text-2xl md:text-4xl text-slate-800 font-light tracking-tight">
+        <h4 className="font-montserrat text-2xl md:text-4xl text-slate-800 font-semibold tracking-tight">
           {"Beat the competition with innovative solutions."}
         </h4>
 
@@ -280,7 +280,7 @@ const ComparisonSection = ({ course, section }) => {
             onClick={() => document.getElementById('pricing-section')?.scrollIntoView({ behavior: 'smooth' })}
             className="group relative bg-[#2171B5] hover:bg-[#1a5c96] px-10 md:px-16 py-5 md:py-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] active:scale-95 flex flex-col items-center gap-2 cursor-pointer"
           >
-            <span className="relative z-10 font-jetbrains text-white text-xs md:text-sm font-black tracking-[0.3em] uppercase">YES, I WANT TO BE CEO OF MY LIFE</span>
+            <span className="relative z-10 font-montserrat text-white text-xs md:text-sm font-black tracking-[0.3em] uppercase">YES, I WANT TO BE CEO OF MY LIFE</span>
           </button>
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2171B5" strokeWidth="2" className="opacity-60 hidden md:block rotate-180"><path d="M5 12h14m-7-7 7 7-7 7" /></svg>
         </div>

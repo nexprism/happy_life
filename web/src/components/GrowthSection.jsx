@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react'
+﻿import React, { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useLanguage } from '../context/LanguageContext'
@@ -86,10 +86,10 @@ const GrowthSection = () => {
 
         {/* Content Side */}
         <div className="growth-header flex flex-col gap-4 text-center md:text-left z-10">
-          <h2 className="font-newsreader text-[clamp(2rem,5vw,3.5rem)] italic leading-none text-normal">
+          <h2 className="font-montserrat text-normal text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] transition-colors">
             {t('growthHeadline')}
           </h2>
-          <p className="max-w-md font-jetbrains text-[10px] md:text-xs text-white/60 tracking-[0.2em] leading-relaxed uppercase">
+          <p className="max-w-md font-montserrat text-[10px] md:text-xs text-white/60 tracking-[0.2em] leading-relaxed uppercase">
             {t('growthSub')}
           </p>
         </div>
@@ -108,7 +108,7 @@ const GrowthSection = () => {
                 <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.1 2.48-1.34.03-1.77-.79-3.29-.79-1.53 0-2.01.77-3.27.82-1.31.05-2.36-1.31-3.2-2.52C4.12 17.02 2.8 12.19 4.54 9.13c.87-1.55 2.46-2.53 4.2-2.56 1.32-.03 2.58.89 3.39.89.8 0 2.34-1.12 3.91-.96 1.13.05 3.01.46 4.14 2.11-.09.06-2.02 1.18-2 3.51.03 2.82 2.45 3.76 2.48 3.77-.02.06-.39 1.35-1.32 2.74M15.25 2c-.03 2.01-1.67 3.63-3.61 3.58.03-2.01 1.7-3.63 3.61-3.58z" />
               </svg>
               <div className="text-left">
-                <p className="text-[8px] font-jetbrains uppercase opacity-100 leading-none mb-1">Download on</p>
+                <p className="text-[8px] font-montserrat uppercase opacity-100 leading-none mb-1">Download on</p>
                 <p className="text-[12px] font-montserrat font-black tracking-[0.15em] uppercase">App Store</p>
               </div>
             </a>
@@ -123,7 +123,7 @@ const GrowthSection = () => {
                 <path d="M3.609 1.814L13.792 12 3.61 22.186a.996.996 0 01-.1-.12V1.934a1 1 0 01.099-.12zM14.5 12.707L3.921 23.286c.056.01.114.014.173.014a1 1 0 00.707-.293L15.914 14.12 14.5 12.707zM15.914 9.88l-1.414-1.414L3.921.714a1 1 0 00-.707-.293.991.991 0 00-.173.014L14.5 11.293 15.914 9.88zm1.086 1.086l3.414 3.414a1 1 0 010 1.414l-3.414 3.414-2.121-2.121 2.121-2.121 3.414-3.414a1 1 0 010-1.414l-3.414-3.414 2.121-2.121z" />
               </svg>
               <div className="text-left">
-                <p className="text-[8px] font-jetbrains uppercase opacity-100 leading-none mb-1">Get it on</p>
+                <p className="text-[8px] font-montserrat uppercase opacity-100 leading-none mb-1">Get it on</p>
                 <p className="text-[12px] font-montserrat font-black tracking-[0.15em] uppercase">Google Play</p>
               </div>
             </a>

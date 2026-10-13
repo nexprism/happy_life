@@ -15,8 +15,13 @@ const persistAuth = (response) => {
 
 const loadFromStorage = () => {
   try {
+    const rawToken = localStorage.getItem('edrilla_token');
+    const isValidToken = typeof rawToken === 'string' && rawToken.trim().length > 0 && rawToken !== 'null' && rawToken !== 'undefined';
+    if (!isValidToken) {
+      return { token: null, user: null };
+    }
     return {
-      token: localStorage.getItem('edrilla_token') || null,
+      token: rawToken,
       user: JSON.parse(localStorage.getItem('edrilla_user')) || null,
     };
   } catch {

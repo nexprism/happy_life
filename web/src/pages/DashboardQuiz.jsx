@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react'
+﻿import React, { useState, useEffect, useCallback } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import { fetchCourseDetail } from '../redux/slices/courseSlice'
@@ -268,7 +268,7 @@ const DashboardQuiz = () => {
                     <div className="w-20 h-20 bg-amber-50 border border-amber-100 rounded-full flex items-center justify-center mx-auto text-[#2171B5]">
                         <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M9 11l3 3L22 4" /><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" /></svg>
                     </div>
-                    <h2 className="font-newsreader text-4xl italic">Protocol Not Found</h2>
+                    <h2 className="font-montserrat text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] transition-colors">Protocol Not Found</h2>
                     <p className="text-slate-500 font-mono uppercase tracking-widest text-[10px]">Security Clearance Failure or Invalid Mission ID</p>
                     <Link to="/dashboard/my-courses" className="inline-block px-12 py-4 bg-[#2171B5] hover:bg-[#1b5c94] text-white font-bold uppercase tracking-wider text-xs rounded-xl shadow-md transition-all">Back to dashboard</Link>
                 </div>
@@ -302,23 +302,23 @@ const DashboardQuiz = () => {
                     <div className={`bg-white border border-slate-200 w-full p-8 md:p-12 rounded-2xl shadow-sm text-center space-y-8 transition-all ${resultView === 'review' ? 'max-w-5xl' : 'max-w-2xl'}`}>
                         <div className="space-y-3">
                             <p className="font-mono text-xs text-[#2171B5] uppercase tracking-[0.3em] font-black">Protocol Complete</p>
-                            <h1 className="font-newsreader italic text-5xl md:text-6xl text-slate-900 font-extralight tracking-tight leading-none uppercase">Evaluation Success</h1>
+                            <h1 className="font-montserrat text-slate-900 uppercase text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] transition-colors">Evaluation Success</h1>
                         </div>
                         
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4">
                             <div className="p-6 bg-slate-50 border border-slate-200 rounded-xl space-y-1">
                                 <p className="font-mono text-[9px] text-slate-400 uppercase tracking-widest">Score Achieved</p>
-                                <p className="font-newsreader text-4xl text-[#2171B5] font-bold italic">{Math.round(submitResult?.data?.score || 0)}%</p>
+                                <p className="font-montserrat text-4xl text-[#2171B5] font-bold">{Math.round(submitResult?.data?.score || 0)}%</p>
                             </div>
                             <div className="p-6 bg-slate-50 border border-slate-200 rounded-xl space-y-1">
                                 <p className="font-mono text-[9px] text-slate-400 uppercase tracking-widest">Status</p>
-                                <p className={`font-newsreader text-4xl font-bold italic ${submitResult?.data?.score >= quiz.passMark ? 'text-green-600' : 'text-red-500'}`}>
+                                <p className={`font-montserrat text-4xl font-bold ${submitResult?.data?.score >= quiz.passMark ? 'text-green-600' : 'text-red-500'}`}>
                                     {submitResult?.data?.score >= quiz.passMark ? 'PASSED' : 'FAILED'}
                                 </p>
                             </div>
                             <div className="p-6 bg-slate-50 border border-slate-200 rounded-xl space-y-1">
                                 <p className="font-mono text-[9px] text-slate-400 uppercase tracking-widest">Required Pass</p>
-                                <p className="font-newsreader text-4xl text-slate-400 font-bold italic">{quiz.passMark}%</p>
+                                <p className="font-montserrat text-4xl text-slate-400 font-bold">{quiz.passMark}%</p>
                             </div>
                         </div>
 
@@ -548,9 +548,9 @@ const DashboardQuiz = () => {
                                     <div className="w-12 h-12 bg-amber-50 border border-amber-100 rounded-xl flex items-center justify-center text-[#2171B5]">
                                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" /></svg>
                                     </div>
-                                    <h1 className="font-newsreader italic text-3xl md:text-5xl text-slate-900 font-extralight tracking-tight leading-[0.9] uppercase">{sanitizeDisplay(quiz.quizTitle)}</h1>
+                                    <h1 className="font-montserrat text-slate-900 uppercase text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] transition-colors">{sanitizeDisplay(quiz.quizTitle)}</h1>
                                 </div>
-                                <p className="font-newsreader italic text-lg text-slate-600 leading-relaxed max-w-2xl">{sanitizeDisplay(quiz.quizDescription)}</p>
+                                <p className="font-montserrat text-lg text-slate-600 leading-relaxed max-w-2xl">{sanitizeDisplay(quiz.quizDescription)}</p>
                             </div>
                         </div>
 
@@ -570,7 +570,7 @@ const DashboardQuiz = () => {
                                         {stat.icon === 'check-circle' && <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>}
                                     </div>
                                     <div className="space-y-1">
-                                        <p className="font-newsreader text-3xl text-slate-800 font-extralight italic">{stat.value}</p>
+                                        <p className="font-montserrat text-3xl text-slate-800 font-normal">{stat.value}</p>
                                         <p className="font-mono text-[9px] text-slate-400 uppercase tracking-widest">{stat.label}</p>
                                     </div>
                                 </div>
@@ -583,7 +583,7 @@ const DashboardQuiz = () => {
                                 <svg className="text-[#2171B5]" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
                                 <h3 className="font-mono text-xs text-[#2171B5] uppercase tracking-wider font-bold">Tactical Instructions</h3>
                             </div>
-                            <ul className="space-y-2.5 font-newsreader italic text-slate-700 list-disc pl-5 leading-relaxed text-sm">
+                            <ul className="space-y-2.5 font-montserrat text-slate-700 list-disc pl-5 leading-relaxed text-sm">
                                 <li>Read each question carefully before selecting your answer.</li>
                                 <li>You can navigate between questions using the question palette.</li>
                                 <li>Use the flag feature to mark questions for review.</li>
@@ -601,10 +601,10 @@ const DashboardQuiz = () => {
                                     <div key={si} className="p-5 bg-slate-50 border border-slate-200 rounded-xl flex justify-between items-center group hover:bg-slate-100/50 transition-all">
                                         <div className="space-y-1">
                                             <h4 className="font-mono text-[10px] text-slate-800 uppercase tracking-wider font-bold">{sanitizeDisplay(section.sectionTitle)}</h4>
-                                            <p className="font-newsreader italic text-xs text-slate-500 leading-snug">{sanitizeDisplay(section.sectionDescription)}</p>
+                                            <p className="font-montserrat text-xs text-slate-500 leading-snug">{sanitizeDisplay(section.sectionDescription)}</p>
                                         </div>
                                         <div className="text-right ml-4">
-                                            <p className="font-newsreader text-2xl text-[#2171B5] font-bold italic">{section.questions?.length || 0}</p>
+                                            <p className="font-montserrat text-2xl text-[#2171B5] font-bold">{section.questions?.length || 0}</p>
                                             <p className="font-mono text-[8px] text-slate-400 uppercase tracking-widest">Questions</p>
                                         </div>
                                     </div>
@@ -736,7 +736,7 @@ const DashboardQuiz = () => {
                             <div className="space-y-6">
                                 {/* Section Description/Directions if present */}
                                 {currentQ.directions && (
-                                    <div className="bg-white border border-slate-200 p-4 rounded-xl text-slate-700 text-sm italic shadow-sm leading-relaxed">
+                                    <div className="bg-white border border-slate-200 p-4 rounded-xl text-slate-700 text-sm shadow-sm leading-relaxed">
                                         {sanitizeDisplay(currentQ.directions)}
                                     </div>
                                 )}

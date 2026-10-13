@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+﻿import React, { useState, useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import DashboardHeader from '../components/dashboard/DashboardHeader';
 import { useDispatch, useSelector } from 'react-redux';
@@ -129,15 +129,15 @@ const DashboardSupport = () => {
                     {/* Header Section */}
                     <div className="flex flex-col md:flex-row md:items-end justify-between items-start gap-8 support-reveal opacity-0">
                         <div className="space-y-3">
-                           <p className="font-jetbrains text-xs text-amber-800 uppercase tracking-[0.4em] font-black italic">{t('supportProtocolTag')}</p>
-                           <h1 className="font-newsreader italic text-4xl md:text-6xl text-slate-900 font-bold tracking-tight leading-none uppercase">
+                           <p className="font-montserrat text-xs text-amber-800 uppercase tracking-[0.4em] font-black">{t('supportProtocolTag')}</p>
+                           <h1 className="font-montserrat text-slate-900 uppercase text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] transition-colors">
                                {t('supportCenter')}
                            </h1>
                         </div>
                         
                         <div className="text-right group relative hidden md:block">
-                           <p className="font-jetbrains text-[9px] text-slate-500 uppercase tracking-[0.4em] mb-1 font-bold">{t('activeDispatches')}</p>
-                           <p className="font-newsreader italic text-3xl md:text-5xl text-slate-900 leading-none font-bold tracking-tighter">04</p>
+                           <p className="font-montserrat text-[9px] text-slate-500 uppercase tracking-[0.4em] mb-1 font-bold">{t('activeDispatches')}</p>
+                           <p className="font-montserrat text-3xl md:text-5xl text-slate-900 leading-none font-bold tracking-tighter">04</p>
                            <div className="absolute -bottom-2 right-0 w-12 h-[2px] bg-amber-400 group-hover:w-full transition-all duration-700" />
                         </div>
                     </div>
@@ -147,14 +147,14 @@ const DashboardSupport = () => {
                         <div className="flex items-center gap-4 bg-slate-100 p-1.5 border border-slate-200 rounded-2xl w-full md:w-auto">
                             <button 
                                 onClick={() => setActiveTab('raise')}
-                                className={`font-jetbrains text-xs font-black uppercase tracking-[0.3em] transition-all relative px-10 py-3 rounded-xl  
+                                className={`font-montserrat text-xs font-black uppercase tracking-[0.3em] transition-all relative px-10 py-3 rounded-xl  
                                   ${activeTab === 'raise' ? 'text-slate-950 bg-amber-400 shadow-sm' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/50'}`}
                             >
                                 {t('raiseTicket')}
                             </button>
                             <button 
                                 onClick={() => setActiveTab('my')}
-                                className={`font-jetbrains text-xs font-black uppercase tracking-[0.3em] transition-all relative px-10 py-3 rounded-xl 
+                                className={`font-montserrat text-xs font-black uppercase tracking-[0.3em] transition-all relative px-10 py-3 rounded-xl 
                                   ${activeTab === 'my' ? 'text-slate-950 bg-amber-400 shadow-sm' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/50'}`}
                             >
                                 {t('myTickets')}
@@ -169,14 +169,14 @@ const DashboardSupport = () => {
                                 {/* Contact Info */}
                                 <div className="space-y-10 support-reveal opacity-0">
                                     <div className="space-y-2">
-                                       <p className="font-jetbrains text-[9px] text-amber-800 uppercase tracking-[0.4em] font-black italic">{t('infoArchitectureTag')}</p>
-                                       <h3 className="font-newsreader italic text-3xl text-slate-900 font-bold tracking-tight uppercase leading-none">{t('contactInfo')}</h3>
+                                       <p className="font-montserrat text-[9px] text-amber-800 uppercase tracking-[0.4em] font-black">{t('infoArchitectureTag')}</p>
+                                       <h3 className="font-montserrat text-3xl text-slate-900 font-bold tracking-tight uppercase leading-none">{t('contactInfo')}</h3>
                                     </div>
                                     
                                     <div className="space-y-6">
                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                                             <div className="space-y-3">
-                                                <label className="font-jetbrains text-xs font-bold tracking-[0.2em] uppercase text-slate-600">{t('fullNameLabel')} *</label>
+                                                <label className="font-montserrat text-xs font-bold tracking-[0.2em] uppercase text-slate-600">{t('fullNameLabel')} *</label>
                                                 <div className="relative group">
                                                     <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-amber-600 transition-colors">
                                                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2m8-11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"/></svg>
@@ -187,12 +187,12 @@ const DashboardSupport = () => {
                                                         value={formData.userName}
                                                         onChange={handleInputChange}
                                                         placeholder={t('enterYourName')} 
-                                                        className="w-full bg-white border border-slate-200 rounded-xl py-3 pl-10 pr-4 outline-none focus:border-amber-500 transition-all font-jetbrains text-xs text-slate-900 tracking-widest uppercase placeholder:text-slate-400 shadow-sm"
+                                                        className="w-full bg-white border border-slate-200 rounded-xl py-3 pl-10 pr-4 outline-none focus:border-amber-500 transition-all font-montserrat text-xs text-slate-900 tracking-widest uppercase placeholder:text-slate-400 shadow-sm"
                                                     />
                                                 </div>
                                             </div>
                                             <div className="space-y-3">
-                                                <label className="font-jetbrains text-xs font-bold tracking-[0.2em] uppercase text-slate-600">{t('emailAddressLabel')} *</label>
+                                                <label className="font-montserrat text-xs font-bold tracking-[0.2em] uppercase text-slate-600">{t('emailAddressLabel')} *</label>
                                                 <div className="relative group">
                                                     <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-amber-600 transition-colors">
                                                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><path d="m22 6-10 7L2 6"/></svg>
@@ -203,14 +203,14 @@ const DashboardSupport = () => {
                                                         value={formData.userEmail}
                                                         onChange={handleInputChange}
                                                         placeholder={t('enterYourEmail')} 
-                                                        className="w-full bg-white border border-slate-200 rounded-xl py-3 pl-10 pr-4 outline-none focus:border-amber-500 transition-all font-jetbrains text-xs text-slate-900 tracking-widest uppercase placeholder:text-slate-400 shadow-sm"
+                                                        className="w-full bg-white border border-slate-200 rounded-xl py-3 pl-10 pr-4 outline-none focus:border-amber-500 transition-all font-montserrat text-xs text-slate-900 tracking-widest uppercase placeholder:text-slate-400 shadow-sm"
                                                     />
                                                 </div>
                                             </div>
                                         </div>
                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                                             <div className="space-y-3">
-                                                <label className="font-jetbrains text-xs font-bold tracking-[0.2em] uppercase text-slate-600">{t('phoneNumberLabel')}</label>
+                                                <label className="font-montserrat text-xs font-bold tracking-[0.2em] uppercase text-slate-600">{t('phoneNumberLabel')}</label>
                                                 <div className="relative group">
                                                     <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-amber-600 transition-colors">
                                                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l2.27-2.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
@@ -221,12 +221,12 @@ const DashboardSupport = () => {
                                                         value={formData.userPhone}
                                                         onChange={handleInputChange}
                                                         placeholder={t('enterYourPhone')} 
-                                                        className="w-full bg-white border border-slate-200 rounded-xl py-3 pl-10 pr-4 outline-none focus:border-amber-500 transition-all font-jetbrains text-xs text-slate-900 tracking-widest uppercase placeholder:text-slate-400 shadow-sm"
+                                                        className="w-full bg-white border border-slate-200 rounded-xl py-3 pl-10 pr-4 outline-none focus:border-amber-500 transition-all font-montserrat text-xs text-slate-900 tracking-widest uppercase placeholder:text-slate-400 shadow-sm"
                                                     />
                                                 </div>
                                             </div>
                                             <div className="space-y-3">
-                                                <label className="font-jetbrains text-xs font-bold tracking-[0.2em] uppercase text-slate-600">{t('subjectLabel')} *</label>
+                                                <label className="font-montserrat text-xs font-bold tracking-[0.2em] uppercase text-slate-600">{t('subjectLabel')} *</label>
                                                 <div className="relative group">
                                                     <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-amber-600 transition-colors">
                                                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
@@ -237,7 +237,7 @@ const DashboardSupport = () => {
                                                         value={formData.subject}
                                                         onChange={handleInputChange}
                                                         placeholder="SUBJECT" 
-                                                        className="w-full bg-white border border-slate-200 rounded-xl py-3 pl-10 pr-4 outline-none focus:border-amber-500 transition-all font-jetbrains text-xs text-slate-900 tracking-widest uppercase placeholder:text-slate-400 shadow-sm"
+                                                        className="w-full bg-white border border-slate-200 rounded-xl py-3 pl-10 pr-4 outline-none focus:border-amber-500 transition-all font-montserrat text-xs text-slate-900 tracking-widest uppercase placeholder:text-slate-400 shadow-sm"
                                                     />
                                                 </div>
                                             </div>
@@ -248,8 +248,8 @@ const DashboardSupport = () => {
                                 {/* Select Query */}
                                 <div className="space-y-10 support-reveal opacity-0">
                                     <div className="space-y-2">
-                                       <p className="font-jetbrains text-[9px] text-amber-800 uppercase tracking-[0.4em] font-black italic">{t('strategicClassificationTag')}</p>
-                                       <h3 className="font-newsreader italic text-3xl text-slate-900 font-bold tracking-tight uppercase leading-none">{t('supportCategory')}</h3>
+                                       <p className="font-montserrat text-[9px] text-amber-800 uppercase tracking-[0.4em] font-black">{t('strategicClassificationTag')}</p>
+                                       <h3 className="font-montserrat text-3xl text-slate-900 font-bold tracking-tight uppercase leading-none">{t('supportCategory')}</h3>
                                     </div>
                                     
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -265,8 +265,8 @@ const DashboardSupport = () => {
                                                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d={type.icon}/></svg>
                                                 </div>
                                                 <div className="space-y-1">
-                                                    <h4 className={`font-jetbrains text-xs font-bold uppercase tracking-[0.2em] ${queryType === type.id ? 'text-amber-900' : 'text-slate-900'}`}>{type.title}</h4>
-                                                    <p className="font-jetbrains text-[10px] text-slate-500 uppercase tracking-widest leading-relaxed">{type.desc}</p>
+                                                    <h4 className={`font-montserrat text-xs font-bold uppercase tracking-[0.2em] ${queryType === type.id ? 'text-amber-900' : 'text-slate-900'}`}>{type.title}</h4>
+                                                    <p className="font-montserrat text-[10px] text-slate-500 uppercase tracking-widest leading-relaxed">{type.desc}</p>
                                                 </div>
                                             </div>
                                         ))}
@@ -278,8 +278,8 @@ const DashboardSupport = () => {
                             <div className="grid grid-cols-1 lg:grid-cols-12 gap-20 support-reveal opacity-0">
                                 <div className="lg:col-span-8 space-y-10">
                                     <div className="space-y-2">
-                                       <p className="font-jetbrains text-[9px] text-amber-800 uppercase tracking-[0.4em] font-black italic">{t('detailedDossierTag')}</p>
-                                       <h3 className="font-newsreader italic text-3xl text-slate-900 font-bold tracking-tight uppercase leading-none">{t('intelligenceBriefingTitle')}</h3>
+                                       <p className="font-montserrat text-[9px] text-amber-800 uppercase tracking-[0.4em] font-black">{t('detailedDossierTag')}</p>
+                                       <h3 className="font-montserrat text-3xl text-slate-900 font-bold tracking-tight uppercase leading-none">{t('intelligenceBriefingTitle')}</h3>
                                     </div>
                                     <div className="relative">
                                         <textarea 
@@ -287,7 +287,7 @@ const DashboardSupport = () => {
                                             value={formData.description}
                                             onChange={handleInputChange}
                                             placeholder={t('describeSituationPlaceholder')}
-                                            className="w-full bg-white border border-slate-200 rounded-2xl p-6 h-64 outline-none focus:border-amber-500 transition-all font-jetbrains text-xs text-slate-900 tracking-widest uppercase resize-none placeholder:text-slate-400 shadow-sm"
+                                            className="w-full bg-white border border-slate-200 rounded-2xl p-6 h-64 outline-none focus:border-amber-500 transition-all font-montserrat text-xs text-slate-900 tracking-widest uppercase resize-none placeholder:text-slate-400 shadow-sm"
                                         />
                                         
                                         {/* Emoji Trigger */}
@@ -315,7 +315,7 @@ const DashboardSupport = () => {
                                             )}
                                         </div>
 
-                                        <div className="absolute bottom-6 right-8 font-jetbrains text-[10px] text-amber-800 font-bold tracking-widest uppercase">
+                                        <div className="absolute bottom-6 right-8 font-montserrat text-[10px] text-amber-800 font-bold tracking-widest uppercase">
                                             {charCount} / 1000
                                         </div>
                                     </div>
@@ -323,8 +323,8 @@ const DashboardSupport = () => {
 
                                 <div className="lg:col-span-4 space-y-10">
                                     <div className="space-y-2">
-                                       <p className="font-jetbrains text-[9px] text-amber-800 uppercase tracking-[0.4em] font-black italic">{t('supportingAssetsTag')}</p>
-                                       <h3 className="font-newsreader italic text-3xl text-slate-900 font-bold tracking-tight uppercase leading-none">{t('attachmentsTitle')}</h3>
+                                       <p className="font-montserrat text-[9px] text-amber-800 uppercase tracking-[0.4em] font-black">{t('supportingAssetsTag')}</p>
+                                       <h3 className="font-montserrat text-3xl text-slate-900 font-bold tracking-tight uppercase leading-none">{t('attachmentsTitle')}</h3>
                                     </div>
                                     <input 
                                         type="file" 
@@ -345,10 +345,10 @@ const DashboardSupport = () => {
                                             </svg>
                                         </div>
                                         <div className="text-center space-y-1">
-                                            <p className="font-jetbrains text-xs font-bold uppercase tracking-[0.2em] text-slate-900">
+                                            <p className="font-montserrat text-xs font-bold uppercase tracking-[0.2em] text-slate-900">
                                                 {formData.attachment ? formData.attachment.name : t('submitAssetsLabel')}
                                             </p>
-                                            <p className="font-jetbrains text-[9px] text-slate-400 uppercase tracking-widest font-bold">{t('fileTypesMax')}</p>
+                                            <p className="font-montserrat text-[9px] text-slate-400 uppercase tracking-widest font-bold">{t('fileTypesMax')}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -357,21 +357,21 @@ const DashboardSupport = () => {
                             {/* Submit Section (Strategic Action) */}
                             <div className="pt-24 pb-20 border-t border-slate-200 grid grid-cols-1 lg:grid-cols-2 items-center gap-20 support-reveal opacity-0">
                                 <div className="space-y-8">
-                                    <h2 className="font-newsreader italic text-4xl md:text-5xl text-slate-900 font-bold tracking-tighter leading-[0.9]">
+                                    <h2 className="font-montserrat text-slate-900 text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] transition-colors">
                                        {t('establishCommunication')}
                                     </h2>
-                                    <p className="font-jetbrains text-xs text-slate-600 leading-[2] uppercase tracking-widest max-w-md font-medium">
+                                    <p className="font-montserrat text-xs text-slate-600 leading-[2] uppercase tracking-widest max-w-md font-medium">
                                        {t('operativesResponseDesc')}
                                     </p>
                                     <div className="pt-6">
                                         <button 
                                             onClick={handleSubmit}
                                             disabled={submitting}
-                                            className="bg-amber-400 text-slate-950 px-10 py-5 rounded-xl font-jetbrains text-xs font-black uppercase tracking-[0.3em] hover:scale-105 active:scale-95 transition-all shadow-sm disabled:opacity-50"
+                                            className="bg-amber-400 text-slate-950 px-10 py-5 rounded-xl font-montserrat text-xs font-black uppercase tracking-[0.3em] hover:scale-105 active:scale-95 transition-all shadow-sm disabled:opacity-50"
                                         >
                                             {submitting ? 'PROTOCOL INITIATED...' : t('submitDispatch')}
                                         </button>
-                                        {error && <p className="font-jetbrains text-[9px] text-red-500 uppercase tracking-widest mt-4 italic">{error}</p>}
+                                        {error && <p className="font-montserrat text-[9px] text-red-500 uppercase tracking-widest mt-4">{error}</p>}
                                     </div>
                                 </div>
                                 
@@ -388,14 +388,14 @@ const DashboardSupport = () => {
                     ) : (
                         <div className="support-reveal opacity-0 space-y-8">
                             <div className="space-y-2">
-                                <p className="font-jetbrains text-[9px] text-amber-800 uppercase tracking-[0.4em] font-black italic">{t('intelligenceLogTag')}</p>
-                                <h3 className="font-newsreader italic text-3xl text-slate-900 font-bold tracking-tight uppercase">{t('raisedTickets')}</h3>
+                                <p className="font-montserrat text-[9px] text-amber-800 uppercase tracking-[0.4em] font-black">{t('intelligenceLogTag')}</p>
+                                <h3 className="font-montserrat text-3xl text-slate-900 font-bold tracking-tight uppercase">{t('raisedTickets')}</h3>
                             </div>
                             
                             <div className="overflow-hidden border border-slate-200 bg-white rounded-2xl shadow-sm">
                                 <table className="w-full text-left border-collapse">
                                     <thead>
-                                        <tr className="bg-slate-100/90 border-b border-slate-200 font-jetbrains text-xs text-amber-900 uppercase tracking-[0.2em] font-black italic">
+                                        <tr className="bg-slate-100/90 border-b border-slate-200 font-montserrat text-xs text-amber-900 uppercase tracking-[0.2em] font-black">
                                             <th className="p-6 border-r border-slate-200">{t('protocolIdCol')}</th>
                                             <th className="p-6 border-r border-slate-200">{t('briefingSubjectCol')}</th>
                                             <th className="p-6 border-r border-slate-200">{t('classificationCol')}</th>
@@ -406,30 +406,30 @@ const DashboardSupport = () => {
                                     <tbody className="divide-y divide-slate-100">
                                         {loading ? (
                                             <tr>
-                                                <td colSpan="5" className="p-16 text-center font-jetbrains text-xs text-amber-800 tracking-[0.3em] animate-pulse uppercase">{t('retrievingDispatches')}</td>
+                                                <td colSpan="5" className="p-16 text-center font-montserrat text-xs text-amber-800 tracking-[0.3em] animate-pulse uppercase">{t('retrievingDispatches')}</td>
                                             </tr>
                                         ) : tickets.length > 0 ? (
                                             tickets.map((ticket) => (
                                                 <tr key={ticket._id} className="hover:bg-slate-50 transition-all cursor-pointer group">
-                                                    <td className="p-6 font-jetbrains text-xs text-amber-800 font-bold tracking-widest">#{ticket._id?.slice(-6).toUpperCase()}</td>
-                                                    <td className="p-6 font-newsreader italic text-lg text-slate-900 font-bold group-hover:text-amber-600 transition-colors">{ticket.subject}</td>
+                                                    <td className="p-6 font-montserrat text-xs text-amber-800 font-bold tracking-widest">#{ticket._id?.slice(-6).toUpperCase()}</td>
+                                                    <td className="p-6 font-montserrat text-lg text-slate-900 font-bold group-hover:text-amber-600 transition-colors">{ticket.subject}</td>
                                                     <td className="p-6">
-                                                        <span className="font-jetbrains text-[10px] border border-slate-200 bg-slate-50 px-3 py-1 rounded-full text-slate-700 uppercase tracking-widest font-bold">{ticket.category}</span>
+                                                        <span className="font-montserrat text-[10px] border border-slate-200 bg-slate-50 px-3 py-1 rounded-full text-slate-700 uppercase tracking-widest font-bold">{ticket.category}</span>
                                                     </td>
                                                     <td className="p-6">
                                                         <div className="flex items-center gap-2">
                                                             <div className={`w-2 h-2 rounded-full ${ticket.status === 'resolved' ? 'bg-green-500' : ticket.status === 'open' ? 'bg-amber-500' : 'bg-blue-500'}`} />
-                                                            <span className="font-jetbrains text-xs text-slate-900 font-bold uppercase tracking-widest">{ticket.status}</span>
+                                                            <span className="font-montserrat text-xs text-slate-900 font-bold uppercase tracking-widest">{ticket.status}</span>
                                                         </div>
                                                     </td>
-                                                    <td className="p-6 text-right font-jetbrains text-xs text-slate-500 uppercase tracking-widest font-bold">
+                                                    <td className="p-6 text-right font-montserrat text-xs text-slate-500 uppercase tracking-widest font-bold">
                                                         {new Date(ticket.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                                                     </td>
                                                 </tr>
                                             ))
                                         ) : (
                                             <tr>
-                                                <td colSpan="5" className="p-16 text-center font-jetbrains text-xs text-slate-400 uppercase tracking-widest italic">{t('noDispatchesFound')}</td>
+                                                <td colSpan="5" className="p-16 text-center font-montserrat text-xs text-slate-400 uppercase tracking-widest">{t('noDispatchesFound')}</td>
                                             </tr>
                                         )}
                                     </tbody>

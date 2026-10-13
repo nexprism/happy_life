@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 
 const LockedModal = ({ isOpen, onClose, title = 'Locked Lesson', message = '' }) => {
     if (!isOpen) return null;
@@ -9,7 +9,7 @@ const LockedModal = ({ isOpen, onClose, title = 'Locked Lesson', message = '' })
             <div className="relative bg-white border border-slate-200 rounded-2xl max-w-lg w-full p-6 z-10 shadow-2xl">
                 <div className="flex justify-between items-start">
                     <div>
-                        <h3 className="font-newsreader text-2xl italic text-slate-900">{title}</h3>
+                        <h3 className="font-montserrat text-2xl text-slate-900">{title}</h3>
                         <p className="mt-2 text-slate-600 text-sm font-medium">{message}</p>
                     </div>
                     <button onClick={onClose} className="text-slate-400 hover:text-slate-900 text-lg">✕</button>

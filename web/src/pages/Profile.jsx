@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+﻿import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { gsap } from 'gsap'
 import DashboardHeader from '../components/dashboard/DashboardHeader'
@@ -71,17 +71,17 @@ const Profile = () => {
                <div className="h-[60vh] flex items-center justify-center">
                   <div className="flex flex-col items-center gap-4">
                      <div className="w-12 h-12 border-3 border-amber-400/20 border-t-amber-500 rounded-full animate-spin" />
-                     <p className="font-jetbrains text-xs font-bold text-amber-800 uppercase tracking-[0.4em] animate-pulse">Loading Profile...</p>
+                     <p className="font-montserrat text-xs font-bold text-amber-800 uppercase tracking-[0.4em] animate-pulse">Loading Profile...</p>
                   </div>
                </div>
             ) : error ? (
                <div className="h-[60vh] flex items-center justify-center">
                   <div className="bg-red-50 border border-red-200 p-8 text-center space-y-4 max-w-md rounded-2xl shadow-sm">
-                     <p className="font-jetbrains text-xs text-red-600 uppercase tracking-[0.4em] font-black">Connection Error</p>
-                     <p className="font-newsreader italic text-xl text-red-700">{error}</p>
+                     <p className="font-montserrat text-xs text-red-600 uppercase tracking-[0.4em] font-black">Connection Error</p>
+                     <p className="font-montserrat text-xl text-red-700">{error}</p>
                      <button 
                         onClick={() => dispatch(fetchUserProfile())}
-                        className="px-8 py-3 bg-red-100 text-red-700 font-jetbrains text-xs font-bold uppercase tracking-widest hover:bg-red-200 transition-all rounded-full"
+                        className="px-8 py-3 bg-red-100 text-red-700 font-montserrat text-xs font-bold uppercase tracking-widest hover:bg-red-200 transition-all rounded-full"
                      >
                         Retry
                      </button>
@@ -104,21 +104,21 @@ const Profile = () => {
                            <div className="absolute top-0 right-0 p-3 opacity-15 text-amber-600">
                               <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M12 15l-2 5l2 2l2-2l-2-5z M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z"/></svg>
                            </div>
-                           <p className="font-jetbrains text-xs text-amber-800 uppercase tracking-[0.3em] font-black italic">Leaderboard Status</p>
+                           <p className="font-montserrat text-xs text-amber-800 uppercase tracking-[0.3em] font-black">Leaderboard Status</p>
                            <div className="space-y-6">
                               <div className="flex justify-between items-end">
                                  <div>
-                                    <p className="font-jetbrains text-[10px] text-slate-500 uppercase tracking-widest font-bold">Global Rank</p>
-                                    <p className="font-newsreader italic text-5xl text-slate-900 font-medium">#{user.leaderboard.rank || 'N/A'}</p>
+                                    <p className="font-montserrat text-[10px] text-slate-500 uppercase tracking-widest font-bold">Global Rank</p>
+                                    <p className="font-montserrat text-5xl text-slate-900 font-medium">#{user.leaderboard.rank || 'N/A'}</p>
                                  </div>
                                  <div className="text-right">
-                                    <p className="font-jetbrains text-[10px] text-slate-500 uppercase tracking-widest font-bold">Experience</p>
-                                    <p className="font-newsreader italic text-3xl text-slate-900 font-medium">{user.leaderboard.xp?.toLocaleString() || '0'} XP</p>
+                                    <p className="font-montserrat text-[10px] text-slate-500 uppercase tracking-widest font-bold">Experience</p>
+                                    <p className="font-montserrat text-3xl text-slate-900 font-medium">{user.leaderboard.xp?.toLocaleString() || '0'} XP</p>
                                  </div>
                               </div>
                               <div className="pt-6 border-t border-slate-100 flex justify-between items-center">
-                                 <span className="font-jetbrains text-xs text-slate-900 uppercase tracking-widest font-black">Level</span>
-                                 <span className="px-4 py-1.5 bg-amber-100 text-amber-900 border border-amber-300/60 font-jetbrains text-[10px] uppercase tracking-widest rounded-full font-black">{user.leaderboard.level || 'Novice'}</span>
+                                 <span className="font-montserrat text-xs text-slate-900 uppercase tracking-widest font-black">Level</span>
+                                 <span className="px-4 py-1.5 bg-amber-100 text-amber-900 border border-amber-300/60 font-montserrat text-[10px] uppercase tracking-widest rounded-full font-black">{user.leaderboard.level || 'Novice'}</span>
                               </div>
                            </div>
                         </div>
@@ -126,8 +126,8 @@ const Profile = () => {
 
                      {/* Account Details */}
                      <div className="bento-panel bg-white border border-slate-200/80 p-6 space-y-4 rounded-2xl shadow-sm">
-                        <p className="font-jetbrains text-xs text-slate-900 uppercase tracking-[0.3em] font-black italic">{t('accountInfo') || 'Account Info'}</p>
-                        <div className="flex justify-between items-center text-xs font-jetbrains">
+                        <p className="font-montserrat text-xs text-slate-900 uppercase tracking-[0.3em] font-black">{t('accountInfo') || 'Account Info'}</p>
+                        <div className="flex justify-between items-center text-xs font-montserrat">
                            <span className="text-slate-500 uppercase font-medium">User ID</span>
                            <span className="text-slate-900 font-black tracking-widest">#{user?._id?.slice(-8).toUpperCase() || 'N/A'}</span>
                         </div>
@@ -158,16 +158,16 @@ const Profile = () => {
                            </div>
                            <div className="space-y-8">
                               <div className="space-y-3">
-                                 <p className="font-jetbrains text-xs text-amber-800 uppercase tracking-[0.3em] font-black italic">{t('personalityArchetype') || 'Personality Archetype'}</p>
+                                 <p className="font-montserrat text-xs text-amber-800 uppercase tracking-[0.3em] font-black">{t('personalityArchetype') || 'Personality Archetype'}</p>
                                  <div className="space-y-1">
-                                    <h3 className="font-newsreader italic text-3xl text-slate-900 font-bold tracking-tight uppercase leading-none">{arche.name}</h3>
+                                    <h3 className="font-montserrat text-3xl text-slate-900 font-bold tracking-tight uppercase leading-none">{arche.name}</h3>
                                  </div>
                               </div>
                               
                               {/* Personality Description */}
                               <div className="space-y-4 pt-6 border-t border-slate-100">
-                                 <p className="font-jetbrains text-[10px] text-slate-500 uppercase tracking-widest font-bold">{t('coreDescription') || 'Core Description'}</p>
-                                 <p className="font-newsreader italic text-lg text-slate-700 leading-relaxed font-medium">
+                                 <p className="font-montserrat text-[10px] text-slate-500 uppercase tracking-widest font-bold">{t('coreDescription') || 'Core Description'}</p>
+                                 <p className="font-montserrat text-lg text-slate-700 leading-relaxed font-medium">
                                     {arche.desc}
                                  </p>
                               </div>
@@ -178,15 +178,15 @@ const Profile = () => {
                      {/* Bio Summary */}
                      <div className="bento-panel bg-white border border-slate-200/80 p-8 relative overflow-hidden rounded-2xl shadow-sm h-fit">
                         <div className="space-y-8">
-                           <p className="font-jetbrains text-xs text-slate-900 uppercase tracking-[0.3em] font-black italic">{t('bioSummary') || 'Bio Summary'}</p>
-                           <p className="font-newsreader italic text-lg text-slate-600 leading-relaxed font-medium">
+                           <p className="font-montserrat text-xs text-slate-900 uppercase tracking-[0.3em] font-black">{t('bioSummary') || 'Bio Summary'}</p>
+                           <p className="font-montserrat text-lg text-slate-600 leading-relaxed font-medium">
                               {user?.bio || (t('noBioRecorded') || 'No bio recorded in the registry.')}
                            </p>
                            <div className="pt-6 space-y-4 border-t border-slate-100">
-                              <p className="font-jetbrains text-[10px] text-slate-500 uppercase tracking-[0.3em] font-black italic">{t('badgesTitle') || 'Badges'}</p>
+                              <p className="font-montserrat text-[10px] text-slate-500 uppercase tracking-[0.3em] font-black">{t('badgesTitle') || 'Badges'}</p>
                               <div className="flex flex-wrap gap-2">
                                  {[t('earlyAdopter') || 'Early Adopter', t('verifiedUser') || 'Verified User'].map((badge, i) => (
-                                    <div key={i} className="px-4 py-1.5 bg-amber-50 border border-amber-200 text-[10px] font-jetbrains text-amber-900 uppercase tracking-widest font-black rounded-full">
+                                    <div key={i} className="px-4 py-1.5 bg-amber-50 border border-amber-200 text-[10px] font-montserrat text-amber-900 uppercase tracking-widest font-black rounded-full">
                                        {badge}
                                     </div>
                                  ))}

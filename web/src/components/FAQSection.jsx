@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+﻿import React, { useState, useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/all'
 import { useLanguage } from '../context/LanguageContext'
@@ -83,11 +83,11 @@ const FAQSection = ({ course }) => {
       <div className="space-y-6 mb-12">
         <div className="flex items-center gap-3">
           <div className="w-8 h-[2px] bg-accent" />
-          <span className="font-jetbrains text-xs text-accent tracking-[0.3em] uppercase font-bold">Frequently Asked Questions</span>
+          <span className="font-montserrat text-xs text-accent tracking-[0.3em] uppercase font-bold">Frequently Asked Questions</span>
         </div>
         
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-8">
-          <h2 className="font-newsreader italic text-4xl md:text-5xl lg:text-6xl text-normal font-light tracking-tight leading-tight max-w-2xl">
+          <h2 className="font-montserrat text-normal max-w-2xl text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] transition-colors">
             Everything you need to know about our astrological masterclasses.
           </h2>
 
@@ -125,7 +125,7 @@ const FAQSection = ({ course }) => {
               className="w-full flex items-center justify-between p-5 md:p-6 text-left cursor-pointer"
             >
               <div className="flex items-center gap-3">
-                <h4 className="font-newsreader italic text-xl md:text-2xl text-normal font-normal tracking-tight leading-snug group-hover:text-accent transition-colors">
+                <h4 className="font-montserrat text-xl md:text-2xl text-normal font-semibold tracking-tight leading-snug group-hover:text-accent transition-colors">
                   {item.q}
                 </h4>
               </div>

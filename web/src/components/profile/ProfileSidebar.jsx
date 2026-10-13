@@ -1,4 +1,4 @@
-import React, { useRef } from 'react'
+﻿import React, { useRef } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { updateUserProfile, fetchUserProfile } from '../../redux/slices/profileSlice'
 import { useLanguage } from '../../context/LanguageContext'
@@ -78,21 +78,21 @@ const ProfileSidebar = ({ compact = false }) => {
             </div>
 
             <div className="absolute bottom-0 left-0 w-full py-1 bg-slate-950/80 backdrop-blur-sm text-center">
-               <span className="font-jetbrains text-[8px] text-amber-400 uppercase tracking-widest font-black">{updateLoading ? 'SYNCING' : 'UPDATE'}</span>
+               <span className="font-montserrat text-[8px] text-amber-400 uppercase tracking-widest font-black">{updateLoading ? 'SYNCING' : 'UPDATE'}</span>
             </div>
          </div>
 
          <div className="space-y-4">
             <div className="space-y-1">
-               <h2 className="font-newsreader italic text-3xl text-slate-900 font-bold tracking-tight lowercase leading-tight">
-                  {user?.fullName?.split(' ')[0] || 'User'} <span className="text-slate-400 italic font-normal">{user?.fullName?.split(' ').slice(1).join(' ') || ''}</span>
+               <h2 className="font-montserrat text-slate-900 lowercase text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] transition-colors">
+                  {user?.fullName?.split(' ')[0] || 'User'} <span className="text-slate-400 font-normal">{user?.fullName?.split(' ').slice(1).join(' ') || ''}</span>
                </h2>
-               <p className="font-jetbrains text-xs text-amber-800 font-black uppercase tracking-[0.3em]">{user?.role ? (t(user.role.toLowerCase() + 'Role') || user.role) : (t('studentRole') || 'STUDENT')}</p>
+               <p className="font-montserrat text-xs text-amber-800 font-black uppercase tracking-[0.3em]">{user?.role ? (t(user.role.toLowerCase() + 'Role') || user.role) : (t('studentRole') || 'STUDENT')}</p>
             </div>
             
             <div className="space-y-2 pt-3 border-t border-slate-100">
-                <p className="font-jetbrains text-[10px] text-slate-500 lowercase tracking-widest font-medium">id: {user?._id?.slice(-12).toUpperCase() || 'UNREGISTERED'}</p>
-                <p className="font-jetbrains text-[10px] text-slate-500 uppercase tracking-widest font-medium">SINCE {user?.createdAt ? new Date(user.createdAt).getFullYear() : '2024'}</p>
+                <p className="font-montserrat text-[10px] text-slate-500 lowercase tracking-widest font-medium">id: {user?._id?.slice(-12).toUpperCase() || 'UNREGISTERED'}</p>
+                <p className="font-montserrat text-[10px] text-slate-500 uppercase tracking-widest font-medium">SINCE {user?.createdAt ? new Date(user.createdAt).getFullYear() : '2024'}</p>
             </div>
          </div>
       </div>
@@ -106,8 +106,8 @@ const ProfileSidebar = ({ compact = false }) => {
          ].map((stat, i) => (
             <div key={i} className="flex justify-between items-center p-4 bg-slate-50 border border-slate-200/80 hover:bg-amber-50/50 hover:border-amber-300/60 rounded-xl transition-all group overflow-hidden relative">
                <div className="space-y-1 relative z-10">
-                  <p className="font-jetbrains text-[10px] text-slate-500 uppercase tracking-[0.3em] font-bold">{stat.label}</p>
-                  <p className="font-newsreader italic text-3xl text-slate-900 font-bold leading-none">
+                  <p className="font-montserrat text-[10px] text-slate-500 uppercase tracking-[0.3em] font-bold">{stat.label}</p>
+                  <p className="font-montserrat text-3xl text-slate-900 font-bold leading-none">
                      {String(stat.value).padStart(2, '0')}
                   </p>
                </div>

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useMemo } from 'react'
+﻿import React, { useEffect, useRef, useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchCourses } from '../redux/slices/courseSlice'
@@ -269,7 +269,7 @@ const CourseSlider = () => {
                   </div>
                 </div>
 
-                <h3 className="font-newsreader text-sm text-slate-900 font-normal tracking-tight leading-[1.2] line-clamp-2 min-h-[2.4em]">
+                <h3 className="font-montserrat text-sm text-slate-900 font-bold tracking-tight leading-[1.2] line-clamp-2 min-h-[2.4em]">
                   {sanitizeDisplay(course.title)}
                 </h3>
               </div>

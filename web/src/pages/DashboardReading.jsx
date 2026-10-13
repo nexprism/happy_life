@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+﻿import React, { useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchCourseDetail } from '../redux/slices/courseSlice';
@@ -48,9 +48,9 @@ const DashboardReading = () => {
                     <div className="w-20 h-20 bg-accent/10 border border-accent/20 rounded-full flex items-center justify-center mx-auto text-accent">
                         <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" /></svg>
                     </div>
-                    <h2 className="font-newsreader text-4xl italic">Transcript Not Found</h2>
-                    <p className="text-description/60 font-jetbrains uppercase tracking-widest text-[10px]">Data Stream Interrupted or Invalid Record ID</p>
-                    <Link to="/dashboard/my-courses" className="inline-block px-12 py-4 bg-accent text-dark font-jetbrains font-black uppercase tracking-widest text-[11px] hover:scale-105 transition-all">Return to Command</Link>
+                    <h2 className="font-montserrat text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] transition-colors">Transcript Not Found</h2>
+                    <p className="text-description/60 font-montserrat uppercase tracking-widest text-[10px]">Data Stream Interrupted or Invalid Record ID</p>
+                    <Link to="/dashboard/my-courses" className="inline-block px-12 py-4 bg-accent text-dark font-montserrat font-black uppercase tracking-widest text-[11px] hover:scale-105 transition-all">Return to Command</Link>
                 </div>
             </div>
         );
@@ -64,7 +64,7 @@ const DashboardReading = () => {
                 <div className="space-y-16">
                     {/* Header Section */}
                     <div className="space-y-8">
-                        <Link to={`/dashboard/course/${courseId}`} className="font-jetbrains text-[8px] text-accent/40 uppercase tracking-[0.4em] hover:text-accent transition-colors flex items-center gap-2">
+                        <Link to={`/dashboard/course/${courseId}`} className="font-montserrat text-[8px] text-accent/40 uppercase tracking-[0.4em] hover:text-accent transition-colors flex items-center gap-2">
                             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="m15 18-6-6 6-6"/></svg>
                             Return to Session
                         </Link>
@@ -72,14 +72,14 @@ const DashboardReading = () => {
                         <div className="space-y-4">
                             <div className="flex items-center gap-3">
                                 <div className="px-3 py-1 border border-accent/30 bg-accent/10">
-                                    <span className="font-jetbrains text-[8px] text-accent uppercase tracking-widest font-black">Reading Protocol</span>
+                                    <span className="font-montserrat text-[8px] text-accent uppercase tracking-widest font-black">Reading Protocol</span>
                                 </div>
                             </div>
-                            <h1 className="font-newsreader italic text-4xl md:text-6xl text-normal font-extralight tracking-tight leading-[0.9] uppercase">
+                            <h1 className="font-montserrat text-normal uppercase text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] transition-colors">
                                 {sanitizeDisplay(reading.title || lessonData.title)}
                             </h1>
                             {reading.subTitle && (
-                                <p className="font-newsreader italic text-2xl md:text-3xl text-accent/60 tracking-tight leading-tight">
+                                <p className="font-montserrat text-2xl md:text-3xl text-accent/60 tracking-tight leading-tight">
                                     {sanitizeDisplay(reading.subTitle)}
                                 </p>
                             )}
@@ -94,9 +94,9 @@ const DashboardReading = () => {
                             <div className="space-y-6">
                                 <div className="flex items-center gap-3">
                                     <div className="w-1.5 h-1.5 bg-accent rounded-full animate-pulse shadow-[0_0_10px_rgba(139, 92, 246,0.5)]" />
-                                    <h3 className="font-jetbrains text-xl text-accent uppercase tracking-widest font-black">Summary</h3>
+                                    <h3 className="font-montserrat text-xl text-accent uppercase tracking-widest font-black">Summary</h3>
                                 </div>
-                                <div className="p-8 bg-white/[0.02] border-l-2 border-accent/40 font-newsreader italic text-md text-normal/80 leading-relaxed break-all">
+                                <div className="p-8 bg-white/[0.02] border-l-2 border-accent/40 font-montserrat text-md text-normal/80 leading-relaxed break-all">
                                     {reading.summary}
                                 </div>
                             </div>
@@ -105,10 +105,10 @@ const DashboardReading = () => {
                         <div className="space-y-6">
                             <div className="flex items-center gap-3">
                                 <div className="w-1.5 h-1.5 bg-accent rounded-full animate-pulse shadow-[0_0_10px_rgba(139, 92, 246,0.5)]" />
-                                <h3 className="font-jetbrains text-xl text-accent uppercase tracking-widest font-black">Intelligence</h3>
+                                <h3 className="font-montserrat text-xl text-accent uppercase tracking-widest font-black">Intelligence</h3>
                             </div>
                             <div 
-                                className="font-newsreader italic text-md md:text-md text-normal/70 leading-[1.8] space-y-8 dashboard-reading-content break-all"
+                                className="font-montserrat text-md md:text-md text-normal/70 leading-[1.8] space-y-8 dashboard-reading-content break-all"
                                 dangerouslySetInnerHTML={{ __html: reading.content || 'No transcript data recorded for this session.' }}
                             />
                         </div>
@@ -119,7 +119,7 @@ const DashboardReading = () => {
                         <div className="pt-20 space-y-8">
                             <div className="flex items-center gap-4">
                                 <div className="h-[1px] bg-white/10 flex-1" />
-                                <h3 className="font-jetbrains text-[10px] text-description/40 uppercase tracking-[0.4em] font-black">Linked Intelligence</h3>
+                                <h3 className="font-montserrat text-[10px] text-description/40 uppercase tracking-[0.4em] font-black">Linked Intelligence</h3>
                                 <div className="h-[1px] bg-white/10 flex-1" />
                             </div>
                             
@@ -131,8 +131,8 @@ const DashboardReading = () => {
                                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
                                             </div>
                                             <div>
-                                                <p className="font-jetbrains text-[11px] text-normal uppercase tracking-widest leading-none mb-2 font-bold">{file.fileName || 'Resource Document'}</p>
-                                                <p className="font-jetbrains text-[9px] text-normal/50 uppercase tracking-widest leading-none">
+                                                <p className="font-montserrat text-[11px] text-normal uppercase tracking-widest leading-none mb-2 font-bold">{file.fileName || 'Resource Document'}</p>
+                                                <p className="font-montserrat text-[9px] text-normal/50 uppercase tracking-widest leading-none">
                                                     Uploaded: {new Date(file.uploadedAt).toLocaleDateString()}
                                                 </p>
                                             </div>

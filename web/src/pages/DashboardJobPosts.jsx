@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react'
+﻿import React, { useEffect, useState, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { gsap } from 'gsap'
 import { fetchMyJobs } from '../redux/slices/jobSlice'
@@ -50,13 +50,13 @@ const DashboardJobPosts = () => {
           {/* Page Header Area */}
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16 job-dash-reveal opacity-0">
             <div className="flex flex-col gap-2">
-              <h1 className="font-newsreader italic text-5xl text-slate-900 font-bold tracking-tight uppercase">{t('jobPostings')}</h1>
-              <p className="font-jetbrains text-[12px] font-bold text-amber-800 uppercase tracking-[0.4em]">{t('manageJobOpps')}</p>
+              <h1 className="font-montserrat text-slate-900 uppercase text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] transition-colors">{t('jobPostings')}</h1>
+              <p className="font-montserrat text-[12px] font-bold text-amber-800 uppercase tracking-[0.4em]">{t('manageJobOpps')}</p>
             </div>
             
             <button 
               onClick={() => setIsModalOpen(true)}
-              className="bg-amber-400 text-slate-950 px-8 py-4 rounded-xl font-jetbrains text-xs font-black uppercase tracking-[0.2em] flex items-center gap-3 hover:scale-[1.03] active:scale-95 transition-all shadow-sm"
+              className="bg-amber-400 text-slate-950 px-8 py-4 rounded-xl font-montserrat text-xs font-black uppercase tracking-[0.2em] flex items-center gap-3 hover:scale-[1.03] active:scale-95 transition-all shadow-sm"
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M12 5v14M5 12h14"/></svg>
               {t('createNewPost')}
@@ -66,23 +66,23 @@ const DashboardJobPosts = () => {
           {/* Stats Protocol */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16 job-dash-reveal opacity-0">
             <div className="bg-white border border-slate-200 p-8 rounded-2xl flex flex-col gap-2 group hover:border-amber-400 shadow-sm transition-all">
-               <span className="font-jetbrains text-[9px] text-slate-500 font-bold uppercase tracking-[0.4em] group-hover:text-amber-700 transition-colors">{t('totalPostsLabel')}</span>
-               <span className="font-newsreader italic text-4xl text-slate-900 tracking-tighter">{total}</span>
+               <span className="font-montserrat text-[9px] text-slate-500 font-bold uppercase tracking-[0.4em] group-hover:text-amber-700 transition-colors">{t('totalPostsLabel')}</span>
+               <span className="font-montserrat text-4xl text-slate-900 tracking-tighter">{total}</span>
             </div>
             <div className="bg-white border border-slate-200 p-8 rounded-2xl flex flex-col gap-2 group hover:border-amber-400 shadow-sm transition-all">
-               <span className="font-jetbrains text-[9px] text-slate-500 font-bold uppercase tracking-[0.4em] group-hover:text-amber-700 transition-colors">{t('activeLeadsLabel')}</span>
-               <span className="font-newsreader italic text-4xl text-slate-900 tracking-tighter">0</span>
+               <span className="font-montserrat text-[9px] text-slate-500 font-bold uppercase tracking-[0.4em] group-hover:text-amber-700 transition-colors">{t('activeLeadsLabel')}</span>
+               <span className="font-montserrat text-4xl text-slate-900 tracking-tighter">0</span>
             </div>
             <div className="bg-white border border-slate-200 p-8 rounded-2xl flex flex-col gap-2 group hover:border-amber-400 shadow-sm transition-all">
-               <span className="font-jetbrains text-[9px] text-slate-500 font-bold uppercase tracking-[0.4em] group-hover:text-amber-700 transition-colors">{t('totalProposalsLabel')}</span>
-               <span className="font-newsreader italic text-4xl text-slate-900 tracking-tighter">0</span>
+               <span className="font-montserrat text-[9px] text-slate-500 font-bold uppercase tracking-[0.4em] group-hover:text-amber-700 transition-colors">{t('totalProposalsLabel')}</span>
+               <span className="font-montserrat text-4xl text-slate-900 tracking-tighter">0</span>
             </div>
           </div>
 
           {/* Main Content Area */}
           <div className="grid grid-cols-1 gap-8">
             <div className="flex items-center gap-4 mb-4 job-dash-reveal opacity-0">
-              <h2 className="font-jetbrains text-xs font-black text-slate-900 tracking-[0.3em] uppercase">{t('myPublications')}</h2>
+              <h2 className="font-montserrat font-black text-slate-900 uppercase text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] transition-colors">{t('myPublications')}</h2>
               <div className="h-[1px] flex-1 bg-slate-200" />
             </div>
 
@@ -102,12 +102,12 @@ const DashboardJobPosts = () => {
                 <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
               </div>
               <div className="flex flex-col items-center gap-2">
-                <h3 className="font-newsreader italic text-2xl text-slate-600 font-bold">No publications found</h3>
-                <p className="font-jetbrains text-[10px] text-slate-400 uppercase tracking-widest">You haven't posted any jobs yet</p>
+                <h3 className="font-montserrat text-2xl text-slate-600 font-bold">No publications found</h3>
+                <p className="font-montserrat text-[10px] text-slate-400 uppercase tracking-widest">You haven't posted any jobs yet</p>
               </div>
               <button 
                 onClick={() => setIsModalOpen(true)}
-                className="mt-2 font-jetbrains text-xs text-amber-900 font-black uppercase tracking-[0.2em] bg-amber-100 border border-amber-300 px-8 py-3 rounded-xl hover:bg-amber-400 hover:text-slate-950 transition-all shadow-sm"
+                className="mt-2 font-montserrat text-xs text-amber-900 font-black uppercase tracking-[0.2em] bg-amber-100 border border-amber-300 px-8 py-3 rounded-xl hover:bg-amber-400 hover:text-slate-950 transition-all shadow-sm"
               >
                 Create your first post
               </button>

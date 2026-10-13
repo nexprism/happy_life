@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react'
+﻿import React, { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 
 const Hero = ({ isLoaded = true }) => {
@@ -64,7 +64,7 @@ const Hero = ({ isLoaded = true }) => {
         <div className="w-fit flex flex-col items-start space-y-3 md:space-y-4">
           {/* Top Tagline */}
           <div ref={taglineRef} className="flex items-center justify-start gap-4">
-            <span className="font-jetbrains text-[9px] md:text-xs text-accent uppercase tracking-[0.4em] font-medium">
+            <span className="font-montserrat text-[9px] md:text-xs text-accent uppercase tracking-[0.4em] font-medium">
               -- ALIGN YOUR ENERGY • UNLOCK SUCCESS
             </span>
           </div>
@@ -73,17 +73,17 @@ const Hero = ({ isLoaded = true }) => {
           <div className="flex flex-col items-center md:items-start text-center md:text-start w-full px-2">
             <h1 
               ref={heading1Ref} 
-              className="font-inter text-4xl sm:text-5xl md:text-6xl lg:text-[4.75rem] xl:text-[5.4rem] text-slate-900 leading-[0.92] md:leading-[0.88] tracking-[-0.015em] break-words md:whitespace-nowrap font-extralight"
-              style={{ fontWeight: 200 }}
+              className="font-montserrat text-slate-900 break-words md:whitespace-nowrap text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] transition-colors"
+              style={{ fontWeight: 800 }}
             >
               Astrology & Vastu that
             </h1>
             <h1 
               ref={heading2Ref} 
-              className="font-inter text-4xl sm:text-5xl md:text-6xl lg:text-[4.75rem] xl:text-[5.4rem] text-slate-900 leading-[0.92] md:leading-[0.88] tracking-[-0.015em] break-words md:whitespace-nowrap mt-1 md:mt-2 font-extralight"
-              style={{ fontWeight: 200 }}
+              className="font-montserrat text-slate-900 break-words md:whitespace-nowrap mt-1 md:mt-2 text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] transition-colors"
+              style={{ fontWeight: 800 }}
             >
-              <span className="italic text-accent mr-2.5 font-extralight" style={{ fontWeight: 200 }}>actually</span>
+              <span className="text-accent mr-2.5 font-normal" style={{ fontWeight: 800 }}>actually</span>
               <span>transforms your life</span>
             </h1>
           </div>

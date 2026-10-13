@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+﻿import React, { useState, useEffect, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import gsap from 'gsap'
 import { fetchExploreJobs } from '../redux/slices/jobSlice'
@@ -68,7 +68,7 @@ const GigCard = ({ gig }) => {
       {/* Content */}
       <div className="flex flex-col gap-6 flex-grow justify-between">
         <div className="flex flex-col gap-3">
-          <h3 className="font-newsreader italic text-2xl md:text-3xl leading-snug text-normal font-bold transition-colors group-hover:text-accent">
+          <h3 className="font-montserrat text-2xl md:text-3xl leading-snug text-normal font-bold transition-colors group-hover:text-accent">
             {safeRender(gig.title)}
           </h3>
 
@@ -82,8 +82,8 @@ const GigCard = ({ gig }) => {
               { label: t('jobTimings') || 'Timings', value: safeRender(gig.timings || 'Flexible') }
             ].map((item, i) => (
               <div key={i} className="flex gap-2 items-baseline">
-                <span className="font-jetbrains text-xs text-description font-bold uppercase tracking-wider shrink-0">{item.label}:</span>
-                <span className="font-jetbrains text-xs text-normal font-medium tracking-wide truncate">{item.value}</span>
+                <span className="font-montserrat text-xs text-description font-bold uppercase tracking-wider shrink-0">{item.label}:</span>
+                <span className="font-montserrat text-xs text-normal font-medium tracking-wide truncate">{item.value}</span>
               </div>
             ))}
           </div>
@@ -98,33 +98,33 @@ const GigCard = ({ gig }) => {
         <div className="flex flex-wrap gap-4 pt-4 border-t border-border">
           <div className="flex items-center gap-2 text-description bg-black/5 dark:bg-white/5 px-3 py-1.5 rounded-none border border-border">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-accent"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
-            <span className="font-jetbrains text-xs font-bold uppercase">{safeRender(gig.type || 'Full Time')}</span>
+            <span className="font-montserrat text-xs font-bold uppercase">{safeRender(gig.type || 'Full Time')}</span>
           </div>
           <div className="flex items-center gap-2 text-description bg-black/5 dark:bg-white/5 px-3 py-1.5 rounded-none border border-border">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-accent"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-            <span className="font-jetbrains text-xs font-bold uppercase">{safeRender(gig.shift || 'Day')}</span>
+            <span className="font-montserrat text-xs font-bold uppercase">{safeRender(gig.shift || 'Day')}</span>
           </div>
           <div className="flex items-center gap-2 text-description bg-black/5 dark:bg-white/5 px-3 py-1.5 rounded-none border border-border">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-accent"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-            <span className="font-jetbrains text-xs font-bold uppercase">{safeRender(gig.workMode || 'Remote')}</span>
+            <span className="font-montserrat text-xs font-bold uppercase">{safeRender(gig.workMode || 'Remote')}</span>
           </div>
         </div>
 
         {/* Posted Date */}
         <div className="flex items-center gap-2 text-description">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-          <span className="font-jetbrains text-xs font-medium">{t('postedText') || 'Posted'} {gig.createdAt ? new Date(gig.createdAt).toLocaleDateString() : 'Recently'}</span>
+          <span className="font-montserrat text-xs font-medium">{t('postedText') || 'Posted'} {gig.createdAt ? new Date(gig.createdAt).toLocaleDateString() : 'Recently'}</span>
         </div>
 
         {/* Skill Tags Cloud */}
         <div className="flex flex-wrap gap-2">
           {(gig.skills || gig.tags || []).slice(0, 3).map((skill, si) => (
-            <span key={si} className="px-3 py-1 bg-accent/10 border border-accent/20 text-accent font-jetbrains text-[10px] font-bold uppercase tracking-wider rounded-none">
+            <span key={si} className="px-3 py-1 bg-accent/10 border border-accent/20 text-accent font-montserrat text-[10px] font-bold uppercase tracking-wider rounded-none">
               {safeRender(skill)}
             </span>
           ))}
           {((gig.skills?.length || gig.tags?.length || 0) > 3) && (
-            <span className="px-3 py-1 bg-black/5 dark:bg-white/5 border border-border font-jetbrains text-[10px] text-description font-bold uppercase tracking-wider rounded-none">
+            <span className="px-3 py-1 bg-black/5 dark:bg-white/5 border border-border font-montserrat text-[10px] text-description font-bold uppercase tracking-wider rounded-none">
               +{((gig.skills?.length || gig.tags?.length || 0) - 3)}
             </span>
           )}
@@ -176,11 +176,11 @@ const Gigs = () => {
       <div className="max-w-7xl mx-auto">
         <div className="mb-6">
           <div className="flex items-baseline gap-6 gig-header-reveal flex-wrap">
-            <h1 className="font-newsreader text-4xl md:text-6xl font-extralight italic text-normal tracking-tight">
+            <h1 className="font-montserrat text-normal text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] transition-colors">
               {t('gigsTitle') || 'Open Opportunities'}
             </h1>
           </div>
-          <p className="font-jetbrains text-xs text-accent uppercase tracking-[0.4em] font-bold italic mt-2">{t('gigsSubtitle') || 'Curated Roles & Remote Gigs'}</p>
+          <p className="font-montserrat text-xs text-accent uppercase tracking-[0.4em] font-bold mt-2">{t('gigsSubtitle') || 'Curated Roles & Remote Gigs'}</p>
         </div>
 
         <div className="mb-10">
@@ -220,7 +220,7 @@ const Gigs = () => {
               {loading ? (
                 <div className="w-8 h-8 border-2 border-accent border-t-transparent rounded-full animate-spin" />
               ) : (
-                <span className="font-jetbrains uppercase tracking-widest text-xs text-description font-medium">{t('noGigsFound') || 'No opportunities found'}</span>
+                <span className="font-montserrat uppercase tracking-widest text-xs text-description font-medium">{t('noGigsFound') || 'No opportunities found'}</span>
               )}
             </div>
           )}
@@ -306,7 +306,7 @@ const JobDetail = ({ job, onBack, submitting, dispatch }) => {
       <div className="max-w-7xl mx-auto">
         <button 
           onClick={onBack}
-          className="flex items-center gap-2 text-accent font-jetbrains text-xs font-bold uppercase tracking-wider mb-8 hover:gap-3 transition-all cursor-pointer"
+          className="flex items-center gap-2 text-accent font-montserrat text-xs font-bold uppercase tracking-wider mb-8 hover:gap-3 transition-all cursor-pointer"
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
           Back to Job Postings
@@ -315,8 +315,8 @@ const JobDetail = ({ job, onBack, submitting, dispatch }) => {
         <div className="grid grid-cols-1 lg:grid-cols-[1.5fr,1fr] gap-12">
           <div className="flex flex-col gap-8 bg-card border border-border p-8 rounded-none shadow-sm">
             <div className="flex flex-col gap-2">
-              <h1 className="font-newsreader text-4xl md:text-5xl font-extralight italic text-normal leading-tight">{safeRender(job.title)}</h1>
-              <p className="font-jetbrains text-xs text-description uppercase tracking-wider font-medium">
+              <h1 className="font-montserrat text-normal text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] transition-colors">{safeRender(job.title)}</h1>
+              <p className="font-montserrat text-xs text-description uppercase tracking-wider font-medium">
                 Posted by Client • {job.createdAt ? new Date(job.createdAt).toLocaleDateString() : 'Recently'}
               </p>
             </div>
@@ -326,7 +326,7 @@ const JobDetail = ({ job, onBack, submitting, dispatch }) => {
             </div>
 
             <div className="space-y-3">
-              <h4 className="font-newsreader text-2xl italic font-bold text-normal">Position Overview</h4>
+              <h4 className="font-montserrat text-2xl font-bold text-normal">Position Overview</h4>
               <p className="font-montserrat text-sm text-description leading-relaxed font-medium">{safeRender(job.description)}</p>
             </div>
 
@@ -342,7 +342,7 @@ const JobDetail = ({ job, onBack, submitting, dispatch }) => {
                 <div key={i} className="flex items-center gap-4 p-4 bg-black/5 dark:bg-white/5 border border-border rounded-none">
                   <div className="w-10 h-10 flex items-center justify-center bg-accent/10 text-accent border border-accent/20 rounded-none">{item.icon}</div>
                   <div>
-                    <p className="font-jetbrains text-[10px] uppercase tracking-wider text-description font-bold">{item.label}</p>
+                    <p className="font-montserrat text-[10px] uppercase tracking-wider text-description font-bold">{item.label}</p>
                     <p className="font-montserrat font-bold text-sm text-normal">{safeRender(item.value)}</p>
                   </div>
                 </div>
@@ -350,10 +350,10 @@ const JobDetail = ({ job, onBack, submitting, dispatch }) => {
             </div>
 
             <div className="flex flex-col gap-4">
-              <h4 className="font-newsreader text-2xl italic font-bold text-normal">Skills Required</h4>
+              <h4 className="font-montserrat text-2xl font-bold text-normal">Skills Required</h4>
               <div className="flex flex-wrap gap-2">
                 {(job.skills || job.tags || ['Design', 'Growth', 'Strategy']).map((skill, i) => (
-                  <span key={i} className="px-4 py-2 border border-border font-jetbrains text-xs font-bold text-normal uppercase tracking-wider bg-black/5 dark:bg-white/5 rounded-none">
+                  <span key={i} className="px-4 py-2 border border-border font-montserrat text-xs font-bold text-normal uppercase tracking-wider bg-black/5 dark:bg-white/5 rounded-none">
                     {safeRender(skill)}
                   </span>
                 ))}
@@ -369,14 +369,14 @@ const JobDetail = ({ job, onBack, submitting, dispatch }) => {
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
                   </div>
                   <div>
-                    <h3 className="font-newsreader text-3xl italic font-bold text-normal">Submit Your Proposal</h3>
-                    <p className="font-jetbrains text-xs text-description uppercase tracking-wider font-medium">Stand out with a compelling proposal</p>
+                    <h3 className="font-montserrat text-3xl font-bold text-normal">Submit Your Proposal</h3>
+                    <p className="font-montserrat text-xs text-description uppercase tracking-wider font-medium">Stand out with a compelling proposal</p>
                   </div>
                 </div>
 
                 <form onSubmit={handleSubmit} className="flex flex-col gap-6">
                   <div className="flex flex-col gap-2">
-                    <label className="font-jetbrains text-xs text-normal font-bold uppercase tracking-wider">Why do you think you're a good fit?</label>
+                    <label className="font-montserrat text-xs text-normal font-bold uppercase tracking-wider">Why do you think you're a good fit?</label>
                     <textarea 
                       required
                       value={formData.coverLetter}
@@ -387,7 +387,7 @@ const JobDetail = ({ job, onBack, submitting, dispatch }) => {
                   </div>
 
                   <div className="flex flex-col gap-2">
-                    <label className="font-jetbrains text-xs text-normal font-bold uppercase tracking-wider">Proposed Amount</label>
+                    <label className="font-montserrat text-xs text-normal font-bold uppercase tracking-wider">Proposed Amount</label>
                     <div className="relative">
                       <span className="absolute left-4 top-1/2 -translate-y-1/2 text-accent font-bold">₹</span>
                       <input 
@@ -396,13 +396,13 @@ const JobDetail = ({ job, onBack, submitting, dispatch }) => {
                         value={formData.proposedAmount}
                         onChange={(e) => setFormData({ ...formData, proposedAmount: e.target.value })}
                         placeholder="0.00"
-                        className="w-full bg-black/5 dark:bg-white/5 border border-border rounded-none py-3 pl-10 pr-4 font-jetbrains text-sm text-normal focus:border-accent outline-none transition-all"
+                        className="w-full bg-black/5 dark:bg-white/5 border border-border rounded-none py-3 pl-10 pr-4 font-montserrat text-sm text-normal focus:border-accent outline-none transition-all"
                       />
                     </div>
                   </div>
 
                   <div className="flex flex-col gap-2">
-                    <label className="font-jetbrains text-xs text-normal font-bold uppercase tracking-wider">Upload your CV (PDF/DOCX)</label>
+                    <label className="font-montserrat text-xs text-normal font-bold uppercase tracking-wider">Upload your CV (PDF/DOCX)</label>
                     <div className="relative h-16 group">
                       <input 
                         type="file" 
@@ -411,7 +411,7 @@ const JobDetail = ({ job, onBack, submitting, dispatch }) => {
                         className="absolute inset-0 opacity-0 cursor-pointer z-10" 
                       />
                       <div className="absolute inset-0 border border-dashed border-border bg-black/5 dark:bg-white/5 rounded-none flex items-center justify-between px-5 group-hover:border-accent transition-colors">
-                        <span className="font-jetbrains text-xs text-description font-medium tracking-wider">
+                        <span className="font-montserrat text-xs text-description font-medium tracking-wider">
                           {cvFile ? cvFile.name : 'Choose File'}
                         </span>
                         <div className="w-8 h-8 rounded-none bg-accent/10 border border-accent/20 flex items-center justify-center text-accent"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg></div>
@@ -420,7 +420,7 @@ const JobDetail = ({ job, onBack, submitting, dispatch }) => {
                   </div>
 
                   <div className="flex flex-col gap-2">
-                    <label className="font-jetbrains text-xs text-normal font-bold uppercase tracking-wider">Additional Information (optional)</label>
+                    <label className="font-montserrat text-xs text-normal font-bold uppercase tracking-wider">Additional Information (optional)</label>
                     <textarea 
                       value={formData.additionalInfo}
                       onChange={(e) => setFormData({ ...formData, additionalInfo: e.target.value })}

@@ -1,4 +1,4 @@
-import React from 'react'
+﻿import React from 'react'
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import bannerImg from '../../assets/images/banner.png'
@@ -35,7 +35,7 @@ const ContinueLearning = () => {
       
       {/* Top Header Floating */}
       <div className="absolute top-6 left-8 right-8 flex justify-between items-center z-10">
-         <span className="bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-4 py-1.5 font-inter text-[10px] text-white font-bold uppercase tracking-wider">
+         <span className="bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-4 py-1.5 font-montserrat text-[10px] text-white font-bold uppercase tracking-wider">
             {activeCourse?.title || 'Course'}
          </span>
          <button className="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20 group-hover:bg-accent group-hover:border-accent transition-colors">
@@ -47,10 +47,10 @@ const ContinueLearning = () => {
 
       {/* Main Content (Bottom Aligned) */}
       <div className="relative z-10 p-8 pt-20 w-full">
-         <p className="font-inter text-[10px] text-accent-secondary font-bold uppercase tracking-widest mb-2">
+         <p className="font-montserrat text-[10px] text-accent-secondary font-bold uppercase tracking-widest mb-2">
             {t('continueLearning')}
          </p>
-         <h3 className="font-inter text-3xl md:text-4xl text-white font-black leading-tight tracking-tight max-w-2xl group-hover:text-accent-secondary transition-colors">
+         <h3 className="font-montserrat text-3xl md:text-4xl text-white font-black leading-tight tracking-tight max-w-2xl group-hover:text-accent-secondary transition-colors">
             {lastSession.videoTitle} {lastSession.lessonTitle ? `- ${lastSession.lessonTitle}` : ''}
          </h3>
          
@@ -58,8 +58,8 @@ const ContinueLearning = () => {
          <div className="flex flex-col md:flex-row gap-6 justify-between items-end mt-8">
             <div className="w-full md:w-2/3 space-y-3">
                <div className="flex justify-between items-center text-white/60">
-                  <span className="font-inter text-[10px] uppercase font-bold tracking-widest">{t('progress')}</span>
-                  <span className="font-inter text-[10px] uppercase font-black tracking-widest text-white">{percentage}%</span>
+                  <span className="font-montserrat text-[10px] uppercase font-bold tracking-widest">{t('progress')}</span>
+                  <span className="font-montserrat text-[10px] uppercase font-black tracking-widest text-white">{percentage}%</span>
                </div>
                <div className="w-full h-[4px] bg-white/20 rounded-full overflow-hidden">
                   <div 
@@ -71,7 +71,7 @@ const ContinueLearning = () => {
             
             <button 
                onClick={() => navigate(`/dashboard/course/${lastSession.courseId}`)}
-               className="w-full md:w-auto bg-accent text-white px-8 py-3.5 rounded-full font-inter text-[11px] font-bold tracking-widest uppercase hover:scale-[1.05] active:scale-95 transition-all shadow-accent-soft flex items-center justify-center gap-3 shrink-0"
+               className="w-full md:w-auto bg-accent text-white px-8 py-3.5 rounded-full font-montserrat text-[11px] font-bold tracking-widest uppercase hover:scale-[1.05] active:scale-95 transition-all shadow-accent-soft flex items-center justify-center gap-3 shrink-0"
             >
                {t('resume')}
                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">

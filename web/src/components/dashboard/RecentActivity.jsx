@@ -1,4 +1,4 @@
-
+﻿
 
 
 
@@ -39,9 +39,9 @@ const RecentActivity = () => {
   return (
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-         <h2 className="font-newsreader italic text-3xl md:text-4xl text-slate-900 font-bold tracking-tight">{t('recentActivity')}</h2>
+         <h2 className="font-montserrat text-slate-900 text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] transition-colors">{t('recentActivity')}</h2>
          <div className="h-[1px] flex-1 bg-slate-200 mx-6 hidden md:block" />
-         <button className="font-jetbrains text-xs text-amber-800 font-black uppercase tracking-wider hover:text-amber-900 transition-colors">
+         <button className="font-montserrat text-xs text-amber-800 font-black uppercase tracking-wider hover:text-amber-900 transition-colors">
             {t('auditTrail')}
          </button>
       </div>
@@ -74,19 +74,19 @@ const RecentActivity = () => {
                   </div>
 
                   <div className="space-y-1">
-                     <h4 className="font-newsreader italic text-xl text-slate-900 font-bold group-hover:text-amber-600 transition-colors">
+                     <h4 className="font-montserrat text-xl text-slate-900 font-bold group-hover:text-amber-600 transition-colors">
                         {item.title.split(':').map((part, i) => (
-                           i === 1 ? <span key={i} className="text-amber-800 ml-1.5 not-italic font-sans text-base font-bold">{part}</span> : <span key={i}>{part}</span>
+                           i === 1 ? <span key={i} className="text-amber-800 ml-1.5 font-sans text-base font-bold">{part}</span> : <span key={i}>{part}</span>
                         ))}
                      </h4>
-                     <p className="font-jetbrains text-[10px] text-slate-500 uppercase tracking-wider font-bold">
+                     <p className="font-montserrat text-[10px] text-slate-500 uppercase tracking-wider font-bold">
                         {item.meta}
                      </p>
                   </div>
                </div>
 
                <div className="flex items-center gap-4 text-slate-500">
-                  <span className="font-jetbrains text-xs font-medium uppercase tracking-wider">{item.displayTime}</span>
+                  <span className="font-montserrat text-xs font-medium uppercase tracking-wider">{item.displayTime}</span>
                </div>
             </div>
          ))}

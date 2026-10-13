@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react'
+﻿import React, { useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/all'
 
@@ -31,9 +31,9 @@ const FinalCTASection = () => {
         <div className="flex justify-between items-center p-4 border-b border-white/5 bg-white/[0.01]">
            <div className="flex items-center gap-3">
               <div className="w-1 h-1 bg-accent rounded-full animate-pulse" />
-              <span className="font-jetbrains text-[8px] text-accent tracking-[0.4em] uppercase font-bold">Node: Operational</span>
+              <span className="font-montserrat text-[8px] text-accent tracking-[0.4em] uppercase font-bold">Node: Operational</span>
            </div>
-           <span className="font-jetbrains text-[8px] text-white/20 tracking-[0.4em] uppercase font-bold">v0.2.2026</span>
+           <span className="font-montserrat text-[8px] text-white/20 tracking-[0.4em] uppercase font-bold">v0.2.2026</span>
         </div>
 
         {/* 2. Cinematic Visual Strip (Compact) */}
@@ -47,8 +47,8 @@ const FinalCTASection = () => {
            </div>
 
            <div className="absolute inset-0 flex flex-col items-center justify-center p-6 space-y-2">
-              <p className="font-jetbrains text-[8px] text-accent/40 tracking-[1em] uppercase font-bold">Protocol Initialization</p>
-              <h3 className="font-newsreader italic text-[clamp(2rem,6vw,4rem)] text-normal font-extralight tracking-tighter leading-none text-center">
+              <p className="font-montserrat text-[8px] text-accent/40 tracking-[1em] uppercase font-bold">Protocol Initialization</p>
+              <h3 className="font-montserrat text-[clamp(2rem,6vw,4rem)] text-normal font-bold tracking-tighter leading-none text-center">
                  Become the <span className="text-accent">Architect.</span>
               </h3>
            </div>
@@ -57,7 +57,7 @@ const FinalCTASection = () => {
         {/* 3. Action Hub */}
         <div className="p-6 md:p-10 flex flex-col md:flex-row items-center justify-between gap-8">
            <div className="text-center md:text-left space-y-2">
-              <h4 className="font-newsreader italic text-2xl md:text-3xl text-normal font-extralight tracking-tight leading-none">
+              <h4 className="font-montserrat text-2xl md:text-3xl text-normal font-semibold tracking-tight leading-none">
                 Claim full archive access.
               </h4>
               <div className="flex items-center justify-center md:justify-start gap-4">
@@ -70,7 +70,7 @@ const FinalCTASection = () => {
            <button className="w-full md:w-auto relative group/btn bg-accent px-10 md:px-14 py-6 transition-all duration-700 hover:scale-[1.03] active:scale-95 shadow-[0_0_30px_rgba(139, 92, 246,0.1)]">
               <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover/btn:translate-x-[100%] transition-transform duration-1000 skew-x-12" />
               <div className="flex items-center justify-center gap-6 relative z-10">
-                 <span className="font-jetbrains text-dark text-[10px] md:text-xs font-black tracking-[0.6em] uppercase">INITIALIZE / $499</span>
+                 <span className="font-montserrat text-dark text-[10px] md:text-xs font-black tracking-[0.6em] uppercase">INITIALIZE / $499</span>
                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="stroke-dark group-hover/btn:translate-x-1 transition-transform">
                     <path d="M5 12h14M12 5l7 7-7 7"/>
                  </svg>
@@ -81,8 +81,8 @@ const FinalCTASection = () => {
         {/* Lower Accents */}
         <div className="h-[1px] w-full bg-white/5" />
         <div className="px-6 py-4 flex justify-between items-center opacity-30">
-           <span className="font-jetbrains text-[7px] tracking-widest uppercase">Encryption Mode: SECURE</span>
-           <span className="font-jetbrains text-[7px] tracking-widest uppercase italic">Vanguard // Archive</span>
+           <span className="font-montserrat text-[7px] tracking-widest uppercase">Encryption Mode: SECURE</span>
+           <span className="font-montserrat text-[7px] tracking-widest uppercase">Vanguard // Archive</span>
         </div>
 
       </div>

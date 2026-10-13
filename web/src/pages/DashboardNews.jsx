@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+﻿import React, { useEffect, useRef, useState } from 'react'
 import { gsap } from 'gsap'
 import { Link } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
@@ -28,15 +28,15 @@ const NewsCard = ({ article, variant = 'standard' }) => {
         </div>
         
         <div className="relative z-10 h-full p-8 md:p-14 flex flex-col justify-end">
-          <span className="font-jetbrains text-[9px] font-black text-accent tracking-[0.4em] uppercase mb-4 inline-block">
+          <span className="font-montserrat text-[9px] font-black text-accent tracking-[0.4em] uppercase mb-4 inline-block">
             {article.category}
           </span>
-          <h2 className="font-newsreader text-[clamp(2.5rem,5vw,4.5rem)] leading-[0.85] font-extralight transition-colors group-hover:text-accent mb-8 max-w-[90%] uppercase">
+          <h2 className="font-montserrat group-hover:text-accent mb-8 max-w-[90%] uppercase text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] transition-colors">
             {article.title}
           </h2>
           <div className="flex items-center gap-8 pt-8 border-t border-white/5 mt-8">
-             <span className="font-jetbrains text-[8px] text-description/80 font-medium uppercase tracking-[0.2em]">{article.date}</span>
-             <span className="font-jetbrains text-[8px] text-description/80 font-medium uppercase tracking-[0.2em] uppercase">CALIBRATED UPDATE</span>
+             <span className="font-montserrat text-[8px] text-description/80 font-medium uppercase tracking-[0.2em]">{article.date}</span>
+             <span className="font-montserrat text-[8px] text-description/80 font-medium uppercase tracking-[0.2em] uppercase">CALIBRATED UPDATE</span>
           </div>
         </div>
       </Link>
@@ -58,18 +58,18 @@ const NewsCard = ({ article, variant = 'standard' }) => {
           />
         </div>
         <div className="flex flex-col gap-4">
-          <span className="font-jetbrains text-[9px] font-black text-accent tracking-[0.3em] uppercase">
+          <span className="font-montserrat text-[9px] font-black text-accent tracking-[0.3em] uppercase">
             {article.category}
           </span>
-          <h3 className="font-newsreader text-[22px] leading-tight text-normal transition-colors group-hover:text-accent uppercase">
+          <h3 className="font-montserrat text-[22px] leading-tight text-normal transition-colors group-hover:text-accent uppercase">
             {article.title}
           </h3>
           <p className="font-montserrat text-[14px] leading-relaxed text-description/80 tracking-wide line-clamp-3">
             {article.description}
           </p>
           <div className="flex items-center justify-between pt-8 border-t border-white/5 mt-6">
-            <span className="font-jetbrains text-[8px] text-description/80 font-medium uppercase tracking-[0.2em]">{article.date}</span>
-            <span className="font-jetbrains text-[8px] text-accent/40 font-black tracking-widest uppercase flex items-center gap-2">
+            <span className="font-montserrat text-[8px] text-description/80 font-medium uppercase tracking-[0.2em]">{article.date}</span>
+            <span className="font-montserrat text-[8px] text-accent/40 font-black tracking-widest uppercase flex items-center gap-2">
               <div className="w-1.5 h-1.5 bg-accent/40 rounded-full animate-pulse" />
               Intelligence Dossier
             </span>
@@ -150,10 +150,10 @@ const DashboardNews = () => {
         <div className="max-w-full mx-auto">
           
           <div className="mb-20 news-dash-reveal opacity-0">
-             <span className="font-jetbrains text-[9px] font-black text-accent/50 tracking-[0.8em] uppercase mb-4 block">
+             <span className="font-montserrat text-[9px] font-black text-accent/50 tracking-[0.8em] uppercase mb-4 block">
                Dispatch Hub
              </span>
-             <h1 className="font-newsreader italic text-[clamp(3rem,8vw,6.5rem)] leading-[0.75] font-extralight uppercase select-none">
+             <h1 className="font-montserrat uppercase select-none text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] transition-colors">
                 {t('news')}
              </h1>
           </div>
@@ -166,11 +166,11 @@ const DashboardNews = () => {
                       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
                    </div>
                    <h4 className="font-montserrat text-[14px] font-black text-accent tracking-[0.4em] uppercase">Intelligence Integrity</h4>
-                   <p className="font-jetbrains text-[9px] text-description leading-relaxed uppercase opacity-60">Verified updates for premium dashboard carriers. calibrated daily at 0400 PST.</p>
+                   <p className="font-montserrat text-[9px] text-description leading-relaxed uppercase opacity-60">Verified updates for premium dashboard carriers. calibrated daily at 0400 PST.</p>
                 </div>
                 <div className="bg-white/[0.01] border border-white/5 p-10 h-full flex flex-col justify-end news-dash-reveal opacity-0">
-                   <span className="font-jetbrains text-[9px] font-black text-description/20 tracking-[0.4em] uppercase mb-4">Tactical Feed</span>
-                   <p className="font-newsreader italic text-3xl text-normal leading-tight">Decentralized protocols and the future of creative labor.</p>
+                   <span className="font-montserrat text-[9px] font-black text-description/20 tracking-[0.4em] uppercase mb-4">Tactical Feed</span>
+                   <p className="font-montserrat text-3xl text-normal leading-tight">Decentralized protocols and the future of creative labor.</p>
                 </div>
              </div>
           </div>
@@ -186,11 +186,11 @@ const DashboardNews = () => {
               {loading ? (
                   <DashboardLoading />
               ) : currentPage < totalPages ? (
-                  <span className="font-jetbrains text-[8px] text-description/20 tracking-[0.4em] uppercase animate-pulse">Scanning Archive...</span>
+                  <span className="font-montserrat text-[8px] text-description/20 tracking-[0.4em] uppercase animate-pulse">Scanning Archive...</span>
               ) : (
                   <div className="flex items-center gap-4 opacity-10">
                       <div className="h-[1px] w-10 bg-description" />
-                      <span className="font-jetbrains text-[8px] text-description tracking-[0.4em] uppercase">Archive Fully Synched</span>
+                      <span className="font-montserrat text-[8px] text-description tracking-[0.4em] uppercase">Archive Fully Synched</span>
                       <div className="h-[1px] w-10 bg-description" />
                   </div>
               )}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+﻿import React, { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { gsap } from 'gsap'
 import RollingText from '../components/RollingText'
@@ -181,20 +181,20 @@ const PersonalityTest = () => {
             <div className="flex flex-col md:flex-row items-center md:items-start gap-12 lg:gap-20 mb-24 result-reveal">
                 <div className="w-48 h-48 bg-accent rounded-[3rem] flex items-center justify-center shadow-[0_0_80px_rgba(139, 92, 246,0.3)] shrink-0 group hover:scale-105 transition-transform duration-500">
                    <div className="text-center">
-                     <span className="block text-dark font-jetbrains text-5xl font-bold tracking-tighter leading-none mb-1">{resultData.type}</span>
-                     <span className="block text-dark/60 font-jetbrains text-[9px] font-bold tracking-[0.2em] uppercase">Core Alpha</span>
+                     <span className="block text-dark font-montserrat text-5xl font-bold tracking-tighter leading-none mb-1">{resultData.type}</span>
+                     <span className="block text-dark/60 font-montserrat text-[9px] font-bold tracking-[0.2em] uppercase">Core Alpha</span>
                    </div>
                 </div>
                 <div className="text-center md:text-left pt-4">
-                  <h1 className="font-newsreader text-6xl md:text-[5.5rem] italic text-normal font-extralight mb-6 tracking-tight leading-none overflow-visible">
+                  <h1 className="font-montserrat text-normal mb-6 overflow-visible text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] transition-colors">
                     Your Type: <span className="text-accent underline-lime">{resultData.name}</span>
                   </h1>
-                  <p className="font-jetbrains text-xs md:text-sm text-description/80 max-w-2xl leading-relaxed uppercase tracking-widest mb-10">
+                  <p className="font-montserrat text-xs md:text-sm text-description/80 max-w-2xl leading-relaxed uppercase tracking-widest mb-10">
                     {resultData.shortIntro}
                   </p>
                   <div className="flex flex-wrap justify-center md:justify-start gap-4">
                     {resultData.tags.map((tag, i) => (
-                        <span key={i} className="px-6 py-2 border border-white/10 rounded-full font-jetbrains text-[9px] font-bold text-accent tracking-[0.2em] bg-white/5 uppercase">
+                        <span key={i} className="px-6 py-2 border border-white/10 rounded-full font-montserrat text-[9px] font-bold text-accent tracking-[0.2em] bg-white/5 uppercase">
                             {tag}
                         </span>
                     ))}
@@ -213,8 +213,8 @@ const PersonalityTest = () => {
                    {resultData.traits.map((trait, i) => (
                       <div key={i} className="group cursor-default">
                         <div className="flex justify-between items-center mb-5">
-                            <span className={`font-jetbrains text-[9px] font-bold tracking-[0.3em] transition-colors duration-500 ${trait.activeSide === 'left' ? 'text-accent' : 'text-description/80'}`}>{trait.left}</span>
-                            <span className={`font-jetbrains text-[9px] font-bold tracking-[0.3em] transition-colors duration-500 ${trait.activeSide === 'right' ? 'text-accent' : 'text-description/80'}`}>{trait.right}</span>
+                            <span className={`font-montserrat text-[9px] font-bold tracking-[0.3em] transition-colors duration-500 ${trait.activeSide === 'left' ? 'text-accent' : 'text-description/80'}`}>{trait.left}</span>
+                            <span className={`font-montserrat text-[9px] font-bold tracking-[0.3em] transition-colors duration-500 ${trait.activeSide === 'right' ? 'text-accent' : 'text-description/80'}`}>{trait.right}</span>
                         </div>
                         <div className="h-[2px] bg-white/5 rounded-full relative overflow-hidden">
                             <div 
@@ -223,8 +223,8 @@ const PersonalityTest = () => {
                             />
                         </div>
                         <div className="mt-3 flex justify-between">
-                            <span className="font-jetbrains text-[8px] italic text-description/80 tracking-[0.4em] uppercase">Core Accuracy Threshold 99.8%</span>
-                            <span className="font-montserrat text-[14px] font-bold text-accent italic tracking-widest">{trait.score}% {trait.activeSide === 'right' ? trait.right : trait.left}</span>
+                            <span className="font-montserrat text-[8px] text-description/80 tracking-[0.4em] uppercase">Core Accuracy Threshold 99.8%</span>
+                            <span className="font-montserrat text-[14px] font-bold text-accent tracking-widest">{trait.score}% {trait.activeSide === 'right' ? trait.right : trait.left}</span>
                         </div>
                       </div>
                    ))}
@@ -249,12 +249,12 @@ const PersonalityTest = () => {
                     </div>
                     <div className="bg-white/[0.02] border border-white/5 p-10 md:p-14 lg:p-16 rounded-[2rem] flex-1 backdrop-blur-xl relative overflow-hidden">
                         <div className="absolute top-0 right-0 p-10 opacity-5">
-                            <span className="font-jetbrains text-[90px] font-black tracking-tighter text-white leading-none">0{Object.keys(resultData.tabs).indexOf(activeTab) + 1}</span>
+                            <span className="font-montserrat text-[90px] font-black tracking-tighter text-white leading-none">0{Object.keys(resultData.tabs).indexOf(activeTab) + 1}</span>
                         </div>
-                        <h4 className="font-newsreader italic text-4xl text-normal mb-10 font-extralight tracking-tight underline-lime decoration-accent/30">{resultData.tabs[activeTab].title}</h4>
+                        <h4 className="font-montserrat text-4xl text-normal mb-10 font-semibold tracking-tight underline-lime decoration-accent/30">{resultData.tabs[activeTab].title}</h4>
                         <div className="space-y-8">
                             {resultData.tabs[activeTab].content.map((p, i) => (
-                                <p key={i} className="font-jetbrains text-[11px] text-description/80 leading-[2.2] tracking-widest uppercase">
+                                <p key={i} className="font-montserrat text-[11px] text-description/80 leading-[2.2] tracking-widest uppercase">
                                     <span className="text-accent/30 mr-4 font-bold">»</span> {p}
                                 </p>
                             ))}
@@ -267,15 +267,15 @@ const PersonalityTest = () => {
             <div className="result-reveal pt-12 border-t border-white/5">
                 <div className="flex flex-col md:flex-row items-center justify-between gap-8 mb-20">
                     <div>
-                        <h2 className="font-newsreader italic text-5xl md:text-6xl text-normal font-extralight mb-4 tracking-tighter">Recommended Architecture</h2>
-                        <p className="font-jetbrains text-[9px] text-description/80 tracking-[0.5em] uppercase italic">Accelerated learning paths tailored to your frequency.</p>
+                        <h2 className="font-montserrat text-normal mb-4 text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] transition-colors">Recommended Architecture</h2>
+                        <p className="font-montserrat text-[9px] text-description/80 tracking-[0.5em] uppercase">Accelerated learning paths tailored to your frequency.</p>
                     </div>
                     <div className="flex items-center gap-6">
                         <div className="flex -space-x-3">
                             <div className="w-10 h-10 rounded-full border border-dark bg-accent flex items-center justify-center text-dark font-bold text-[8px]">AM</div>
                             <div className="w-10 h-10 rounded-full border border-dark bg-white/20 backdrop-blur-sm flex items-center justify-center text-normal font-bold text-[8px]">+4</div>
                         </div>
-                        <span className="font-jetbrains text-[8px] font-bold text-description/30 tracking-[0.2em] uppercase">Join the Campaigner Network</span>
+                        <span className="font-montserrat text-[8px] font-bold text-description/30 tracking-[0.2em] uppercase">Join the Campaigner Network</span>
                     </div>
                 </div>
 
@@ -300,7 +300,7 @@ const PersonalityTest = () => {
                    </button>
                    <Link 
                       to="/"
-                      className="group relative px-20 py-5 bg-accent text-dark font-jetbrains text-[11px] font-bold tracking-[0.5em] uppercase shadow-accent-soft hover:scale-105 transition-all duration-500 overflow-hidden"
+                      className="group relative px-20 py-5 bg-accent text-dark font-montserrat text-[11px] font-bold tracking-[0.5em] uppercase shadow-accent-soft hover:scale-105 transition-all duration-500 overflow-hidden"
                    >
                       <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 skew-x-12" />
                       RETURN TO HUB
@@ -319,8 +319,8 @@ const PersonalityTest = () => {
                 <div className="absolute inset-0 border-2 border-accent/20 rounded-full" />
                 <div className="absolute inset-0 border-t-2 border-accent rounded-full animate-spin shadow-[0_0_20px_rgba(139, 92, 246,0.3)]" />
             </div>
-            <h2 className="font-newsreader italic text-5xl text-normal mb-4 font-extralight tracking-tight opacity-0 animate-reveal-up">Synthesizing Your Frequency</h2>
-            <p className="font-jetbrains text-[9px] text-description tracking-[0.5em] uppercase opacity-30 animate-pulse">Mapping Core Intelligence...</p>
+            <h2 className="font-montserrat text-normal mb-4 opacity-0 animate-reveal-up text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] transition-colors">Synthesizing Your Frequency</h2>
+            <p className="font-montserrat text-[9px] text-description tracking-[0.5em] uppercase opacity-30 animate-pulse">Mapping Core Intelligence...</p>
         </div>
     )
   }
@@ -339,27 +339,27 @@ const PersonalityTest = () => {
       {testState === 'intro' ? (
         <div className="max-w-4xl w-full text-center relative z-10 flex-1 flex flex-col justify-between py-8 md:py-12 lg:py-16">
           <div className="pt-reveal flex flex-col items-center">
-             <span className="block font-jetbrains text-[9px] md:text-[10px] text-accent tracking-[0.5em] md:tracking-[0.8em] uppercase mb-4 opacity-70">
+             <span className="block font-montserrat text-[9px] md:text-[10px] text-accent tracking-[0.5em] md:tracking-[0.8em] uppercase mb-4 opacity-70">
                 Core Matrix / Frequency Scan
              </span>
              <div className="w-[1px] h-12 md:h-20 bg-accent/20" />
           </div>
 
           <div className="pt-reveal">
-            <h1 className="font-newsreader italic text-[clamp(2.8rem,10vw,7rem)] leading-[0.85] font-extralight text-normal mb-8 md:mb-10">
+            <h1 className="font-montserrat text-normal mb-8 md:mb-10 text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] transition-colors">
               Discover Your <br />
               <span className="text-accent underline-lime">Frequency</span>
             </h1>
-            <p className="font-jetbrains text-[9px] md:text-[10px] text-description/80 max-w-sm md:max-w-xl mx-auto leading-[2] tracking-[0.3em] uppercase">
+            <p className="font-montserrat text-[9px] md:text-[10px] text-description/80 max-w-sm md:max-w-xl mx-auto leading-[2] tracking-[0.3em] uppercase">
               Map your core traits against the <br className="md:hidden" /> intelligence matrix.
             </p>
           </div>
 
           <div className="pt-reveal flex flex-col items-center gap-8 md:gap-10">
             <div className="hidden md:flex items-center gap-10 opacity-20">
-                <span className="font-jetbrains text-[8px] tracking-[0.4em] uppercase">Status: Initializing</span>
+                <span className="font-montserrat text-[8px] tracking-[0.4em] uppercase">Status: Initializing</span>
                 <div className="w-24 h-[1px] bg-white/20" />
-                <span className="font-jetbrains text-[8px] tracking-[0.4em] uppercase">Protocol: A-01</span>
+                <span className="font-montserrat text-[8px] tracking-[0.4em] uppercase">Protocol: A-01</span>
             </div>
             <button 
               onClick={handleStart} 
@@ -368,7 +368,7 @@ const PersonalityTest = () => {
               <div className="absolute inset-0 bg-white/20 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out skew-x-12" />
               <RollingText text="INITIALIZE TEST" />
             </button>
-            <span className="md:hidden font-jetbrains text-[7px] text-description/80 tracking-[0.5em] uppercase">Est. Time: 03:00 / Scan</span>
+            <span className="md:hidden font-montserrat text-[7px] text-description/80 tracking-[0.5em] uppercase">Est. Time: 03:00 / Scan</span>
           </div>
         </div>
       ) : (
@@ -377,7 +377,7 @@ const PersonalityTest = () => {
             <div className="quiz-inner w-full flex flex-col h-full justify-between">
                 {/* HUD / Progress */}
                 <div className="w-full flex items-center justify-center h-12 relative quiz-content-reveal">
-                    <span className="absolute left-0 font-jetbrains text-[8px] md:text-[9px] text-description/30 tracking-[0.3em] font-bold italic">
+                    <span className="absolute left-0 font-montserrat text-[8px] md:text-[9px] text-description/30 tracking-[0.3em] font-bold">
                        QUESTION {currentIndex + 1} / {questions.length}
                     </span>
                     <div className="h-[1.5px] bg-white/5 w-full md:w-2/3 lg:w-1/2 relative overflow-hidden">
@@ -390,13 +390,13 @@ const PersonalityTest = () => {
 
                 {/* Question Area - Taking more space */}
                 <div className="flex-1 flex flex-col justify-center py-10 md:py-16 text-center">
-                    <h2 className="quiz-content-reveal font-newsreader italic text-[clamp(1.8rem,7vw,3.8rem)] text-normal leading-[1.1] font-extralight mb-12 md:mb-20 max-w-3xl mx-auto px-4 drop-shadow-[0_0_30px_rgba(255,255,255,0.05)]">
+                    <h2 className="quiz-content-reveal font-montserrat text-normal mb-12 md:mb-20 max-w-3xl mx-auto px-4 drop-shadow-[0_0_30px_rgba(255,255,255,0.05)] text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] transition-colors">
                         "{questions[currentIndex].text}"
                     </h2>
 
                     <div className="quiz-content-reveal flex flex-col items-center gap-10 md:gap-20">
                         <div className="flex items-center justify-center gap-4 md:gap-12 lg:gap-16 w-full">
-                            <span className="hidden md:block font-jetbrains text-[8px] font-bold text-description/80 tracking-[0.4em] uppercase shrink-0">Disagree</span>
+                            <span className="hidden md:block font-montserrat text-[8px] font-bold text-description/80 tracking-[0.4em] uppercase shrink-0">Disagree</span>
                             <div className="flex items-center gap-3 md:gap-5 lg:gap-8">
                                 {[1, 2, 3, 4, 5].map((level) => {
                                     const sizes = [
@@ -432,11 +432,11 @@ const PersonalityTest = () => {
                                     )
                                 })}
                             </div>
-                            <span className="hidden md:block font-jetbrains text-[8px] font-bold text-description/80 tracking-[0.4em] uppercase shrink-0">Agree</span>
+                            <span className="hidden md:block font-montserrat text-[8px] font-bold text-description/80 tracking-[0.4em] uppercase shrink-0">Agree</span>
                         </div>
                         
                         {/* Mobile specific labels */}
-                        <div className="md:hidden flex justify-between w-full px-8 opacity-40 font-jetbrains text-[7px] font-bold tracking-[0.4em] uppercase">
+                        <div className="md:hidden flex justify-between w-full px-8 opacity-40 font-montserrat text-[7px] font-bold tracking-[0.4em] uppercase">
                             <span>Disagree</span>
                             <span>Agree</span>
                         </div>
@@ -448,7 +448,7 @@ const PersonalityTest = () => {
                     <button 
                       onClick={handlePrev} 
                       disabled={currentIndex === 0}
-                      className={`group flex items-center gap-4 md:gap-6 font-jetbrains text-[9px] md:text-[10px] font-bold tracking-[0.3em] md:tracking-[0.4em] uppercase transition-all duration-500 ${currentIndex === 0 ? 'opacity-0 pointer-events-none' : 'text-description/30 hover:text-normal'}`}
+                      className={`group flex items-center gap-4 md:gap-6 font-montserrat text-[9px] md:text-[10px] font-bold tracking-[0.3em] md:tracking-[0.4em] uppercase transition-all duration-500 ${currentIndex === 0 ? 'opacity-0 pointer-events-none' : 'text-description/30 hover:text-normal'}`}
                     >
                         <div className="w-6 md:w-8 h-[1px] bg-white/10 transition-transform group-hover:scale-x-125 origin-left" />
                         PREV
@@ -457,7 +457,7 @@ const PersonalityTest = () => {
                     <button 
                        disabled={!answers[questions[currentIndex].id]}
                        onClick={() => handleAnswer(answers[questions[currentIndex].id])}
-                       className={`group flex items-center gap-6 md:gap-8 font-jetbrains text-[9px] md:text-[11px] font-bold tracking-[0.4em] md:tracking-[0.6em] uppercase transition-all duration-500
+                       className={`group flex items-center gap-6 md:gap-8 font-montserrat text-[9px] md:text-[11px] font-bold tracking-[0.4em] md:tracking-[0.6em] uppercase transition-all duration-500
                         ${!answers[questions[currentIndex].id] ? 'opacity-0 pointer-events-none' : 'text-accent hover:tracking-[0.8em]'}`}
                     >
                         {currentIndex === questions.length - 1 ? 'Calculate' : 'Next Step'}

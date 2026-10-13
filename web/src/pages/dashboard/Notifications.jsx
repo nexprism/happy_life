@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchNotifications, markNotificationsRead } from '../../redux/slices/notificationSlice';
 import { useLanguage } from '../../context/LanguageContext';
@@ -35,7 +35,7 @@ const Notifications = () => {
   return (
     <>
       <div className="flex justify-between items-center mb-6 mt-8 px-2">
-        <h1 className="text-2xl font-bold text-slate-900">Notifications</h1>
+        <h1 className="text-slate-900 text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] transition-colors">Notifications</h1>
         <button
           onClick={handleMarkAllRead}
           className="px-4 py-2 bg-amber-50 text-amber-700 border border-amber-200 rounded-lg text-sm font-semibold hover:bg-amber-100 transition-colors"

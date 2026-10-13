@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react'
+﻿import React, { useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
 import RollingText from './RollingText'
 import sanitizeDisplay from '../utils/textSanitize'
@@ -56,10 +56,10 @@ const CourseHeroDetail = ({ course, section }) => {
          {/* LEFT: DRAMATIC TYPOGRAPHY & VALUE */}
          <div className="lg:col-span-7 space-y-8 md:space-y-8">
             <div className="space-y-2">
-               <span className="reveal-text block font-jetbrains text-accent text-[9px] md:text-xs tracking-[0.6em] md:tracking-[0.2em] font-bold uppercase opacity-60">
+               <span className="reveal-text block font-montserrat text-accent text-[9px] md:text-xs tracking-[0.6em] md:tracking-[0.2em] font-bold uppercase opacity-60">
                   {course.category?.name || 'COURSE'} / {course.level?.[0] || 'GENERAL'}
                </span>
-               <h1 className="reveal-text font-newsreader text-[clamp(2.1rem,5.1vw,3.3rem)] leading-[0.85] font-light  text-normal max-w-3xl break-words">
+               <h1 className="reveal-text font-montserrat text-normal max-w-3xl break-words text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] transition-colors">
                   {displayTitle.split(' ').map((word, i, arr) => (
                      <React.Fragment key={i}>
                         {i === arr.length - 1 ? (
@@ -71,12 +71,12 @@ const CourseHeroDetail = ({ course, section }) => {
                      </React.Fragment>
                   ))}
                </h1>
-               {/* <h2 className="reveal-text font-newsreader  text-2xl text-normal/70 font-extralight tracking-tight pt-2">
+               {/* <h2 className="reveal-text font-montserrat text-normal/70 pt-2 text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] transition-colors">
             {displaySubtitle}
           </h2> */}
             </div>
 
-            <p className="reveal-text font-newsreader text-[9px] md:text-xs text-black max-w-xl leading-[1.7] tracking-widest break-words">
+            <p className="reveal-text font-montserrat text-[9px] md:text-xs text-black max-w-xl leading-[1.7] tracking-widest break-words">
                {course.shortDescription || course.description}
             </p>
 
@@ -87,7 +87,7 @@ const CourseHeroDetail = ({ course, section }) => {
                      <div className="reveal-checkmark w-4 h-4 rounded-full border border-accent/40 flex items-center justify-center shrink-0">
                         <svg width="6" height="6" viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" strokeWidth="3"><path d="M20 6L9 17l-5-5" /></svg>
                      </div>
-                     <span className="reveal-text font-jetbrains text-[8px] md:text-[9px] text-description/70 font-bold tracking-widest uppercase group-hover:text-accent transition-colors">
+                     <span className="reveal-text font-montserrat text-[8px] md:text-[9px] text-description/70 font-bold tracking-widest uppercase group-hover:text-accent transition-colors">
                         {check}
                      </span>
                   </div>
@@ -101,13 +101,13 @@ const CourseHeroDetail = ({ course, section }) => {
                   className="group relative bg-accent px-10 md:px-12 py-4 overflow-hidden transition-all duration-700 hover:scale-105 active:scale-95"
                >
                   <div className="absolute inset-0 bg-white/20 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out skew-x-12" />
-                  <span className="relative z-10 font-jetbrains text-dark text-[9px] font-bold tracking-[0.5em] uppercase">{t('seePricing')}</span>
+                  <span className="relative z-10 font-montserrat text-dark text-[9px] font-bold tracking-[0.5em] uppercase">{t('seePricing')}</span>
                </button>
                <button
                   onClick={() => document.getElementById('curriculum-section')?.scrollIntoView({ behavior: 'smooth' })}
                   className="group relative px-10 md:px-12 py-4 border border-border overflow-hidden hover:border-accent transition-all duration-500"
                >
-                  <span className="relative z-10 font-jetbrains text-normal text-[9px] font-bold tracking-[0.5em] uppercase">VIEW CURRICULUM</span>
+                  <span className="relative z-10 font-montserrat text-normal text-[9px] font-bold tracking-[0.5em] uppercase">VIEW CURRICULUM</span>
                </button>
             </div>
          </div>
@@ -120,40 +120,40 @@ const CourseHeroDetail = ({ course, section }) => {
 
                <div className="space-y-8 relative z-20">
                   <div className="space-y-3">
-                     <h3 className="font-newsreader italic text-3xl text-normal leading-tight font-extralight group-hover:underline-lime decoration-accent/20 transition-all">
+                     <h3 className="font-montserrat text-3xl text-normal leading-tight font-bold group-hover:underline-lime decoration-accent/20 transition-all">
                         Ready to <br /> <span className="text-accent underline-lime">Transform?</span>
                      </h3>
-                     <p className="font-jetbrains text-[8px] text-description tracking-[0.4em] uppercase">Join {course.enrolledStudentsCount || 0}+ students today.</p>
+                     <p className="font-montserrat text-[8px] text-description tracking-[0.4em] uppercase">Join {course.enrolledStudentsCount || 0}+ students today.</p>
                   </div>
 
                   <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
                      <div className="space-y-4">
                         <div className="relative group/input">
-                           <input type="text" placeholder={t('fullName')} className="w-full bg-white/[0.02] border-b border-white/10 px-0 py-3 font-jetbrains text-[9px] tracking-widest text-normal uppercase focus:outline-none focus:border-accent transition-all placeholder:text-description" />
+                           <input type="text" placeholder={t('fullName')} className="w-full bg-white/[0.02] border-b border-white/10 px-0 py-3 font-montserrat text-[9px] tracking-widest text-normal uppercase focus:outline-none focus:border-accent transition-all placeholder:text-description" />
                            <div className="absolute bottom-0 left-0 w-0 h-[1px] bg-accent group-focus-within/input:w-full transition-all duration-700" />
                         </div>
                         <div className="relative group/input">
-                           <input type="email" placeholder={t('emailAddress')} className="w-full bg-white/[0.02] border-b border-white/10 px-0 py-3 font-jetbrains text-[9px] tracking-widest text-normal uppercase focus:outline-none focus:border-accent transition-all placeholder:text-description" />
+                           <input type="email" placeholder={t('emailAddress')} className="w-full bg-white/[0.02] border-b border-white/10 px-0 py-3 font-montserrat text-[9px] tracking-widest text-normal uppercase focus:outline-none focus:border-accent transition-all placeholder:text-description" />
                            <div className="absolute bottom-0 left-0 w-0 h-[1px] bg-accent group-focus-within/input:w-full transition-all duration-700" />
                         </div>
                         <div className="flex gap-4">
                            <div className="w-16 relative group/input">
-                              <span className="absolute left-0 bottom-3 font-jetbrains text-[9px] text-accent font-bold">+91</span>
-                              <input type="text" disabled className="w-full bg-white/[0.02] border-b border-white/10 px-0 py-3 font-jetbrains text-[9px] tracking-widest text-normal uppercase opacity-40" />
+                              <span className="absolute left-0 bottom-3 font-montserrat text-[9px] text-accent font-bold">+91</span>
+                              <input type="text" disabled className="w-full bg-white/[0.02] border-b border-white/10 px-0 py-3 font-montserrat text-[9px] tracking-widest text-normal uppercase opacity-40" />
                            </div>
                            <div className="flex-1 relative group/input">
-                              <input type="tel" placeholder={t('phoneNumber')} className="w-full bg-white/[0.02] border-b border-white/10 px-0 py-3 font-jetbrains text-[9px] tracking-widest text-normal uppercase focus:outline-none focus:border-accent transition-all placeholder:text-description" />
+                              <input type="tel" placeholder={t('phoneNumber')} className="w-full bg-white/[0.02] border-b border-white/10 px-0 py-3 font-montserrat text-[9px] tracking-widest text-normal uppercase focus:outline-none focus:border-accent transition-all placeholder:text-description" />
                               <div className="absolute bottom-0 left-0 w-0 h-[1px] bg-accent group-focus-within/input:w-full transition-all duration-700" />
                            </div>
                         </div>
                         <div className="relative group/input pt-2">
-                           <textarea rows="2" placeholder="WHY DO YOU WANT TO JOIN?" className="w-full bg-white/[0.02] border border-white/10 p-4 font-jetbrains text-[9px] tracking-widest text-normal uppercase focus:outline-none focus:border-accent transition-all placeholder:text-description resize-none rounded-none" />
+                           <textarea rows="2" placeholder="WHY DO YOU WANT TO JOIN?" className="w-full bg-white/[0.02] border border-white/10 p-4 font-montserrat text-[9px] tracking-widest text-normal uppercase focus:outline-none focus:border-accent transition-all placeholder:text-description resize-none rounded-none" />
                         </div>
                      </div>
 
                      <button className="w-full group/btn relative bg-accent py-5 overflow-hidden transition-all duration-700 hover:scale-[1.02] active:scale-95">
                         <div className="absolute inset-0 bg-white/20 translate-y-full group-hover/btn:translate-y-0 transition-transform duration-700" />
-                        <span className="relative z-10 font-jetbrains text-dark text-[10px] font-black tracking-[0.5em] uppercase">
+                        <span className="relative z-10 font-montserrat text-dark text-[10px] font-black tracking-[0.5em] uppercase">
                            REQUEST CALLBACK
                         </span>
                      </button>

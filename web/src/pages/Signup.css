@@ -1,10 +1,10 @@
-/* Reusing the core structure from Login.css */
+﻿/* Reusing the core structure from Login.css */
 .signup-container {
   display: flex;
   min-height: 100vh;
   background-color: var(--color-dark);
   color: var(--color-normal);
-  font-family: var(--font-jetbrains);
+  font-family: var(--font-montserrat);
 }
 
 .signup-left {
@@ -43,10 +43,10 @@
 }
 
 .signup-title {
-  font-family: var(--font-newsreader);
+  font-family: var(--font-montserrat);
   font-size: 3.5rem;
-  font-weight: 200;
-  font-style: italic;
+  font-weight: 800;
+  font-style: normal;
   margin-bottom: 0.5rem;
 }
 
@@ -213,10 +213,10 @@
 }
 
 .bg-text {
-  font-family: var(--font-newsreader);
+  font-family: var(--font-montserrat);
   font-size: 15rem;
-  font-weight: 200;
-  font-style: italic;
+  font-weight: 700;
+  font-style: normal;
   color: rgba(15, 23, 42, 0.04);
   line-height: 0.8;
   white-space: nowrap;
@@ -237,11 +237,11 @@
 }
 
 .testimonial-quote {
-  font-family: var(--font-newsreader);
+  font-family: var(--font-montserrat);
   font-size: 1.25rem;
   line-height: 1.6;
   font-weight: 400;
-  font-style: italic;
+  font-style: normal;
   color: #0F172A;
 }
 
@@ -263,7 +263,7 @@
   font-weight: 800;
   color: #2171B5;
   margin-bottom: 0.3rem;
-  font-family: var(--font-newsreader);
+  font-family: var(--font-montserrat);
 }
 
 .stat-label {
@@ -276,7 +276,7 @@
 
 .right-description {
   max-width: 380px;
-  font-family: var(--font-newsreader);
+  font-family: var(--font-montserrat);
   font-size: 1.1rem;
   line-height: 1.6;
   font-weight: 400;

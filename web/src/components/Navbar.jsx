@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+﻿import React, { useState, useEffect, useRef } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import RollingText from './RollingText'
@@ -11,8 +11,16 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 gsap.registerPlugin(ScrollTrigger)
 
 const Navbar = ({ isLoaded }) => {
-  const { token, user } = useSelector((state) => state.auth)
-  const isAuthenticated = Boolean(token || user)
+  const { token } = useSelector((state) => state.auth)
+  const storedToken = typeof window !== 'undefined' ? localStorage.getItem('edrilla_token') : null
+  const activeToken = token || storedToken
+  const isAuthenticated = Boolean(
+    activeToken &&
+    typeof activeToken === 'string' &&
+    activeToken.trim().length > 0 &&
+    activeToken !== 'null' &&
+    activeToken !== 'undefined'
+  )
   const { theme } = useTheme()
   const { t } = useLanguage()
   const location = useLocation()
@@ -292,7 +300,7 @@ const Navbar = ({ isLoaded }) => {
                 to={link.path}
                 onMouseEnter={handleHover}
                 className={({ isActive }) =>
-                  `nav-slot nav-link-item group px-4 py-2 rounded-full font-inter text-[11px] font-semibold uppercase transition-all duration-300 tracking-[0.18em] relative z-10 ${
+                  `nav-slot nav-link-item group px-4 py-2 rounded-full font-montserrat text-[11px] font-semibold uppercase transition-all duration-300 tracking-[0.18em] relative z-10 ${
                     isActive ? 'nav-item-active text-accent font-bold' : 'text-slate-700 hover:text-slate-900'
                   }`
                 }
@@ -306,7 +314,7 @@ const Navbar = ({ isLoaded }) => {
             {/* Sign In / Dashboard Button */}
             <Link
               to={isAuthenticated ? "/dashboard" : "/login"}
-              className="relative group bg-accent text-white font-bold px-4 md:px-5 py-2 rounded-full font-inter text-[10px] uppercase tracking-[0.15em] overflow-hidden transition-all duration-300 hover:scale-[1.04] active:scale-95 shadow-accent-soft flex items-center justify-center gap-1.5"
+              className="relative group bg-accent text-white font-bold px-4 md:px-5 py-2 rounded-full font-montserrat text-[10px] uppercase tracking-[0.15em] overflow-hidden transition-all duration-300 hover:scale-[1.04] active:scale-95 shadow-accent-soft flex items-center justify-center gap-1.5"
             >
               <span className="relative z-10 font-black">{isAuthenticated ? t('dashboard') : t('signIn')}</span>
               <div className="absolute inset-0 bg-white/25 -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out skew-x-12" />
@@ -359,8 +367,8 @@ const Navbar = ({ isLoaded }) => {
                     to={link.path}
                     onClick={toggleMenu}
                     className={({ isActive }) =>
-                      `menu-item font-newsreader text-2xl sm:text-4xl md:text-7xl font-extralight transition-all duration-300 block ${
-                        isActive ? 'text-accent italic' : 'text-slate-800 opacity-60 hover:opacity-100 hover:tracking-wider'
+                      `menu-item font-montserrat text-2xl sm:text-4xl md:text-7xl font-normal transition-all duration-300 block ${
+                        isActive ? 'text-accent' : 'text-slate-800 opacity-60 hover:opacity-100 hover:tracking-wider'
                       }`
                     }
                   >
@@ -407,8 +415,8 @@ const Navbar = ({ isLoaded }) => {
                   ))}
                 </div>
                 <div className="flex flex-col gap-2 items-center text-center w-full">
-                  <p className="font-jetbrains text-[9px] tracking-[0.3em] sm:tracking-[0.6em] text-slate-500 uppercase italic whitespace-normal">Where Ambition Meets Execution</p>
-                  <p className="font-jetbrains text-[8px] tracking-[0.1em] sm:tracking-[0.2em] text-slate-400 uppercase whitespace-normal">© 2026 HAPPY LIFE ASTRO</p>
+                  <p className="font-montserrat text-[9px] tracking-[0.3em] sm:tracking-[0.6em] text-slate-500 uppercase whitespace-normal">Where Ambition Meets Execution</p>
+                  <p className="font-montserrat text-[8px] tracking-[0.1em] sm:tracking-[0.2em] text-slate-400 uppercase whitespace-normal">© 2026 HAPPY LIFE ASTRO</p>
                 </div>
               </div>
             </div>

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+﻿import React, { useEffect, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchCourseDetail } from '../redux/slices/courseSlice'
@@ -121,7 +121,7 @@ const CourseDetail = () => {
   if (error) {
     return (
       <div className="min-h-screen bg-dark flex items-center justify-center">
-        <div className="text-red-500 font-jetbrains tracking-widest uppercase text-[10px]">Transmission Error: {error}</div>
+        <div className="text-red-500 font-montserrat tracking-widest uppercase text-[10px]">Transmission Error: {error}</div>
       </div>
     )
   }
@@ -129,7 +129,7 @@ const CourseDetail = () => {
   if (!course && !loading) {
     return (
       <div className="min-h-screen bg-dark flex items-center justify-center">
-        <div className="text-normal font-jetbrains tracking-widest uppercase text-[10px]">Archive Not Found</div>
+        <div className="text-normal font-montserrat tracking-widest uppercase text-[10px]">Archive Not Found</div>
       </div>
     )
   }
@@ -221,7 +221,7 @@ const CourseDetail = () => {
         <section id="curriculum-section" className="section-reveal max-w-7xl mx-auto py-16 scroll-mt-32">
           <div className="flex flex-col gap-6">
             <div className="mb-4 text-center md:text-left">
-              <h2 className="font-newsreader italic text-4xl md:text-6xl text-normal font-extralight mb-4 tracking-tighter">
+              <h2 className="font-montserrat text-normal mb-4 text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] transition-colors">
                 The <span className="text-accent">Blueprint</span>
               </h2>
               <div className="h-[1px] bg-accent/20 w-32 md:w-48 mx-auto md:mx-0" />
@@ -243,7 +243,7 @@ const CourseDetail = () => {
                     >
                       <div className={`${isExpanded ? 'space-y-4' : 'space-y-2'}`}>
                         <div className="flex items-center gap-6">
-                          <span className="font-jetbrains text-accent font-black tracking-[0.4em] uppercase text-[10px]">Chapter {String(mIndex + 1).padStart(2, '0')}</span>
+                          <span className="font-montserrat text-accent font-black tracking-[0.4em] uppercase text-[10px]">Chapter {String(mIndex + 1).padStart(2, '0')}</span>
                           <div className="h-[1px] flex-1 bg-white/10" />
                           <button className="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center group-hover/header:border-accent transition-colors bg-dark/50">
                             <svg 
@@ -254,7 +254,7 @@ const CourseDetail = () => {
                             </svg>
                           </button>
                         </div>
-                        <h3 className={`font-newsreader italic text-normal font-extralight leading-[1] transition-all duration-500 ${
+                        <h3 className={`font-montserrat text-normal font-bold leading-[1] transition-all duration-500 ${
                           isExpanded ? 'text-3xl md:text-4xl' : 'text-2xl md:text-3xl'
                         }`}>
                           {module.title}
@@ -283,14 +283,14 @@ const CourseDetail = () => {
                               
                               <div className="relative z-10 space-y-8 md:space-y-12">
                                 <div className="flex items-center gap-4">
-                                  <span className="font-jetbrains text-xl md:text-2xl font-black text-accent">
+                                  <span className="font-montserrat text-xl md:text-2xl font-black text-accent">
                                     {String(lIndex + 1).padStart(2, '0')}.
                                   </span>
-                                  <span className="font-jetbrains text-[9px] text-white/40 tracking-[0.3em] uppercase border border-white/10 px-3 py-1">
+                                  <span className="font-montserrat text-[9px] text-white/40 tracking-[0.3em] uppercase border border-white/10 px-3 py-1">
                                     {lesson.type}
                                   </span>
                                 </div>
-                                <h4 className="font-newsreader italic text-3xl md:text-4xl text-normal font-extralight leading-none tracking-tight">
+                                <h4 className="font-montserrat text-3xl md:text-4xl text-normal font-semibold leading-none tracking-tight">
                                   {lesson.title}
                                 </h4>
                                 <p className="font-montserrat text-description/70 text-sm md:text-base lg:text-lg leading-relaxed max-w-3xl break-words">

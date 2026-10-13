@@ -1,4 +1,4 @@
-import React from 'react'
+﻿import React from 'react'
 import { useLanguage } from '../context/LanguageContext'
 
 const LanguageSelector = ({ className = '' }) => {
@@ -9,7 +9,7 @@ const LanguageSelector = ({ className = '' }) => {
       <button
         type="button"
         onClick={() => setLanguage('en')}
-        className={`px-3 py-1.5 rounded-full font-jetbrains text-[10px] font-black uppercase tracking-wider transition-all duration-300 flex items-center gap-1.5 ${
+        className={`px-3 py-1.5 rounded-full font-montserrat text-[10px] font-black uppercase tracking-wider transition-all duration-300 flex items-center gap-1.5 ${
           language === 'en'
             ? 'bg-amber-400 text-slate-950 shadow-sm font-black scale-105'
             : 'text-slate-600 hover:text-slate-900'
@@ -23,7 +23,7 @@ const LanguageSelector = ({ className = '' }) => {
       <button
         type="button"
         onClick={() => setLanguage('hi')}
-        className={`px-3 py-1.5 rounded-full font-jetbrains text-[10px] font-black uppercase tracking-wider transition-all duration-300 flex items-center gap-1.5 ${
+        className={`px-3 py-1.5 rounded-full font-montserrat text-[10px] font-black uppercase tracking-wider transition-all duration-300 flex items-center gap-1.5 ${
           language === 'hi'
             ? 'bg-amber-400 text-slate-950 shadow-sm font-black scale-105'
             : 'text-slate-600 hover:text-slate-900'

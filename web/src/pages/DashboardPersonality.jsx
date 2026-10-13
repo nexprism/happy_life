@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useLayoutEffect } from 'react'
+﻿import React, { useState, useEffect, useRef, useLayoutEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { gsap } from 'gsap'
 import RollingText from '../components/RollingText'
@@ -103,7 +103,7 @@ const DashboardPersonality = () => {
   if (loading && !results) {
     return (
       <div className="min-h-screen bg-dark flex items-center justify-center">
-        <span className="font-jetbrains text-[10px] text-accent tracking-[0.5em] animate-pulse uppercase">Synchronizing Neural Profile...</span>
+        <span className="font-montserrat text-[10px] text-accent tracking-[0.5em] animate-pulse uppercase">Synchronizing Neural Profile...</span>
       </div>
     )
   }
@@ -118,8 +118,8 @@ const DashboardPersonality = () => {
                 <circle cx="12" cy="12" r="10" /><path d="M12 16v-4M12 8h.01" />
               </svg>
            </div>
-           <h2 className="font-newsreader text-5xl italic text-normal font-extralight mb-6 tracking-tighter">{t('noNeuralData')}</h2>
-           <p className="font-jetbrains text-[9px] text-description/80 tracking-[0.4em] uppercase mb-12 max-w-sm leading-relaxed">{t('cognitiveNotCalibrated')}</p>
+           <h2 className="font-montserrat text-normal mb-6 text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] transition-colors">{t('noNeuralData')}</h2>
+           <p className="font-montserrat text-[9px] text-description/80 tracking-[0.4em] uppercase mb-12 max-w-sm leading-relaxed">{t('cognitiveNotCalibrated')}</p>
            <Link 
             to="/personality-test"
             className="px-20 py-5 bg-accent text-dark font-montserrat text-[14px] font-bold tracking-[0.5em] uppercase hover:scale-105 transition-all duration-500"
@@ -193,13 +193,13 @@ const DashboardPersonality = () => {
             <div className="flex flex-col md:flex-row items-center md:items-start gap-12 lg:gap-20 mb-24 result-reveal opacity-0 invisible">
                 <div className="w-48 h-48 bg-accent rounded-[3rem] flex items-center justify-center shadow-[0_0_80px_rgba(139, 92, 246,0.3)] shrink-0 group hover:scale-105 transition-transform duration-500">
                    <div className="text-center">
-                     <span className="block text-dark font-jetbrains text-5xl font-bold tracking-tighter leading-none mb-1">{displayData.type}</span>
-                     <span className="block text-dark/60 font-jetbrains text-[9px] font-bold tracking-[0.2em] uppercase">Core Frequency</span>
+                     <span className="block text-dark font-montserrat text-5xl font-bold tracking-tighter leading-none mb-1">{displayData.type}</span>
+                     <span className="block text-dark/60 font-montserrat text-[9px] font-bold tracking-[0.2em] uppercase">Core Frequency</span>
                    </div>
                 </div>
                 <div className="text-center md:text-left pt-4">
-                   <p className="font-jetbrains text-[8px] text-accent font-black tracking-[0.6em] uppercase mb-4 italic">Analysis Synchronized</p>
-                   <h1 className="font-newsreader text-4xl md:text-6xl italic text-normal font-extralight mb-6 tracking-tighter leading-none">
+                   <p className="font-montserrat text-[8px] text-accent font-black tracking-[0.6em] uppercase mb-4">Analysis Synchronized</p>
+                   <h1 className="font-montserrat text-normal mb-6 text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] transition-colors">
                      Type: <span className="text-accent underline-lime">{displayData.name}</span>
                    </h1>
                    <p className="font-montserrat text-[14px] md:text-xs text-description/80 max-w-2xl leading-relaxed uppercase tracking-[0.3em] mb-10">
@@ -207,7 +207,7 @@ const DashboardPersonality = () => {
                    </p>
                    <div className="flex flex-wrap justify-center md:justify-start gap-4">
                      {displayData.tags.map((tag, i) => (
-                         <span key={i} className="px-6 py-2 border border-white/10 rounded-full font-jetbrains text-[8px] font-bold text-accent tracking-[0.2em] bg-white/5 uppercase">
+                         <span key={i} className="px-6 py-2 border border-white/10 rounded-full font-montserrat text-[8px] font-bold text-accent tracking-[0.2em] bg-white/5 uppercase">
                              {tag}
                          </span>
                      ))}
@@ -221,13 +221,13 @@ const DashboardPersonality = () => {
                 <div className="lg:col-span-5 space-y-10 result-reveal opacity-0 invisible">
                    <div className="flex items-center gap-6 mb-12">
                       <div className="w-1.5 h-1.5 bg-accent rounded-full animate-pulse shadow-[0_0_10px_#8B5CF6]" />
-                      <h3 className="font-jetbrains text-[9px] font-bold tracking-[0.5em] text-normal uppercase">Biological Calibration</h3>
+                      <h3 className="font-montserrat text-[9px] font-bold tracking-[0.5em] text-normal uppercase">Biological Calibration</h3>
                    </div>
                    {displayData.traits.map((trait, i) => (
                       <div key={i} className="group cursor-default">
                         <div className="flex justify-between items-center mb-5">
-                            <span className={`font-jetbrains text-[8px] font-bold tracking-[0.3em] transition-colors duration-500 ${trait.activeSide === 'left' ? 'text-accent' : 'text-description/80'}`}>{trait.left}</span>
-                            <span className={`font-jetbrains text-[8px] font-bold tracking-[0.3em] transition-colors duration-500 ${trait.activeSide === 'right' ? 'text-accent' : 'text-description/80'}`}>{trait.right}</span>
+                            <span className={`font-montserrat text-[8px] font-bold tracking-[0.3em] transition-colors duration-500 ${trait.activeSide === 'left' ? 'text-accent' : 'text-description/80'}`}>{trait.left}</span>
+                            <span className={`font-montserrat text-[8px] font-bold tracking-[0.3em] transition-colors duration-500 ${trait.activeSide === 'right' ? 'text-accent' : 'text-description/80'}`}>{trait.right}</span>
                         </div>
                         <div className="h-[1.5px] bg-white/5 rounded-full relative overflow-hidden">
                             <div 
@@ -236,8 +236,8 @@ const DashboardPersonality = () => {
                             />
                         </div>
                         <div className="mt-3 flex justify-between">
-                            <span className="font-jetbrains text-[7px] italic text-description/80 tracking-[0.4em] uppercase">SYSTEM THRESHOLD 99.8%</span>
-                            <span className="font-jetbrains text-[9px] font-bold text-accent italic tracking-widest">{trait.score}% {trait.activeSide === 'right' ? trait.right : trait.left}</span>
+                            <span className="font-montserrat text-[7px] text-description/80 tracking-[0.4em] uppercase">SYSTEM THRESHOLD 99.8%</span>
+                            <span className="font-montserrat text-[9px] font-bold text-accent tracking-widest">{trait.score}% {trait.activeSide === 'right' ? trait.right : trait.left}</span>
                         </div>
                       </div>
                    ))}
@@ -250,7 +250,7 @@ const DashboardPersonality = () => {
                             <button
                                 key={tabKey}
                                 onClick={() => setActiveTab(tabKey)}
-                                className={`px-10 py-5 font-jetbrains text-[9px] font-bold tracking-[0.5em] uppercase transition-all relative shrink-0
+                                className={`px-10 py-5 font-montserrat text-[9px] font-bold tracking-[0.5em] uppercase transition-all relative shrink-0
                                     ${activeTab === tabKey ? 'text-accent' : 'text-description/80 hover:text-normal'}`}
                             >
                                 {tabKey}
@@ -262,9 +262,9 @@ const DashboardPersonality = () => {
                     </div>
                     <div className="bg-white/[0.02] border border-white/5 p-10 md:p-14 lg:p-16 rounded-[2rem] flex-1 backdrop-blur-xl relative overflow-hidden">
                         <div className="absolute top-0 right-0 p-10 opacity-5">
-                            <span className="font-jetbrains text-[90px] font-black tracking-tighter text-white leading-none">0{Object.keys(displayData.tabs).indexOf(activeTab) + 1}</span>
+                            <span className="font-montserrat text-[90px] font-black tracking-tighter text-white leading-none">0{Object.keys(displayData.tabs).indexOf(activeTab) + 1}</span>
                         </div>
-                        <h4 className="font-newsreader italic text-4xl text-normal mb-10 font-extralight tracking-tight underline-lime decoration-accent/30">{displayData.tabs[activeTab].title}</h4>
+                        <h4 className="font-montserrat text-4xl text-normal mb-10 font-semibold tracking-tight underline-lime decoration-accent/30">{displayData.tabs[activeTab].title}</h4>
                         <div className="space-y-8">
                             {displayData.tabs[activeTab].content.map((p, i) => (
                                 <p key={i} className="font-montserrat text-[14px] text-description/80 leading-[2.2] tracking-widest uppercase">
@@ -280,12 +280,12 @@ const DashboardPersonality = () => {
             <div className="result-reveal pt-12 border-t border-white/5 opacity-0 invisible">
                 <div className="flex flex-col md:flex-row items-center justify-between gap-8 mb-20">
                     <div>
-                        <h2 className="font-newsreader italic text-5xl md:text-6xl text-normal font-extralight mb-4 tracking-tighter">Recommended Architecture</h2>
-                        <p className="font-jetbrains text-[9px] text-description/80 tracking-[0.5em] uppercase italic">Accelerated learning paths tailored to your frequency.</p>
+                        <h2 className="font-montserrat text-normal mb-4 text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] transition-colors">Recommended Architecture</h2>
+                        <p className="font-montserrat text-[9px] text-description/80 tracking-[0.5em] uppercase">Accelerated learning paths tailored to your frequency.</p>
                     </div>
                     <Link 
                       to="/dashboard/courses"
-                      className="px-10 py-5 border border-white/10 font-jetbrains text-[9px] font-bold tracking-[0.4em] uppercase text-description/80 hover:text-normal hover:bg-white/5 transition-all duration-500 rounded-full"
+                      className="px-10 py-5 border border-white/10 font-montserrat text-[9px] font-bold tracking-[0.4em] uppercase text-description/80 hover:text-normal hover:bg-white/5 transition-all duration-500 rounded-full"
                     >
                       Browse Full Catalog
                     </Link>
@@ -300,7 +300,7 @@ const DashboardPersonality = () => {
                 <div className="flex flex-col md:flex-row items-center justify-center gap-8 py-12 border-t border-white/5">
                    <Link 
                       to="/personality-test"
-                      className="group flex items-center gap-6 px-12 py-5 border border-white/10 font-jetbrains text-[9px] font-bold tracking-[0.4em] uppercase text-description/80 hover:text-normal hover:bg-white/5 transition-all duration-500 rounded-full"
+                      className="group flex items-center gap-6 px-12 py-5 border border-white/10 font-montserrat text-[9px] font-bold tracking-[0.4em] uppercase text-description/80 hover:text-normal hover:bg-white/5 transition-all duration-500 rounded-full"
                    >
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="group-hover:rotate-180 transition-transform duration-700 opacity-40">
                          <path d="M2.5 2v6h6M21.5 22v-6h-6M22 11.5A10 10 0 0 0 3.2 7.2M2 12.5a10 10 0 0 0 18.8 4.3" />

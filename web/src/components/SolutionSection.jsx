@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react'
+﻿import React, { useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/all'
 import sanitizeDisplay from '../utils/textSanitize'
@@ -64,7 +64,7 @@ const SolutionSection = ({ course, section }) => {
 
       <div className="grid grid-cols-1 min-[1301px]:grid-cols-[1fr_1.8fr] gap-12 min-[1301px]:gap-20 items-start mb-28 px-4 md:px-0">
         <div className="space-y-8 min-[1301px]:sticky min-[1301px]:top-32 transition-all duration-500">
-          <h2 className="sol-title font-newsreader italic text-4xl md:text-5xl lg:text-6xl text-slate-900 font-extralight tracking-tight leading-[1.1]">
+          <h2 className="sol-title font-montserrat text-slate-900 text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] transition-colors">
             {sanitizeDisplay(section?.title || "The Solution").split(' ').map((word, i, arr) => (
               <React.Fragment key={i}>
                 {i === arr.length - 1 ? (
@@ -94,7 +94,7 @@ const SolutionSection = ({ course, section }) => {
         <div className="space-y-16 mb-20">
           {section?.outcomeTitle && (
             <div className="text-center">
-              <h3 className="sol-title font-newsreader italic text-3xl md:text-5xl text-slate-900 font-extralight tracking-tight">
+              <h3 className="sol-title font-montserrat text-3xl md:text-5xl text-slate-900 font-bold tracking-tight">
                 {sanitizeDisplay(section.outcomeTitle)}
               </h3>
             </div>
@@ -117,7 +117,7 @@ const SolutionSection = ({ course, section }) => {
       <div className="space-y-16">
         {section?.solutionTitle && (
           <div className="text-center">
-            <h3 className="sol-title font-newsreader italic text-3xl md:text-5xl text-slate-900 font-extralight tracking-tight">
+            <h3 className="sol-title font-montserrat text-3xl md:text-5xl text-slate-900 font-bold tracking-tight">
               {sanitizeDisplay(section.solutionTitle)}
             </h3>
           </div>

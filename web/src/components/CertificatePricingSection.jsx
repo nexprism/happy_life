@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+﻿import React, { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import { gsap } from 'gsap'
@@ -87,7 +87,7 @@ const CertificatePricingSection = ({ course }) => {
 
          {/* 1. Header Area with fixed overlap */}
          <div className="text-center mb-10 lg:mb-24 reveal-item">
-            <h2 className="font-newsreader italic text-[clamp(3rem,8vw,5rem)] text-normal font-extralight tracking-tighter leading-tight">
+            <h2 className="font-montserrat text-normal text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] transition-colors">
                Get Started with the <span className="text-accent underline decoration-accent/20">Perfect Plan.</span>
             </h2>
          </div>
@@ -112,7 +112,7 @@ const CertificatePricingSection = ({ course }) => {
 
                   {/* USER NAME OVERLAY */}
                   <div className="absolute top-[49%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-full text-center pointer-events-none px-8">
-                     <span className="font-newsreader font-semibold italic text-[#1a2e4c] text-[clamp(1.1rem,2.2vw,1.8rem)] leading-none drop-shadow-xs tracking-wide">
+                     <span className="font-montserrat font-semibold text-[#1a2e4c] text-[clamp(1.1rem,2.2vw,1.8rem)] leading-none drop-shadow-xs tracking-wide">
                         {displayName}
                      </span>
                   </div>
@@ -128,7 +128,7 @@ const CertificatePricingSection = ({ course }) => {
                    </div> */}
                </div>
                <div className="mt-8 space-y-4">
-                  <p className="font-jetbrains text-[9px] text-amber-700 tracking-[0.5em] uppercase text-center md:text-left font-bold">{course?.certificateTitle || "Certification Protocol Available Upon Completion"}</p>
+                  <p className="font-montserrat text-[9px] text-amber-700 tracking-[0.5em] uppercase text-center md:text-left font-bold">{course?.certificateTitle || "Certification Protocol Available Upon Completion"}</p>
                </div>
             </div>
 
@@ -149,18 +149,18 @@ const CertificatePricingSection = ({ course }) => {
 
                         <div className="flex justify-between items-center">
                            <div className="space-y-1">
-                              <h3 className="font-newsreader italic text-3xl md:text-4xl text-slate-900 leading-none font-extralight tracking-tight">
+                              <h3 className="font-montserrat text-3xl md:text-4xl text-slate-900 leading-none font-bold tracking-tight">
                                  {plan.title}
                               </h3>
-                              <p className="font-jetbrains text-[9px] text-slate-600 tracking-widest uppercase font-bold">
+                              <p className="font-montserrat text-[9px] text-slate-600 tracking-widest uppercase font-bold">
                                  {plan.subtitle}
                               </p>
                            </div>
 
                            <div className="flex items-center gap-8">
                               <div className="flex flex-col items-end">
-                                 <span className="font-newsreader italic text-3xl md:text-5xl text-amber-700 font-normal">₹{plan.price}</span>
-                                 <span className="font-jetbrains text-[7px] text-slate-400 uppercase tracking-widest">Single Access</span>
+                                 <span className="font-montserrat text-3xl md:text-5xl text-amber-700 font-normal">₹{plan.price}</span>
+                                 <span className="font-montserrat text-[7px] text-slate-400 uppercase tracking-widest">Single Access</span>
                               </div>
 
                               {/* Custom Selection Circle */}
@@ -185,7 +185,7 @@ const CertificatePricingSection = ({ course }) => {
                      onClick={handleContinue}
                      className="w-full relative group bg-accent px-6 md:px-12 py-6 md:py-7 flex items-center justify-center gap-4 md:gap-6 hover:scale-[1.02] active:scale-95 transition-all duration-500 rounded-full shadow-accent-soft"
                   >
-                     <span className="relative z-10 font-jetbrains text-slate-950 text-[10px] md:text-xs font-black tracking-[0.3em] md:tracking-[0.6em] uppercase whitespace-nowrap">Continue to Buy</span>
+                     <span className="relative z-10 font-montserrat text-slate-950 text-[10px] md:text-xs font-black tracking-[0.3em] md:tracking-[0.6em] uppercase whitespace-nowrap">Continue to Buy</span>
                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="relative z-10 stroke-slate-950 group-hover:translate-x-2 transition-transform duration-500">
                         <path d="M5 12h14M12 5l7 7-7 7" strokeWidth="3" />
                      </svg>
@@ -194,11 +194,11 @@ const CertificatePricingSection = ({ course }) => {
                   <div className="mt-8 flex items-center justify-center gap-10 opacity-30">
                      <div className="flex items-center gap-2">
                         <div className="w-1.5 h-1.5 bg-accent rounded-full" />
-                        <span className="font-jetbrains text-[8px] tracking-widest uppercase">{t('sslSecured')}</span>
+                        <span className="font-montserrat text-[8px] tracking-widest uppercase">{t('sslSecured')}</span>
                      </div>
                      <div className="flex items-center gap-2">
                         <div className="w-1.5 h-1.5 bg-accent rounded-full" />
-                        <span className="font-jetbrains text-[8px] tracking-widest uppercase">{t('instantActivation')}</span>
+                        <span className="font-montserrat text-[8px] tracking-widest uppercase">{t('instantActivation')}</span>
                      </div>
                   </div>
                </div>

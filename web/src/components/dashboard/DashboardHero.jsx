@@ -1,4 +1,4 @@
-import React from 'react'
+﻿import React from 'react'
 import { useSelector } from 'react-redux'
 import { useLanguage } from '../../context/LanguageContext'
 
@@ -27,7 +27,7 @@ const DashboardHero = () => {
       <div className="flex justify-between items-center z-10">
          <div className="flex items-center gap-3 px-3.5 py-1 bg-amber-100 border border-amber-300 rounded-full">
             <div className="w-2 h-2 bg-amber-600 rounded-full animate-pulse" />
-            <span className="font-jetbrains text-[10px] text-amber-900 font-black uppercase tracking-wider">{t('systemActive')}</span>
+            <span className="font-montserrat text-[10px] text-amber-900 font-black uppercase tracking-wider">{t('systemActive')}</span>
          </div>
          
          {/* Circular Progress Ring */}
@@ -37,15 +37,15 @@ const DashboardHero = () => {
                <circle cx="40" cy="40" r="35" fill="none" stroke="currentColor" strokeWidth="6" strokeDasharray={2 * Math.PI * 35} strokeDashoffset={2 * Math.PI * 35 - (completionRate / 100) * 2 * Math.PI * 35} className="text-amber-500 transition-all duration-1000 ease-out" />
             </svg>
             <div className="absolute flex flex-col items-center justify-center">
-               <span className="font-jetbrains text-base font-black text-slate-900">{completionRate}%</span>
+               <span className="font-montserrat text-base font-black text-slate-900">{completionRate}%</span>
             </div>
          </div>
       </div>
 
       {/* Main Content */}
       <div className="space-y-3 my-6 z-10 relative">
-         <h1 className="font-newsreader italic text-4xl md:text-6xl text-slate-900 font-bold tracking-tight leading-tight">
-            {t('welcomeHello')}, <span className="not-italic font-black text-amber-800">{displayName}</span>
+         <h1 className="font-montserrat text-slate-900 text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] transition-colors">
+            {t('welcomeHello')}, <span className="font-black text-amber-800">{displayName}</span>
          </h1>
          <p className="font-montserrat text-xs md:text-sm text-slate-600 max-w-md font-medium leading-relaxed">
             {t('onTrack')}
@@ -55,13 +55,13 @@ const DashboardHero = () => {
       {/* Bottom Stats Ribbon */}
       <div className="pt-6 border-t border-slate-100 flex flex-wrap items-center gap-6 md:gap-10 z-10">
          <div>
-            <span className="font-jetbrains text-[9px] text-slate-500 uppercase tracking-widest block font-bold mb-1">{t('currentXP')}</span>
-            <span className="font-jetbrains text-xl font-black text-slate-900">{currentXP} XP</span>
+            <span className="font-montserrat text-[9px] text-slate-500 uppercase tracking-widest block font-bold mb-1">{t('currentXP')}</span>
+            <span className="font-montserrat text-xl font-black text-slate-900">{currentXP} XP</span>
          </div>
          <div className="h-8 w-[1px] bg-slate-200" />
          <div>
-            <span className="font-jetbrains text-[9px] text-slate-500 uppercase tracking-widest block font-bold mb-1">{t('carrierLevel')}</span>
-            <span className="font-jetbrains text-xl font-black text-amber-700">{currentLevel}</span>
+            <span className="font-montserrat text-[9px] text-slate-500 uppercase tracking-widest block font-bold mb-1">{t('carrierLevel')}</span>
+            <span className="font-montserrat text-xl font-black text-amber-700">{currentLevel}</span>
          </div>
       </div>
     </div>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+﻿import React, { useState, useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
 
 const CreateTopicModal = ({ isOpen, onClose, onSubmit }) => {
@@ -89,10 +89,10 @@ const CreateTopicModal = ({ isOpen, onClose, onSubmit }) => {
         {/* Header Terminal */}
         <div className="flex-shrink-0 flex items-center justify-between p-5 border-b border-border bg-card">
            <div className="flex items-center gap-4">
-              <div className="w-10 h-10 rounded-none bg-accent text-white flex items-center justify-center font-jetbrains text-sm font-bold">
+              <div className="w-10 h-10 rounded-none bg-accent text-white flex items-center justify-center font-montserrat text-sm font-bold">
                  AS
               </div>
-              <span className="font-newsreader italic text-xl text-normal font-bold">Create Discourse Topic</span>
+              <span className="font-montserrat text-xl text-normal font-bold">Create Discourse Topic</span>
            </div>
             <button 
               onClick={handleClose}
@@ -109,7 +109,7 @@ const CreateTopicModal = ({ isOpen, onClose, onSubmit }) => {
            <div className="space-y-3">
               <div className="flex items-center gap-3">
                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-accent"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-                 <span className="font-jetbrains text-[10px] font-bold text-accent tracking-[0.3em] uppercase">Title <span className="text-red-500">*</span></span>
+                 <span className="font-montserrat text-[10px] font-bold text-accent tracking-[0.3em] uppercase">Title <span className="text-red-500">*</span></span>
               </div>
               <div className="relative group">
                  <input 
@@ -117,9 +117,9 @@ const CreateTopicModal = ({ isOpen, onClose, onSubmit }) => {
                    value={title}
                    onChange={(e) => setTitle(e.target.value.substring(0, 100))}
                    placeholder="e.g., Google Ads vs Meta Ads, which works better for eCommerce?"
-                   className="w-full bg-dark border border-border rounded-none px-5 py-4 font-jetbrains text-sm text-normal placeholder:text-description/60 focus:outline-none focus:border-accent transition-all"
+                   className="w-full bg-dark border border-border rounded-none px-5 py-4 font-montserrat text-sm text-normal placeholder:text-description/60 focus:outline-none focus:border-accent transition-all"
                  />
-                 <span className="absolute right-4 top-1/2 -translate-y-1/2 font-jetbrains text-[9px] text-description/60 uppercase tracking-widest">{title.length}/100</span>
+                 <span className="absolute right-4 top-1/2 -translate-y-1/2 font-montserrat text-[9px] text-description/60 uppercase tracking-widest">{title.length}/100</span>
               </div>
            </div>
 
@@ -127,16 +127,16 @@ const CreateTopicModal = ({ isOpen, onClose, onSubmit }) => {
            <div className="space-y-3">
               <div className="flex items-center gap-3">
                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-accent"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                 <span className="font-jetbrains text-[10px] font-bold text-accent tracking-[0.3em] uppercase">Content <span className="text-red-500">*</span></span>
+                 <span className="font-montserrat text-[10px] font-bold text-accent tracking-[0.3em] uppercase">Content <span className="text-red-500">*</span></span>
               </div>
               <div className="relative group">
                  <textarea 
                    value={content}
                    onChange={(e) => setContent(e.target.value.substring(0, 2000))}
                    placeholder="Describe your question or topic in detail..."
-                   className="w-full bg-dark border border-border rounded-none px-5 py-5 font-jetbrains text-sm text-normal placeholder:text-description/60 focus:outline-none focus:border-accent transition-all min-h-[180px] resize-none"
+                   className="w-full bg-dark border border-border rounded-none px-5 py-5 font-montserrat text-sm text-normal placeholder:text-description/60 focus:outline-none focus:border-accent transition-all min-h-[180px] resize-none"
                  />
-                 <span className="absolute right-4 bottom-4 font-jetbrains text-[9px] text-description/60 uppercase tracking-widest">{content.length}/2000</span>
+                 <span className="absolute right-4 bottom-4 font-montserrat text-[9px] text-description/60 uppercase tracking-widest">{content.length}/2000</span>
               </div>
            </div>
 
@@ -144,14 +144,14 @@ const CreateTopicModal = ({ isOpen, onClose, onSubmit }) => {
            <div className="space-y-3">
               <div className="flex items-center gap-3">
                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-accent"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
-                 <span className="font-jetbrains text-[10px] font-bold text-accent tracking-[0.3em] uppercase">Tags <span className="text-description font-normal ml-2 italic">(Select up to 5)</span></span>
+                 <span className="font-montserrat text-[10px] font-bold text-accent tracking-[0.3em] uppercase">Tags <span className="text-description font-normal ml-2">(Select up to 5)</span></span>
               </div>
               <div className="flex flex-wrap gap-2 pt-1">
                  {tags.map((tag) => (
                     <button 
                       key={tag}
                       onClick={() => toggleTag(tag)}
-                      className={`px-4 py-2 border font-jetbrains text-[9px] font-bold uppercase tracking-widest transition-all duration-300 rounded-none cursor-pointer
+                      className={`px-4 py-2 border font-montserrat text-[9px] font-bold uppercase tracking-widest transition-all duration-300 rounded-none cursor-pointer
                         ${selectedTags.includes(tag) ? 'bg-accent border-accent text-white shadow-sm' : 'border-border text-description hover:border-accent hover:text-normal bg-card'}`}
                     >
                        #{tag}
@@ -164,7 +164,7 @@ const CreateTopicModal = ({ isOpen, onClose, onSubmit }) => {
            <div className="space-y-3">
               <div className="flex items-center gap-3">
                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-accent"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
-                 <span className="font-jetbrains text-[10px] font-bold text-accent tracking-[0.3em] uppercase">Attachments <span className="text-description font-normal ml-2 italic">(Optional)</span></span>
+                 <span className="font-montserrat text-[10px] font-bold text-accent tracking-[0.3em] uppercase">Attachments <span className="text-description font-normal ml-2">(Optional)</span></span>
               </div>
 
               <input 
@@ -187,7 +187,7 @@ const CreateTopicModal = ({ isOpen, onClose, onSubmit }) => {
                  </div>
                  <div className="flex flex-col items-center gap-1">
                     <span className="font-montserrat text-xs font-bold uppercase tracking-wider text-normal">Click to upload files or drag and drop</span>
-                    <span className="font-jetbrains text-[9px] text-description uppercase tracking-wider">Images, PDFs, Documents (Max 10MB each)</span>
+                    <span className="font-montserrat text-[9px] text-description uppercase tracking-wider">Images, PDFs, Documents (Max 10MB each)</span>
                  </div>
               </div>
 
@@ -196,7 +196,7 @@ const CreateTopicModal = ({ isOpen, onClose, onSubmit }) => {
                 <div className="flex flex-wrap gap-3 pt-2">
                   {attachments.map((file, idx) => (
                     <div key={idx} className="flex items-center gap-3 px-4 py-2 bg-dark border border-border rounded-none group/file">
-                      <span className="font-jetbrains text-[10px] text-normal truncate max-w-[150px]">{file.name}</span>
+                      <span className="font-montserrat text-[10px] text-normal truncate max-w-[150px]">{file.name}</span>
                       <button 
                         onClick={(e) => {
                           e.stopPropagation();
@@ -217,7 +217,7 @@ const CreateTopicModal = ({ isOpen, onClose, onSubmit }) => {
         <div className="flex-shrink-0 p-5 border-t border-border flex items-center justify-end gap-6 bg-card">
             <button 
               onClick={handleClose}
-              className="font-jetbrains text-[11px] font-bold text-description hover:text-normal uppercase tracking-[0.3em] transition-colors py-3 px-2 cursor-pointer"
+              className="font-montserrat text-[11px] font-bold text-description hover:text-normal uppercase tracking-[0.3em] transition-colors py-3 px-2 cursor-pointer"
             >
                Cancel
             </button>

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react'
+﻿import React, { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { Link } from 'react-router-dom'
@@ -52,10 +52,10 @@ const Footer = () => {
 
         {/* Statement / Slogan Typography */}
         <div className="footer-reveal text-center space-y-1 md:space-y-1.5 mb-10 md:mb-12">
-          <h2 className="font-montserrat text-2xl sm:text-4xl md:text-5xl lg:text-6xl leading-[1.08] tracking-tight font-light text-white">
+          <h2 className="font-montserrat text-white text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] transition-colors">
             We don't do <span className="font-extrabold uppercase tracking-tighter text-white">BLACK MAGIC</span>
           </h2>
-          <h2 className="font-montserrat text-2xl sm:text-4xl md:text-5xl lg:text-6xl leading-[1.08] tracking-tight font-light text-white">
+          <h2 className="font-montserrat text-white text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] transition-colors">
             No overnight results <span className="font-extrabold uppercase tracking-tighter text-white">GUARANTEE</span>
           </h2>
         </div>
@@ -100,7 +100,7 @@ const Footer = () => {
 
       {/* Bottom Navigation & Tagline Bar */}
       <div className="footer-reveal flex flex-col items-center gap-4 mt-12 relative z-10">
-        <div className="flex items-center gap-2 font-jetbrains text-xs text-white/90">
+        <div className="flex items-center gap-2 font-montserrat text-xs text-white/90">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white/80">
             <rect width="20" height="16" x="2" y="4" rx="2" />
             <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
@@ -110,7 +110,7 @@ const Footer = () => {
           </a>
         </div>
 
-        <div className="flex flex-wrap justify-center gap-x-8 gap-y-2 font-jetbrains text-[10px] uppercase tracking-[0.2em] text-white">
+        <div className="flex flex-wrap justify-center gap-x-8 gap-y-2 font-montserrat text-[10px] uppercase tracking-[0.2em] text-white">
           <Link className="hover:opacity-70 transition-opacity" to="/privacy-policy">Privacy Policy</Link>
           <Link className="hover:opacity-70 transition-opacity" to="/courses">Services</Link>
           <Link className="hover:opacity-70 transition-opacity" to="/news">Blog</Link>
@@ -119,7 +119,7 @@ const Footer = () => {
         </div>
 
         <div className="opacity-50 text-white text-center">
-          <p className="font-jetbrains text-[8px] md:text-[9px] uppercase tracking-[0.4em]">Align Your Energy, Unlock Success, and Live with Purpose</p>
+          <p className="font-montserrat text-[8px] md:text-[9px] uppercase tracking-[0.4em]">Align Your Energy, Unlock Success, and Live with Purpose</p>
         </div>
       </div>
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+﻿import React, { useState, useEffect, useRef } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { logout } from '../../redux/slices/authSlice'
@@ -185,8 +185,8 @@ const DashboardHeader = () => {
                     onClick={item.path === '#' ? undefined : toggleMenu}
                     className="flex items-center gap-6 group/link py-4 border-b border-slate-100 hover:border-accent/40 transition-all duration-500"
                   >
-                    <span className="font-jetbrains text-[10px] text-accent group-hover/link:text-amber-600 tracking-widest transition-colors italic">0{i + 1}</span>
-                    <span className={`font-newsreader text-2xl md:text-3xl lg:text-4xl font-extralight tracking-tighter leading-none transition-all duration-500 ${isActive ? 'text-accent italic font-normal' : 'text-slate-800 group-hover/link:text-amber-600 group-hover/link:translate-x-2'}`}>
+                    <span className="font-montserrat text-[10px] text-accent group-hover/link:text-amber-600 tracking-widest transition-colors">0{i + 1}</span>
+                    <span className={`font-montserrat text-2xl md:text-3xl lg:text-4xl font-normal tracking-tighter leading-none transition-all duration-500 ${isActive ? 'text-accent font-normal' : 'text-slate-800 group-hover/link:text-amber-600 group-hover/link:translate-x-2'}`}>
                       {item.name}
                     </span>
                   </Link>
@@ -198,7 +198,7 @@ const DashboardHeader = () => {
                           key={si}
                           to={sub.path}
                           onClick={toggleMenu}
-                          className="font-jetbrains text-[8px] text-slate-600 hover:text-accent tracking-[0.4em] uppercase transition-all flex items-center gap-2"
+                          className="font-montserrat text-[8px] text-slate-600 hover:text-accent tracking-[0.4em] uppercase transition-all flex items-center gap-2"
                         >
                           <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="m9 18 6-6-6-6" /></svg>
                           {sub.name}
@@ -213,11 +213,11 @@ const DashboardHeader = () => {
 
           <div className="dash-menu-item w-full max-w-4xl mt-20 pt-8 border-t border-slate-100 flex flex-col md:flex-row justify-between items-center gap-8 text-center md:text-left pb-20">
             <div className="space-y-1">
-              <p className="font-jetbrains text-[9px] tracking-[0.6em] text-slate-600 uppercase italic">Where Ambition Meets Execution</p>
+              <p className="font-montserrat text-[9px] tracking-[0.6em] text-slate-600 uppercase">Where Ambition Meets Execution</p>
             </div>
             <button
               onClick={() => setShowLogoutConfirm(true)}
-              className="px-8 py-4 border border-red-500/20 bg-red-50 text-red-600 font-jetbrains text-[9px] tracking-[0.4em] uppercase hover:bg-red-600 hover:text-white transition-all rounded-xl flex items-center gap-3 group/logout"
+              className="px-8 py-4 border border-red-500/20 bg-red-50 text-red-600 font-montserrat text-[9px] tracking-[0.4em] uppercase hover:bg-red-600 hover:text-white transition-all rounded-xl flex items-center gap-3 group/logout"
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="transition-transform group-hover/logout:translate-x-1"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" /></svg>
               LOG OUT
@@ -257,7 +257,7 @@ const DashboardHeader = () => {
               return (
                 <div key={item.name} className="relative group/nav py-2">
                   <button
-                    className={`font-jetbrains text-[9px] tracking-[0.2em] font-black transition-all duration-300 flex items-center gap-1
+                    className={`font-montserrat text-[9px] tracking-[0.2em] font-black transition-all duration-300 flex items-center gap-1
                          ${isActive ? 'text-amber-600' : 'text-slate-700 hover:text-slate-900'}`}
                   >
                     {item.name}
@@ -271,7 +271,7 @@ const DashboardHeader = () => {
                         <Link
                           key={sub.name}
                           to={sub.path}
-                          className="font-jetbrains text-[9px] text-slate-700 hover:text-accent font-bold tracking-[0.15em] uppercase transition-all flex items-center gap-3 group/sub"
+                          className="font-montserrat text-[9px] text-slate-700 hover:text-accent font-bold tracking-[0.15em] uppercase transition-all flex items-center gap-3 group/sub"
                         >
                           <div className="w-1.5 h-[1.5px] bg-accent group-hover/sub:w-4 transition-all" />
                           {sub.name}
@@ -287,7 +287,7 @@ const DashboardHeader = () => {
               <Link
                 key={item.name}
                 to={item.path}
-                className={`font-jetbrains text-[9px] tracking-[0.2em] font-black transition-all duration-300 relative py-2
+                className={`font-montserrat text-[9px] tracking-[0.2em] font-black transition-all duration-300 relative py-2
                      ${isActive ? 'text-amber-600' : 'text-slate-700 hover:text-slate-900'}`}
               >
                 {item.name}
@@ -331,23 +331,23 @@ const DashboardHeader = () => {
           <div className={`absolute top-14 right-0 w-80 bg-white border border-slate-200 rounded-2xl p-4 shadow-2xl transition-all duration-300 origin-top
               ${showNotifications ? 'opacity-100 scale-100 translate-y-0 visible' : 'opacity-0 scale-95 -translate-y-2 invisible pointer-events-none'}`}>
             <div className="flex justify-between items-center mb-4 pb-2 border-b border-slate-100">
-              <span className="font-jetbrains text-[8px] text-amber-600 tracking-[0.2em] font-black uppercase">{t('recentDispatches') || 'RECENT DISPATCHES'}</span>
-              <button onClick={handleMarkAllRead} className="font-jetbrains text-[8px] text-slate-500 uppercase tracking-widest cursor-pointer hover:text-slate-800 bg-transparent border-none p-0">{t('markAllRead') || 'MARK ALL READ'}</button>
+              <span className="font-montserrat text-[8px] text-amber-600 tracking-[0.2em] font-black uppercase">{t('recentDispatches') || 'RECENT DISPATCHES'}</span>
+              <button onClick={handleMarkAllRead} className="font-montserrat text-[8px] text-slate-500 uppercase tracking-widest cursor-pointer hover:text-slate-800 bg-transparent border-none p-0">{t('markAllRead') || 'MARK ALL READ'}</button>
             </div>
             <div className="space-y-3 max-h-[300px] overflow-y-auto">
               {notifications?.length > 0 ? notifications.slice(0, 5).map((item, i) => (
                 <div key={i} className={`group cursor-pointer p-3 rounded-lg hover:bg-slate-50 transition-colors border-l-2 ${item.status === 1 ? 'border-amber-400 bg-amber-50/30' : 'border-transparent hover:border-accent'}`}>
                   <div className="flex justify-between items-start mb-1">
-                    <h5 className="font-newsreader italic text-sm text-slate-900 group-hover:text-amber-600 transition-colors">{item.data?.title || 'Notification'}</h5>
-                    <span className="font-jetbrains text-[6px] text-amber-700 bg-amber-50 border border-amber-200 px-1 rounded">{item.status === 1 ? 'NEW' : 'READ'}</span>
+                    <h5 className="font-montserrat text-sm text-slate-900 group-hover:text-amber-600 transition-colors">{item.data?.title || 'Notification'}</h5>
+                    <span className="font-montserrat text-[6px] text-amber-700 bg-amber-50 border border-amber-200 px-1 rounded">{item.status === 1 ? 'NEW' : 'READ'}</span>
                   </div>
-                  <p className="font-jetbrains text-[9px] text-slate-600 leading-tight line-clamp-2">{item.data?.description || item.data?.body || ''}</p>
+                  <p className="font-montserrat text-[9px] text-slate-600 leading-tight line-clamp-2">{item.data?.description || item.data?.body || ''}</p>
                 </div>
               )) : (
                 <p className="text-xs text-slate-500 text-center py-4">No recent notifications</p>
               )}
             </div>
-            <Link to="/dashboard/notifications" className="w-full mt-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg font-jetbrains text-[8px] text-slate-700 uppercase tracking-[0.3em] hover:bg-accent hover:text-slate-950 font-bold transition-all flex justify-center text-center items-center">{t('viewAllAlerts') || 'VIEW ALL ALERTS'}</Link>
+            <Link to="/dashboard/notifications" className="w-full mt-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg font-montserrat text-[8px] text-slate-700 uppercase tracking-[0.3em] hover:bg-accent hover:text-slate-950 font-bold transition-all flex justify-center text-center items-center">{t('viewAllAlerts') || 'VIEW ALL ALERTS'}</Link>
           </div>
         </div>
 
@@ -357,7 +357,7 @@ const DashboardHeader = () => {
             onClick={() => { setShowProfileMenu(!showProfileMenu); setShowNotifications(false); }}
             className="flex items-center gap-3 pl-3 border-l border-slate-200 group cursor-pointer"
           >
-            <div className="w-9 h-9 rounded-full bg-accent text-slate-950 flex items-center justify-center font-jetbrains text-xs font-black shadow-sm group-hover:scale-105 transition-all overflow-hidden border border-amber-300">
+            <div className="w-9 h-9 rounded-full bg-accent text-slate-950 flex items-center justify-center font-montserrat text-xs font-black shadow-sm group-hover:scale-105 transition-all overflow-hidden border border-amber-300">
               {avatarUrl ? (
                 <img src={avatarUrl} alt={currentUser?.fullName || 'User'} className="w-full h-full object-cover" />
               ) : (
@@ -370,8 +370,8 @@ const DashboardHeader = () => {
           <div className={`absolute top-14 right-0 w-56 bg-white border border-slate-200 rounded-2xl p-4 shadow-2xl transition-all duration-300 origin-top
               ${showProfileMenu ? 'opacity-100 scale-100 translate-y-0 visible' : 'opacity-0 scale-95 -translate-y-2 invisible pointer-events-none'}`}>
             <div className="mb-4 pb-3 border-b border-slate-100">
-              <p className="font-newsreader italic text-lg text-slate-900 leading-none mb-1">{currentUser?.fullName || currentUser?.name || 'Protocol User'}</p>
-              <p className="font-jetbrains text-[8px] text-amber-600 tracking-[0.2em] font-black uppercase">RANK {currentUser?.rank || currentUser?.leaderboard?.rank || '#--'} {t('rankCarrier')}</p>
+              <p className="font-montserrat text-lg text-slate-900 leading-none mb-1">{currentUser?.fullName || currentUser?.name || 'Protocol User'}</p>
+              <p className="font-montserrat text-[8px] text-amber-600 tracking-[0.2em] font-black uppercase">RANK {currentUser?.rank || currentUser?.leaderboard?.rank || '#--'} {t('rankCarrier')}</p>
             </div>
             <div className="space-y-1">
               {[
@@ -384,11 +384,11 @@ const DashboardHeader = () => {
                   className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-slate-50 transition-colors group"
                 >
                   <div className="w-1.5 h-1.5 rounded-full bg-accent group-hover:scale-125 transition-transform" />
-                  <span className="font-jetbrains text-[9px] text-slate-700 group-hover:text-slate-950 font-bold uppercase tracking-widest">{item.name}</span>
+                  <span className="font-montserrat text-[9px] text-slate-700 group-hover:text-slate-950 font-bold uppercase tracking-widest">{item.name}</span>
                 </Link>
               ))}
             </div>
-            <button onClick={() => setShowLogoutConfirm(true)} className="w-full mt-4 py-3 bg-red-50 border border-red-200 text-red-600 rounded-xl font-jetbrains text-[8px] font-black uppercase tracking-[0.4em] hover:bg-red-600 hover:text-white transition-all">{t('logOut')}</button>
+            <button onClick={() => setShowLogoutConfirm(true)} className="w-full mt-4 py-3 bg-red-50 border border-red-200 text-red-600 rounded-xl font-montserrat text-[8px] font-black uppercase tracking-[0.4em] hover:bg-red-600 hover:text-white transition-all">{t('logOut')}</button>
           </div>
         </div>
 

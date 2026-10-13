@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+﻿import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import RollingText from './RollingText'
 import authorizedFetch from '../utils/apiClient'
@@ -115,11 +115,11 @@ const StackingBanners = () => {
             <div className="space-y-6">
               <div className="flex items-center gap-4">
                 <div className="w-8 h-[1px] bg-accent/40"></div>
-                <span className="font-jetbrains text-[10px] text-accent tracking-[0.5em] uppercase opacity-80">
+                <span className="font-montserrat text-[10px] text-accent tracking-[0.5em] uppercase opacity-80">
                   {t('selectedForYou') || 'Selected for You'}
                 </span>
               </div>
-              <h2 className="font-newsreader text-6xl md:text-8xl italic text-normal leading-[0.85] tracking-tighter">
+              <h2 className="font-montserrat text-normal text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] transition-colors">
                 The <br />
                 <span className="text-accent ml-8">Selection</span>
               </h2>
@@ -129,7 +129,7 @@ const StackingBanners = () => {
             <div className="relative pl-8">
               <div className="absolute left-0 top-0 bottom-0 w-[1px] bg-gradient-to-b from-accent/60 via-accent/10 to-transparent"></div>
               <div className="absolute left-[-3px] top-0 w-[7px] h-[7px] rounded-full bg-accent animate-pulse shadow-[0_0_15px_rgba(33,113,181,0.8)]"></div>
-              <p className="font-jetbrains text-[11px] text-description tracking-[0.2em] leading-[2.2] uppercase max-w-sm">
+              <p className="font-montserrat text-[11px] text-description tracking-[0.2em] leading-[2.2] uppercase max-w-sm">
                 {t('selectionSub') || 'A hand-picked collection of lessons built to help you grow faster. Learn the best strategies from our most popular courses.'}
               </p>
             </div>

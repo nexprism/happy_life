@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+﻿import React, { useState, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { gsap } from 'gsap';
 import { submitLapaasTicket, resetSupportState } from '../redux/slices/supportSlice';
@@ -149,13 +149,13 @@ const Contact = () => {
             <div className="max-w-7xl mx-auto relative z-10">
                 {/* Contact Header */}
                 <div className="mb-20 contact-reveal">
-                    <span className="font-jetbrains text-[10px] font-bold text-amber-800 tracking-[0.5em] uppercase mb-4 block">
+                    <span className="font-montserrat text-[10px] font-bold text-amber-800 tracking-[0.5em] uppercase mb-4 block">
                         {t('getInTouch')}
                     </span>
-                    <h1 className="font-newsreader text-[clamp(3rem,8vw,7rem)] leading-[0.9] font-extralight uppercase select-none tracking-tighter text-slate-900">
+                    <h1 className="font-montserrat uppercase select-none text-slate-900 text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] transition-colors">
                         {t('contactUs')}
                     </h1>
-                    <p className="font-jetbrains text-slate-600 text-sm max-w-xl mt-6 leading-relaxed">
+                    <p className="font-montserrat text-slate-600 text-sm max-w-xl mt-6 leading-relaxed">
                         {t('contactDesc')}
                     </p>
                 </div>
@@ -164,7 +164,7 @@ const Contact = () => {
                     {/* Left Column: Form */}
                     <div className="lg:col-span-7 space-y-10 contact-reveal">
                         <div className="space-y-2">
-                            <h2 className="font-newsreader italic text-3xl text-slate-900 font-bold tracking-tight uppercase">
+                            <h2 className="font-montserrat text-slate-900 uppercase text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] transition-colors">
                                 {t('sendMessage')}
                             </h2>
                             <div className="h-[2px] w-12 bg-amber-400 mt-4" />
@@ -173,7 +173,7 @@ const Contact = () => {
                         <form onSubmit={handleSubmit} className="space-y-6">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="space-y-2">
-                                    <label className="font-jetbrains text-[9px] text-slate-600 uppercase tracking-[0.3em] font-bold">{t('yourNameLabel')} *</label>
+                                    <label className="font-montserrat text-[9px] text-slate-600 uppercase tracking-[0.3em] font-bold">{t('yourNameLabel')} *</label>
                                     <input
                                         type="text"
                                         name="userName"
@@ -181,11 +181,11 @@ const Contact = () => {
                                         onChange={handleInputChange}
                                         placeholder={t('enterYourName')}
                                         required
-                                        className="w-full bg-white border border-slate-200 rounded-xl p-4 font-jetbrains text-xs text-slate-900 focus:border-amber-500 outline-none transition-all shadow-sm placeholder:text-slate-400"
+                                        className="w-full bg-white border border-slate-200 rounded-xl p-4 font-montserrat text-xs text-slate-900 focus:border-amber-500 outline-none transition-all shadow-sm placeholder:text-slate-400"
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="font-jetbrains text-[9px] text-slate-600 uppercase tracking-[0.3em] font-bold">{t('emailAddressLabel')} *</label>
+                                    <label className="font-montserrat text-[9px] text-slate-600 uppercase tracking-[0.3em] font-bold">{t('emailAddressLabel')} *</label>
                                     <input
                                         type="email"
                                         name="userEmail"
@@ -193,14 +193,14 @@ const Contact = () => {
                                         onChange={handleInputChange}
                                         placeholder={t('enterYourEmail')}
                                         required
-                                        className="w-full bg-white border border-slate-200 rounded-xl p-4 font-jetbrains text-xs text-slate-900 focus:border-amber-500 outline-none transition-all shadow-sm placeholder:text-slate-400"
+                                        className="w-full bg-white border border-slate-200 rounded-xl p-4 font-montserrat text-xs text-slate-900 focus:border-amber-500 outline-none transition-all shadow-sm placeholder:text-slate-400"
                                     />
                                 </div>
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                                 <div className="md:col-span-1 space-y-2">
-                                    <label className="font-jetbrains text-[9px] text-slate-600 uppercase tracking-[0.3em] font-bold">{t('phoneCodeLabel')} *</label>
+                                    <label className="font-montserrat text-[9px] text-slate-600 uppercase tracking-[0.3em] font-bold">{t('phoneCodeLabel')} *</label>
                                     <input
                                         type="text"
                                         name="code"
@@ -208,11 +208,11 @@ const Contact = () => {
                                         onChange={handleInputChange}
                                         placeholder="+91"
                                         required
-                                        className="w-full bg-white border border-slate-200 rounded-xl p-4 font-jetbrains text-xs text-slate-900 focus:border-amber-500 outline-none transition-all shadow-sm"
+                                        className="w-full bg-white border border-slate-200 rounded-xl p-4 font-montserrat text-xs text-slate-900 focus:border-amber-500 outline-none transition-all shadow-sm"
                                     />
                                 </div>
                                 <div className="md:col-span-3 space-y-2">
-                                    <label className="font-jetbrains text-[9px] text-slate-600 uppercase tracking-[0.3em] font-bold">{t('phoneNumberLabel')} *</label>
+                                    <label className="font-montserrat text-[9px] text-slate-600 uppercase tracking-[0.3em] font-bold">{t('phoneNumberLabel')} *</label>
                                     <input
                                         type="tel"
                                         name="phoneNumber"
@@ -220,18 +220,18 @@ const Contact = () => {
                                         onChange={handleInputChange}
                                         placeholder={t('enterYourPhone')}
                                         required
-                                        className="w-full bg-white border border-slate-200 rounded-xl p-4 font-jetbrains text-xs text-slate-900 focus:border-amber-500 outline-none transition-all shadow-sm placeholder:text-slate-400"
+                                        className="w-full bg-white border border-slate-200 rounded-xl p-4 font-montserrat text-xs text-slate-900 focus:border-amber-500 outline-none transition-all shadow-sm placeholder:text-slate-400"
                                     />
                                 </div>
                             </div>
 
                             <div className="space-y-2">
-                                <label className="font-jetbrains text-[9px] text-slate-600 uppercase tracking-[0.3em] font-bold block">{t('subjectLabel')} *</label>
+                                <label className="font-montserrat text-[9px] text-slate-600 uppercase tracking-[0.3em] font-bold block">{t('subjectLabel')} *</label>
                                 <select
                                     name="subject"
                                     value={formData.subject}
                                     onChange={handleInputChange}
-                                    className="w-full bg-white border border-slate-200 rounded-xl p-4 font-jetbrains text-xs text-slate-900 focus:border-amber-500 outline-none transition-all shadow-sm cursor-pointer"
+                                    className="w-full bg-white border border-slate-200 rounded-xl p-4 font-montserrat text-xs text-slate-900 focus:border-amber-500 outline-none transition-all shadow-sm cursor-pointer"
                                 >
                                     {subjectOptions.map(opt => (
                                         <option key={opt} value={opt} className="bg-white text-slate-900">{opt}</option>
@@ -240,26 +240,26 @@ const Contact = () => {
                             </div>
 
                             <div className="space-y-2">
-                                <label className="font-jetbrains text-[9px] text-slate-600 uppercase tracking-[0.3em] font-bold">{t('messageLabel')}</label>
+                                <label className="font-montserrat text-[9px] text-slate-600 uppercase tracking-[0.3em] font-bold">{t('messageLabel')}</label>
                                 <textarea
                                     name="description"
                                     value={formData.description}
                                     onChange={handleInputChange}
                                     placeholder={t('tellUsHowHelp')}
                                     rows="5"
-                                    className="w-full bg-white border border-slate-200 rounded-xl p-4 outline-none focus:border-amber-500 transition-all font-jetbrains text-xs text-slate-900 resize-vertical shadow-sm placeholder:text-slate-400"
+                                    className="w-full bg-white border border-slate-200 rounded-xl p-4 outline-none focus:border-amber-500 transition-all font-montserrat text-xs text-slate-900 resize-vertical shadow-sm placeholder:text-slate-400"
                                 />
                             </div>
 
                             <button
                                 type="submit"
                                 disabled={submitting}
-                                className="w-full bg-amber-400 text-slate-950 py-5 rounded-xl flex items-center justify-center gap-3 hover:scale-[1.01] active:scale-[0.98] transition-all duration-300 shadow-sm font-black font-jetbrains text-xs uppercase tracking-[0.4em]"
+                                className="w-full bg-amber-400 text-slate-950 py-5 rounded-xl flex items-center justify-center gap-3 hover:scale-[1.01] active:scale-[0.98] transition-all duration-300 shadow-sm font-black font-montserrat text-xs uppercase tracking-[0.4em]"
                             >
                                 {submitting ? 'SENDING...' : t('sendMessageBtn')}
                             </button>
 
-                            {error && <p className="font-jetbrains text-[10px] text-red-500 uppercase tracking-widest text-center italic">{error}</p>}
+                            {error && <p className="font-montserrat text-[10px] text-red-500 uppercase tracking-widest text-center">{error}</p>}
                         </form>
                     </div>
 
@@ -272,35 +272,35 @@ const Contact = () => {
                             <div className="space-y-8">
                                 {/* Header bracket */}
                                 <div className="flex justify-between items-center opacity-40">
-                                    <span className="font-jetbrains text-[8px] tracking-[0.4em] uppercase text-slate-500">Coordinates</span>
+                                    <span className="font-montserrat text-[8px] tracking-[0.4em] uppercase text-slate-500">Coordinates</span>
                                     <div className="h-[1px] w-16 bg-slate-300" />
-                                    <span className="font-jetbrains text-[8px] tracking-[0.1em] uppercase text-slate-500">Happy Life HQ</span>
+                                    <span className="font-montserrat text-[8px] tracking-[0.1em] uppercase text-slate-500">Happy Life HQ</span>
                                 </div>
 
                                 <div className="space-y-6">
                                     {/* Email Section */}
                                     <div className="space-y-2">
-                                        <h3 className="font-newsreader text-xl italic text-amber-800 font-bold">{t('emailSupport')}</h3>
-                                        <p className="font-jetbrains text-xs text-slate-600 leading-relaxed">
+                                        <h3 className="font-montserrat text-xl text-amber-800 font-bold">{t('emailSupport')}</h3>
+                                        <p className="font-montserrat text-xs text-slate-600 leading-relaxed">
                                             For general inquiries, course-related questions, or technical assistance:
                                         </p>
                                         <div className="pt-2">
                                             <a
                                                 href="mailto:happylifereport@gmail.com"
-                                                className="font-jetbrains text-base md:text-lg font-bold text-slate-900 hover:text-amber-600 transition-colors break-all"
+                                                className="font-montserrat text-base md:text-lg font-bold text-slate-900 hover:text-amber-600 transition-colors break-all"
                                             >
                                                 happylifereport@gmail.com
                                             </a>
                                         </div>
-                                        <p className="font-jetbrains text-[9px] text-slate-500 uppercase tracking-wider">
+                                        <p className="font-montserrat text-[9px] text-slate-500 uppercase tracking-wider">
                                             Response timeframe: <span className="text-amber-800 font-bold">24–48 hours</span>
                                         </p>
                                     </div>
 
                                     {/* Address Section */}
                                     {/* <div className="space-y-2 pt-4 border-t border-slate-100">
-                                        <h3 className="font-newsreader text-xl italic text-amber-800 font-bold">{t('officeAddress')}</h3>
-                                        <div className="font-jetbrains text-sm text-slate-800 leading-relaxed">
+                                        <h3 className="font-montserrat text-xl text-amber-800 font-bold">{t('officeAddress')}</h3>
+                                        <div className="font-montserrat text-sm text-slate-800 leading-relaxed">
                                             <p className="font-bold text-slate-900">Lapaas Digital Private Limited</p>
                                             <p className="text-slate-600">Sec 11, Rohini</p>
                                             <p className="text-slate-600">New Delhi, India</p>
@@ -309,8 +309,8 @@ const Contact = () => {
 
                                     {/* Feedback Info Section */}
                                     <div className="space-y-1.5 pt-4 border-t border-slate-100">
-                                        <h3 className="font-newsreader text-xl italic text-amber-800 font-bold">{t('feedbackSuggestions')}</h3>
-                                        <p className="font-jetbrains text-xs text-slate-600 leading-relaxed">
+                                        <h3 className="font-montserrat text-xl text-amber-800 font-bold">{t('feedbackSuggestions')}</h3>
+                                        <p className="font-montserrat text-xs text-slate-600 leading-relaxed">
                                             Your feedback helps us improve. If you have ideas, suggestions, or feature requests, email us with the subject: <span className="text-amber-800 font-bold">"Feedback – [Your Name]"</span>.
                                         </p>
                                     </div>
@@ -319,15 +319,15 @@ const Contact = () => {
 
                             {/* Social Grid */}
                             <div className="pt-8 mt-8 border-t border-slate-100">
-                                <h3 className="font-newsreader text-xl italic text-amber-800 font-bold mb-3">{t('socialMedia')}</h3>
+                                <h3 className="font-montserrat text-xl text-amber-800 font-bold mb-3">{t('socialMedia')}</h3>
                                 <div className="flex flex-col gap-2">
-                                    <div className="font-jetbrains text-xs text-slate-600">
+                                    <div className="font-montserrat text-xs text-slate-600">
                                         YouTube – <a href="https://youtube.com/@happylifeastro?si=6jttLMEZmVEyoDbS" target="_blank" rel="noopener noreferrer" className="text-amber-800 font-bold hover:underline transition-all">Happy Life Astro</a>
                                     </div>
-                                    <div className="font-jetbrains text-xs text-slate-600">
+                                    <div className="font-montserrat text-xs text-slate-600">
                                         Instagram – <a href="https://www.instagram.com/happy_life_astro?utm_source=qr&stkn=MTA5NHpxc2tpeXE4Yg%3D%3D" target="_blank" rel="noopener noreferrer" className="text-amber-800 font-bold hover:underline transition-all">@happy_life_astro</a>
                                     </div>
-                                    <div className="font-jetbrains text-xs text-slate-600">
+                                    <div className="font-montserrat text-xs text-slate-600">
                                         Email – <a href="mailto:happylifereport@gmail.com" className="text-amber-800 font-bold hover:underline transition-all">happylifereport@gmail.com</a>
                                     </div>
                                 </div>
@@ -355,16 +355,16 @@ const Contact = () => {
                             </div>
 
                             <div className="space-y-2">
-                                <span className="font-jetbrains text-[9px] text-green-700 uppercase tracking-[0.4em] font-black">Message Sent</span>
-                                <h3 className="font-newsreader italic text-3xl text-slate-900 font-bold tracking-tight">Thank You.</h3>
-                                <p className="font-jetbrains text-[10px] text-slate-600 uppercase tracking-widest mt-2">
+                                <span className="font-montserrat text-[9px] text-green-700 uppercase tracking-[0.4em] font-black">Message Sent</span>
+                                <h3 className="font-montserrat text-3xl text-slate-900 font-bold tracking-tight">Thank You.</h3>
+                                <p className="font-montserrat text-[10px] text-slate-600 uppercase tracking-widest mt-2">
                                     We have received your message. Our team aims to respond within 24–48 hours.
                                 </p>
                             </div>
 
                             <button
                                 onClick={() => setShowSuccessOverlay(false)}
-                                className="mt-4 w-full bg-amber-400 text-slate-950 py-4 rounded-xl font-jetbrains text-xs font-black uppercase tracking-[0.3em] hover:scale-[1.02] transition-transform duration-300 shadow-sm"
+                                className="mt-4 w-full bg-amber-400 text-slate-950 py-4 rounded-xl font-montserrat text-xs font-black uppercase tracking-[0.3em] hover:scale-[1.02] transition-transform duration-300 shadow-sm"
                             >
                                 CLOSE
                             </button>

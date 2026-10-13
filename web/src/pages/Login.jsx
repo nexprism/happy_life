@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+﻿import { useState, useEffect } from 'react'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { loginUser, googleLoginUser, clearAuthError, requestPasswordReset } from '../redux/slices/authSlice'
 import { useGoogleLogin } from '@react-oauth/google'
@@ -10,8 +10,13 @@ import './Login.css'
 const Login = () => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
+  const location = useLocation()
   const { loading, error, token } = useSelector((state) => state.auth)
   const { t } = useLanguage()
+
+  const from = location.state?.from?.pathname
+    ? `${location.state.from.pathname}${location.state.from.search || ''}`
+    : '/dashboard'
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -24,8 +29,8 @@ const Login = () => {
 
   // Redirect if already logged in
   useEffect(() => {
-    if (token) navigate('/dashboard', { replace: true })
-  }, [token, navigate])
+    if (token) navigate(from, { replace: true })
+  }, [token, navigate, from])
 
   // Clear error when inputs change
   useEffect(() => {
@@ -47,7 +52,7 @@ const Login = () => {
     if (!email.trim() || !password.trim()) return
     const resultAction = await dispatch(loginUser({ email: email.trim(), password }))
     if (loginUser.fulfilled.match(resultAction)) {
-      navigate('/dashboard', { replace: true })
+      navigate(from, { replace: true })
     }
   }
 
@@ -95,7 +100,7 @@ const Login = () => {
           platform: 'web'
         }));
         if (googleLoginUser.fulfilled.match(resultAction)) {
-          navigate('/dashboard', { replace: true })
+          navigate(from, { replace: true })
         }
       } catch (err) {
         console.error('Google Login Error:', err);
@@ -115,7 +120,7 @@ const Login = () => {
         </div>
 
         <div className="login-form-wrap">
-          <h1 className="login-title">{t('welcomeBackTitle')}</h1>
+          <h1 className="login-title text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] transition-colors">{t('welcomeBackTitle')}</h1>
           <p className="login-subtitle">{t('loginSubtitle')}</p>
 
           <button type="button" className="google-btn" onClick={() => handleGoogleLogin()}>
@@ -277,7 +282,7 @@ const Login = () => {
             <div className="forgot-modal__header">
               <div>
                 <p className="forgot-modal__eyebrow">{t('forgotPassword')}</p>
-                <h2 className="forgot-modal__title">{t('requestResetLink')}</h2>
+                <h2 className="forgot-modal__title text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] transition-colors">{t('requestResetLink')}</h2>
               </div>
               <button type="button" className="forgot-modal__close" onClick={closeForgotModal} aria-label="Close forgot password dialog">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

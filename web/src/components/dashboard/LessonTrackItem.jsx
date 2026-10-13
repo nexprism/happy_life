@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 
 const LessonTrackItem = ({ title, progress, isActive, onPlay, unlocked = true, type = 'video' }) => {
     const getIcon = () => {
@@ -34,16 +34,16 @@ const LessonTrackItem = ({ title, progress, isActive, onPlay, unlocked = true, t
     const getLabel = () => {
         switch (type) {
             case 'quiz':
-                return <span className="font-jetbrains text-[8px] bg-purple-600/20 text-purple-400 border border-purple-600/30 px-2 py-0.5 uppercase tracking-widest font-black">Quiz</span>;
+                return <span className="font-montserrat text-[8px] bg-purple-600/20 text-purple-400 border border-purple-600/30 px-2 py-0.5 uppercase tracking-widest font-black">Quiz</span>;
             case 'assignment':
-                return <span className="font-jetbrains text-[8px] bg-orange-500/20 text-orange-400 border border-orange-500/30 px-2 py-0.5 uppercase tracking-widest font-black">Assignment</span>;
+                return <span className="font-montserrat text-[8px] bg-orange-500/20 text-orange-400 border border-orange-500/30 px-2 py-0.5 uppercase tracking-widest font-black">Assignment</span>;
             case 'text':
-                return <span className="font-jetbrains text-[8px] bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 px-2 py-0.5 uppercase tracking-widest font-black">Reading</span>;
+                return <span className="font-montserrat text-[8px] bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 px-2 py-0.5 uppercase tracking-widest font-black">Reading</span>;
             default:
                 return (
                     <>
-                        <span className="font-jetbrains text-[8px] bg-amber-500/20 text-amber-400 border border-amber-500/30 px-2 py-0.5 uppercase tracking-widest font-black">Video</span>
-                        <span className="font-jetbrains text-[8px] bg-green-500/20 text-green-400 border border-green-500/30 px-2 py-0.5 uppercase tracking-widest font-black">Secure</span>
+                        <span className="font-montserrat text-[8px] bg-amber-500/20 text-amber-400 border border-amber-500/30 px-2 py-0.5 uppercase tracking-widest font-black">Video</span>
+                        <span className="font-montserrat text-[8px] bg-green-500/20 text-green-400 border border-green-500/30 px-2 py-0.5 uppercase tracking-widest font-black">Secure</span>
                     </>
                 );
         }
@@ -71,7 +71,7 @@ const LessonTrackItem = ({ title, progress, isActive, onPlay, unlocked = true, t
 
                 <div className="space-y-4 flex-1 min-w-0 pr-4">
                     <div className="flex flex-wrap items-center gap-3">
-                        <h4 className="font-jetbrains text-[13px] md:text-[15px] font-black text-normal tracking-tight truncate leading-tight group-hover:text-accent transition-colors">
+                        <h4 className="font-montserrat text-[13px] md:text-[15px] font-black text-normal tracking-tight truncate leading-tight group-hover:text-accent transition-colors">
                             {title}
                         </h4>
                         <div className="flex gap-2">
@@ -81,7 +81,7 @@ const LessonTrackItem = ({ title, progress, isActive, onPlay, unlocked = true, t
 
                     {/* Tactical Progress Protocol */}
                     <div className="space-y-2 max-w-sm">
-                        <div className="flex justify-between items-center font-jetbrains text-[9px] font-black tracking-[0.2em] uppercase">
+                        <div className="flex justify-between items-center font-montserrat text-[9px] font-black tracking-[0.2em] uppercase">
                                 <span className="text-description/80">Progress: {typeof progress === 'number' ? (Math.round(progress) === progress ? `${progress}%` : `${progress.toFixed(1)}%`) : `${progress}%`}</span>
                             </div>
                         <div className="h-1.5 bg-white/[0.05] relative overflow-hidden">

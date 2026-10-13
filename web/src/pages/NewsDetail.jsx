@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+﻿import React, { useEffect, useRef, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchNewsBySlug } from '../redux/slices/newsSlice'
@@ -94,12 +94,12 @@ const NewsDetail = () => {
         {/* 1. Header Section */}
         <div className="flex flex-col gap-8 mb-16">
             <div className="detail-reveal opacity-0">
-                <span className="px-3 py-1 bg-accent/20 border border-accent/30 text-accent font-jetbrains text-[9px] font-bold tracking-[0.2em] uppercase">
+                <span className="px-3 py-1 bg-accent/20 border border-accent/30 text-accent font-montserrat text-[9px] font-bold tracking-[0.2em] uppercase">
                     {article.category}
                 </span>
             </div>
 
-            <h1 className="detail-reveal opacity-0 font-newsreader text-4xl md:text-6xl text-normal leading-[1.1] selection:bg-accent selection:text-dark">
+            <h1 className="detail-reveal opacity-0 font-montserrat text-normal selection:bg-accent selection:text-dark text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] transition-colors">
                 {article.title}
             </h1>
 
@@ -122,7 +122,7 @@ const NewsDetail = () => {
                     </div>
 
                     <div className="flex items-center gap-3">
-                        <span className="font-jetbrains text-[9px] text-description/30 tracking-widest uppercase mr-2">Share</span>
+                        <span className="font-montserrat text-[9px] text-description/30 tracking-widest uppercase mr-2">Share</span>
                         {shareButtons.map((btn) => (
                             <button key={btn.label} className="w-8 h-8 flex items-center justify-center border border-white/5 text-description hover:text-accent hover:border-accent transition-all group">
                                 {btn.icon}
@@ -147,7 +147,7 @@ const NewsDetail = () => {
         <div className="flex flex-col gap-12">
             {/* Intro Block */}
             <div className="detail-reveal opacity-0 bg-accent/5 border-l-2 border-accent p-8 md:p-10">
-                <p className="font-newsreader italic text-xl md:text-2xl leading-relaxed text-accent/80 selection:bg-accent selection:text-dark">
+                <p className="font-montserrat text-xl md:text-2xl leading-relaxed text-accent/80 selection:bg-accent selection:text-dark">
                     {article.intro}
                 </p>
             </div>
@@ -155,7 +155,7 @@ const NewsDetail = () => {
             {/* Main Text Content */}
             <div className="flex flex-col gap-16">
                 <div 
-                    className="detail-reveal opacity-0 font-jetbrains text-xs md:text-[13px] leading-[1.8] text-description tracking-wide selection:bg-accent selection:text-dark news-content-html"
+                    className="detail-reveal opacity-0 font-montserrat text-xs md:text-[13px] leading-[1.8] text-description tracking-wide selection:bg-accent selection:text-dark news-content-html"
                     dangerouslySetInnerHTML={{ __html: article.content }}
                 />
             </div>
@@ -165,7 +165,7 @@ const NewsDetail = () => {
         <div className="detail-reveal opacity-0 mt-32 pt-20 border-t border-white/5 group">
             <div className="flex items-center gap-4 mb-16">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-accent"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-                <h3 className="font-jetbrains text-[11px] font-bold tracking-[0.3em] uppercase text-normal">Comments ({comments.length})</h3>
+                <h3 className="font-montserrat text-[11px] font-bold tracking-[0.3em] uppercase text-normal">Comments ({comments.length})</h3>
             </div>
 
             {/* Dynamic Comments Thread - Now at the Top */}
@@ -173,17 +173,17 @@ const NewsDetail = () => {
                 {comments.map((c) => (
                     <div key={c.id} className="detail-reveal flex flex-col gap-4 border-b border-white/5 pb-10">
                         <div className="flex items-center justify-between">
-                            <span className="font-jetbrains text-[9px] font-bold text-accent tracking-[0.2em] uppercase">{c.author}</span>
-                            <span className="font-jetbrains text-[8px] text-description/30 tracking-widest uppercase">{c.date}</span>
+                            <span className="font-montserrat text-[9px] font-bold text-accent tracking-[0.2em] uppercase">{c.author}</span>
+                            <span className="font-montserrat text-[8px] text-description/30 tracking-widest uppercase">{c.date}</span>
                         </div>
-                        <p className="font-newsreader italic text-lg text-description/80 leading-relaxed">
+                        <p className="font-montserrat text-lg text-description/80 leading-relaxed">
                             {c.text}
                         </p>
                     </div>
                 ))}
                 {comments.length === 0 && (
                     <div className="text-center py-10 border border-white/5 bg-white/[0.01]">
-                        <span className="font-jetbrains text-[9px] text-description tracking-[0.2em] uppercase">No perspectives shared yet. Be the first.</span>
+                        <span className="font-montserrat text-[9px] text-description tracking-[0.2em] uppercase">No perspectives shared yet. Be the first.</span>
                     </div>
                 )}
             </div>
@@ -194,12 +194,12 @@ const NewsDetail = () => {
                     value={comment}
                     onChange={(e) => setComment(e.target.value)}
                     placeholder="Share your perspective..."
-                    className="w-full bg-transparent border-none outline-none font-newsreader italic text-xl text-normal placeholder:text-description min-h-[120px] resize-none"
+                    className="w-full bg-transparent border-none outline-none font-montserrat text-xl text-normal placeholder:text-description min-h-[120px] resize-none"
                 />
                 <div className="pt-6 border-t border-white/5 flex justify-end">
                     <button 
                         onClick={handlePostComment}
-                        className="px-10 py-5 bg-accent text-dark font-jetbrains text-[9px] font-bold tracking-[0.3em] uppercase hover:brightness-110 active:scale-95 transition-all"
+                        className="px-10 py-5 bg-accent text-dark font-montserrat text-[9px] font-bold tracking-[0.3em] uppercase hover:brightness-110 active:scale-95 transition-all"
                     >
                         POST COMMENT
                     </button>
@@ -216,7 +216,7 @@ const NewsDetail = () => {
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="group-hover:-translate-x-1 transition-transform">
                     <path d="M19 12H5M12 19l-7-7 7-7" />
                 </svg>
-                <span className="font-jetbrains text-[9px] font-bold tracking-[0.3em] uppercase">{t('backToNews')}</span>
+                <span className="font-montserrat text-[9px] font-bold tracking-[0.3em] uppercase">{t('backToNews')}</span>
             </Link>
         </div>
 

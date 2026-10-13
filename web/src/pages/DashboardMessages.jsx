@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+﻿import React, { useState, useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import DashboardHeader from '../components/dashboard/DashboardHeader';
 import ChatMessage from '../components/dashboard/ChatMessage';
@@ -546,21 +546,21 @@ const DashboardMessages = () => {
 
                     <div className="p-6 space-y-6">
                         <div className="flex items-center justify-between">
-                            <h1 className="font-newsreader italic text-2xl font-bold text-slate-900">{t('messagesTitle') || 'Messages'}</h1>
-                            <div className="font-jetbrains text-[10px] text-slate-500 font-bold uppercase tracking-wider">{t('activeChats') || 'Active chats:'} {rooms.length}</div>
+                            <h1 className="font-montserrat text-slate-900 text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] transition-colors">{t('messagesTitle') || 'Messages'}</h1>
+                            <div className="font-montserrat text-[10px] text-slate-500 font-bold uppercase tracking-wider">{t('activeChats') || 'Active chats:'} {rooms.length}</div>
                         </div>
 
                         {/* Tabs */}
                         <div className="flex bg-slate-100 p-1 rounded-xl border border-slate-200/80">
                             <button
                                 onClick={() => setActiveTab('chats')}
-                                className={`flex-1 py-2 rounded-lg font-jetbrains text-xs uppercase tracking-wider transition-all cursor-pointer ${activeTab === 'chats' ? 'bg-amber-400 text-slate-950 font-black shadow-sm' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'}`}
+                                className={`flex-1 py-2 rounded-lg font-montserrat text-xs uppercase tracking-wider transition-all cursor-pointer ${activeTab === 'chats' ? 'bg-amber-400 text-slate-950 font-black shadow-sm' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'}`}
                             >
                                 {t('chatsTab') || 'CHATS'}
                             </button>
                             <button
                                 onClick={() => setActiveTab('groups')}
-                                className={`flex-1 py-2 rounded-lg font-jetbrains text-xs uppercase tracking-wider transition-all cursor-pointer ${activeTab === 'groups' ? 'bg-amber-400 text-slate-950 font-black shadow-sm' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'}`}
+                                className={`flex-1 py-2 rounded-lg font-montserrat text-xs uppercase tracking-wider transition-all cursor-pointer ${activeTab === 'groups' ? 'bg-amber-400 text-slate-950 font-black shadow-sm' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'}`}
                             >
                                 {t('groupsTab') || 'GROUPS'}
                             </button>
@@ -574,7 +574,7 @@ const DashboardMessages = () => {
                                 placeholder={t('searchMessages') || 'Search messages...'}
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 pl-10 pr-4 outline-none focus:border-amber-500 transition-all font-jetbrains text-xs text-slate-900 placeholder:text-slate-400"
+                                className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 pl-10 pr-4 outline-none focus:border-amber-500 transition-all font-montserrat text-xs text-slate-900 placeholder:text-slate-400"
                             />
                         </div>
 
@@ -582,13 +582,13 @@ const DashboardMessages = () => {
                         <div className="flex border-b border-slate-200 mt-2">
                             <button
                                 onClick={() => setFilterTab('all')}
-                                className={`flex-1 pb-3 text-center font-jetbrains text-[11px] uppercase tracking-wider transition-all border-b-2 cursor-pointer ${filterTab === 'all' ? 'border-amber-500 text-amber-900 font-black' : 'border-transparent text-slate-500 hover:text-slate-900'}`}
+                                className={`flex-1 pb-3 text-center font-montserrat text-[11px] uppercase tracking-wider transition-all border-b-2 cursor-pointer ${filterTab === 'all' ? 'border-amber-500 text-amber-900 font-black' : 'border-transparent text-slate-500 hover:text-slate-900'}`}
                             >
                                 {t('allFilter') || 'ALL'}
                             </button>
                             <button
                                 onClick={() => setFilterTab('unread')}
-                                className={`flex-1 pb-3 text-center font-jetbrains text-[11px] uppercase tracking-wider transition-all border-b-2 cursor-pointer ${filterTab === 'unread' ? 'border-amber-500 text-amber-900 font-black' : 'border-transparent text-slate-500 hover:text-slate-900'}`}
+                                className={`flex-1 pb-3 text-center font-montserrat text-[11px] uppercase tracking-wider transition-all border-b-2 cursor-pointer ${filterTab === 'unread' ? 'border-amber-500 text-amber-900 font-black' : 'border-transparent text-slate-500 hover:text-slate-900'}`}
                             >
                                 {t('unreadFilter') || 'UNREAD'} {sidebarChats.filter(c => c.unread > 0).length > 0 && `(${sidebarChats.filter(c => c.unread > 0).length})`}
                             </button>
@@ -600,17 +600,17 @@ const DashboardMessages = () => {
                         {chatState.loading && (
                             <div className="flex flex-col items-center justify-center py-10 gap-3 opacity-60">
                                 <div className="w-7 h-7 border-2 border-amber-400 border-t-transparent rounded-full animate-spin" />
-                                <span className="font-jetbrains text-xs tracking-wider text-slate-600">{t('loadingChats') || 'Loading chats...'}</span>
+                                <span className="font-montserrat text-xs tracking-wider text-slate-600">{t('loadingChats') || 'Loading chats...'}</span>
                             </div>
                         )}
 
                         {chatState.error && !chatState.loading && (
                             <div className="p-4 bg-red-50 border border-red-200 rounded-xl mb-4">
-                                <p className="font-jetbrains text-xs text-red-600 font-bold mb-1">{t('connectionError') || 'Connection Error'}</p>
-                                <p className="font-jetbrains text-xs text-red-500/80 leading-relaxed mb-3">{chatState.error}</p>
+                                <p className="font-montserrat text-xs text-red-600 font-bold mb-1">{t('connectionError') || 'Connection Error'}</p>
+                                <p className="font-montserrat text-xs text-red-500/80 leading-relaxed mb-3">{chatState.error}</p>
                                 <button
                                     onClick={() => dispatch(fetchChatRooms())}
-                                    className="w-full py-2 bg-red-100 hover:bg-red-200 text-red-700 rounded-lg font-jetbrains text-xs font-bold uppercase tracking-wider transition-all"
+                                    className="w-full py-2 bg-red-100 hover:bg-red-200 text-red-700 rounded-lg font-montserrat text-xs font-bold uppercase tracking-wider transition-all"
                                 >
                                     {t('retryBtn') || 'RETRY'}
                                 </button>
@@ -619,11 +619,11 @@ const DashboardMessages = () => {
 
                         {chatState.socketError && !chatState.socketLoading && (
                             <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl mb-4">
-                                <p className="font-jetbrains text-xs text-amber-700 font-bold mb-1">{t('connectionError') || 'Connection Error'}</p>
-                                <p className="font-jetbrains text-xs text-amber-600 leading-relaxed mb-3">{chatState.socketError}</p>
+                                <p className="font-montserrat text-xs text-amber-700 font-bold mb-1">{t('connectionError') || 'Connection Error'}</p>
+                                <p className="font-montserrat text-xs text-amber-600 leading-relaxed mb-3">{chatState.socketError}</p>
                                 <button
                                     onClick={() => dispatch(connectSocket())}
-                                    className="w-full py-2 bg-amber-100 hover:bg-amber-200 text-amber-900 rounded-lg font-jetbrains text-xs font-bold uppercase tracking-wider transition-all"
+                                    className="w-full py-2 bg-amber-100 hover:bg-amber-200 text-amber-900 rounded-lg font-montserrat text-xs font-bold uppercase tracking-wider transition-all"
                                 >
                                     {t('reconnectBtn') || 'RECONNECT'}
                                 </button>
@@ -632,7 +632,7 @@ const DashboardMessages = () => {
 
                         {filteredChats.length === 0 && !chatState.loading && (
                             <div className="flex flex-col items-center justify-center py-10 opacity-50">
-                                <p className="font-newsreader italic text-sm text-slate-500">{t('noMessagesFound') || 'No messages found'}</p>
+                                <p className="font-montserrat text-sm text-slate-500">{t('noMessagesFound') || 'No messages found'}</p>
                             </div>
                         )}
 
@@ -643,7 +643,7 @@ const DashboardMessages = () => {
                                 className={`w-full p-3.5 rounded-xl flex items-center gap-3.5 transition-all group ${selectedChat === chat.id ? 'bg-amber-50 border border-amber-200 shadow-sm' : 'hover:bg-slate-50'}`}
                             >
                                 <div className="relative shrink-0">
-                                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-jetbrains text-xs font-bold shrink-0 ${chat.isSupport ? 'bg-blue-100 text-blue-700 border-blue-200' : 'bg-amber-100 text-amber-900 border-amber-300'} border`}>
+                                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-montserrat text-xs font-bold shrink-0 ${chat.isSupport ? 'bg-blue-100 text-blue-700 border-blue-200' : 'bg-amber-100 text-amber-900 border-amber-300'} border`}>
                                         {chat.initials}
                                     </div>
                                     {chat.status === 'online' && (
@@ -651,8 +651,8 @@ const DashboardMessages = () => {
                                     )}
                                 </div>
                                 <div className="flex-1 text-left min-w-0">
-                                    <h4 className="font-jetbrains text-xs font-bold text-slate-900 truncate">{chat.name}</h4>
-                                    <p className="font-jetbrains text-[11px] text-slate-500 truncate mt-0.5">{chat.lastMsg}</p>
+                                    <h4 className="font-montserrat text-xs font-bold text-slate-900 truncate">{chat.name}</h4>
+                                    <p className="font-montserrat text-[11px] text-slate-500 truncate mt-0.5">{chat.lastMsg}</p>
                                 </div>
                                 {chat.unread > 0 && (
                                     <div className="w-5 h-5 bg-amber-400 text-slate-950 text-[9px] font-black rounded-full flex items-center justify-center shrink-0 shadow-sm">
@@ -670,7 +670,7 @@ const DashboardMessages = () => {
 
                     {/* Notification Toast */}
                     {chatState.notification && (
-                        <div className={`absolute top-0 left-0 right-0 z-50 px-4 py-3 font-jetbrains text-xs font-bold uppercase tracking-wider flex items-center justify-between animate-in slide-in-from-top-2 duration-300 ${chatState.notification.type === 'success' ? 'bg-amber-400 text-slate-950' : 'bg-red-600 text-white'}`}>
+                        <div className={`absolute top-0 left-0 right-0 z-50 px-4 py-3 font-montserrat text-xs font-bold uppercase tracking-wider flex items-center justify-between animate-in slide-in-from-top-2 duration-300 ${chatState.notification.type === 'success' ? 'bg-amber-400 text-slate-950' : 'bg-red-600 text-white'}`}>
                             <span>{chatState.notification.message}</span>
                             <button onClick={() => dispatch(clearNotification())} className="p-1 hover:opacity-70 transition-opacity">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M18 6L6 18M6 6l12 12" /></svg>
@@ -696,14 +696,14 @@ const DashboardMessages = () => {
                                     {sidebarChats.find(c => c.id === selectedChat)?.initials || '🛠️'}
                                 </div>
                                 <div>
-                                    <h3 className="font-newsreader italic font-bold text-lg md:text-xl text-slate-900 leading-none mb-1">
+                                    <h3 className="font-montserrat font-bold text-lg md:text-xl text-slate-900 leading-none mb-1">
                                         {sidebarChats.find(c => c.id === selectedChat)?.name || 'Support Team'}
                                     </h3>
                                     <div className="flex items-center gap-2">
                                         <div className={`w-2 h-2 rounded-full animate-pulse ${chatState.socketConnected ? 'bg-green-500' :
                                             chatState.socketLoading ? 'bg-amber-500' : 'bg-red-500'
                                             }`} />
-                                        <span className={`font-jetbrains text-[10px] uppercase tracking-wider font-bold ${chatState.socketConnected ? 'text-green-700' :
+                                        <span className={`font-montserrat text-[10px] uppercase tracking-wider font-bold ${chatState.socketConnected ? 'text-green-700' :
                                             chatState.socketLoading ? 'text-amber-700' : 'text-red-600'
                                             }`}>
                                             {chatState.socketConnected ? (t('online') || 'Online') :
@@ -719,10 +719,10 @@ const DashboardMessages = () => {
                                 <div className="relative">
                                     <button
                                         onClick={() => setShowParticipants(!showParticipants)}
-                                        className="flex items-center gap-2 text-slate-700 hover:text-slate-950 transition-colors px-4 py-2 hover:bg-slate-100 rounded-xl border border-slate-200 font-jetbrains text-xs font-bold uppercase tracking-wider"
+                                        className="flex items-center gap-2 text-slate-700 hover:text-slate-950 transition-colors px-4 py-2 hover:bg-slate-100 rounded-xl border border-slate-200 font-montserrat text-xs font-bold uppercase tracking-wider"
                                     >
                                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>
-                                        <span className="font-jetbrains text-xs uppercase font-bold tracking-wider">{t('participants') || 'PARTICIPANTS'}</span>
+                                        <span className="font-montserrat text-xs uppercase font-bold tracking-wider">{t('participants') || 'PARTICIPANTS'}</span>
                                     </button>
                                     {showParticipants && (
                                         <>
@@ -896,7 +896,7 @@ const DashboardMessages = () => {
                     {/* Typing Indicator */}
                     <div className="px-6 md:px-10">
                         {(chatState.typingUsers && chatState.typingUsers[selectedChat] && chatState.typingUsers[selectedChat].length > 0) && (
-                            <div className="text-[11px] text-accent font-montserrat italic mb-2">{
+                            <div className="text-[11px] text-accent font-montserrat mb-2">{
                                 (() => {
                                     const ids = chatState.typingUsers[selectedChat];
                                     const room = rooms.find(r => r._id === selectedChat) || {};
@@ -917,8 +917,8 @@ const DashboardMessages = () => {
                                 <div className="flex items-center gap-3 overflow-hidden">
                                     <div className="w-1 bg-amber-500 h-6 rounded-full" />
                                     <div className="min-w-0">
-                                        <p className="text-[10px] text-amber-800 font-bold uppercase font-jetbrains">Replying to {replyingTo.senderName || 'Message'}</p>
-                                        <p className="text-[11px] text-slate-600 truncate font-jetbrains">{replyingTo.message || replyingTo.text || 'Attachment'}</p>
+                                        <p className="text-[10px] text-amber-800 font-bold uppercase font-montserrat">Replying to {replyingTo.senderName || 'Message'}</p>
+                                        <p className="text-[11px] text-slate-600 truncate font-montserrat">{replyingTo.message || replyingTo.text || 'Attachment'}</p>
                                     </div>
                                 </div>
                                 <button onClick={() => setReplyingTo(null)} className="p-2 hover:bg-slate-200/60 rounded-full text-slate-400 hover:text-slate-700 transition-all">
@@ -931,7 +931,7 @@ const DashboardMessages = () => {
                             <div className="flex flex-wrap gap-2 mb-3 animate-reveal-message">
                                 {attachments.map((file, i) => (
                                     <div key={i} className="bg-amber-50 border border-amber-200 rounded-lg px-3 py-1.5 flex items-center gap-2">
-                                        <span className="font-jetbrains text-[11px] text-amber-900 font-bold uppercase truncate max-w-[100px]">{file.name}</span>
+                                        <span className="font-montserrat text-[11px] text-amber-900 font-bold uppercase truncate max-w-[100px]">{file.name}</span>
                                         <button onClick={() => setAttachments(prev => prev.filter((_, idx) => idx !== i))} className="text-amber-600 hover:text-red-600 transition-colors">
                                             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M18 6L6 18M6 6l12 12" /></svg>
                                         </button>
@@ -945,7 +945,7 @@ const DashboardMessages = () => {
                             {showEmojiPicker && (
                                 <div className="absolute bottom-full mb-4 left-0 bg-white border border-slate-200 rounded-2xl p-3 shadow-2xl w-72 md:w-85 z-50">
                                     <div className="flex justify-between items-center mb-3 pb-2 border-b border-slate-100">
-                                        <span className="font-jetbrains text-[11px] text-amber-800 uppercase tracking-wider font-bold">Select Emoji</span>
+                                        <span className="font-montserrat text-[11px] text-amber-800 uppercase tracking-wider font-bold">Select Emoji</span>
                                         <button onClick={() => setShowEmojiPicker(false)} className="text-slate-400 hover:text-slate-700 transition-colors">
                                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M18 6L6 18M6 6l12 12" /></svg>
                                         </button>
@@ -975,7 +975,7 @@ const DashboardMessages = () => {
 
                                     <div className="flex items-center gap-2">
                                         <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse shadow-sm" />
-                                        <span className="font-jetbrains text-xs font-bold text-slate-900 min-w-[35px]">{formatTime(recordingTime)}</span>
+                                        <span className="font-montserrat text-xs font-bold text-slate-900 min-w-[35px]">{formatTime(recordingTime)}</span>
                                     </div>
 
                                     {/* Waveform Visualization */}
@@ -1028,7 +1028,7 @@ const DashboardMessages = () => {
                                         onChange={handleInputChange}
                                         onKeyPress={(e) => e.key === 'Enter' && (handleSendMessage(), (() => { clearTimeout(typingTimeoutRef.current); import('../services/socketService').then(m => { try { m.default.socket && m.default.socket.emit('typing_stop', { roomId: selectedChat }) } catch (e) { } }).catch(() => { }); })())}
                                         placeholder={t('typeMessage') || 'Type a message...'}
-                                        className="flex-1 bg-transparent py-2 outline-none font-jetbrains text-xs text-slate-900 placeholder:text-slate-400"
+                                        className="flex-1 bg-transparent py-2 outline-none font-montserrat text-xs text-slate-900 placeholder:text-slate-400"
                                     />
 
                                     <div className="flex items-center gap-1 md:gap-1.5 pr-1">

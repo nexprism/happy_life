@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react'
+﻿import React, { useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/all'
 import sanitizeDisplay from '../utils/textSanitize'
@@ -102,17 +102,17 @@ const FrameworkSection = ({ course, section }) => {
           
           <div className="space-y-12 relative z-10">
             <div className="space-y-4">
-              <h2 className="framework-intro-item font-newsreader italic text-3xl md:text-4xl lg:text-6xl text-white font-extralight tracking-tight leading-[1.1]">
+              <h2 className="framework-intro-item font-montserrat text-white text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] transition-colors">
                 {sanitizeDisplay(section?.title || 'The Framework')}
               </h2>
-                <span className="framework-intro-item block font-jetbrains text-accent text-[10px] tracking-[0.1em] uppercase font-black opacity-60">
+                <span className="framework-intro-item block font-montserrat text-accent text-[10px] tracking-[0.1em] uppercase font-black opacity-60">
                 {sanitizeDisplay(section?.subtitle || "THE ARCHITECT'S ROADMAP")}
               </span>
             </div>
 
             <div className="space-y-8">
               {intro.map((text, i) => (
-                <p key={i} className={`framework-intro-item font-montserrat text-white/70 leading-[1.8] tracking-wide font-light ${i === 0 ? 'text-lg md:text-xl text-white/90 border-l-2 border-accent/30 pl-6 md:pl-8 py-2' : 'text-sm md:text-base'}`}>
+                <p key={i} className={`framework-intro-item font-montserrat text-white/70 leading-[1.8] tracking-wide font-normal ${i === 0 ? 'text-lg md:text-xl text-white/90 border-l-2 border-accent/30 pl-6 md:pl-8 py-2' : 'text-sm md:text-base'}`}>
                   {sanitizeDisplay(stripHtml(text))}
                 </p>
               ))}
@@ -150,27 +150,27 @@ const FrameworkSection = ({ course, section }) => {
                   <div className="absolute -top-10 -right-10 w-24 h-24 bg-accent/15 rounded-full blur-3xl group-hover:bg-accent/25 transition-colors" />
                   
                   {/* Ghost Numbering */}
-                  <div className="absolute top-4 right-8 font-jetbrains text-4xl md:text-5xl lg:text-6xl font-black text-accent/[0.08] select-none scale-105 group-hover:scale-115 transition-all duration-700">
+                  <div className="absolute top-4 right-8 font-montserrat text-4xl md:text-5xl lg:text-6xl font-black text-accent/[0.08] select-none scale-105 group-hover:scale-115 transition-all duration-700">
                     0{index + 1}
                   </div>
 
                   <div className="space-y-5 relative z-10">
                     <div className="flex items-center gap-3">
                       <div className="h-[1px] w-8 bg-accent/80" />
-                      <span className="font-jetbrains text-[9px] tracking-[0.5em] text-accent uppercase font-bold">MODULE_0{index + 1}</span>
+                      <span className="font-montserrat text-[9px] tracking-[0.5em] text-accent uppercase font-bold">MODULE_0{index + 1}</span>
                     </div>
                     
-                    <h3 className="font-newsreader italic text-2xl md:text-3xl lg:text-4xl text-white font-extralight leading-tight tracking-tight">
+                    <h3 className="font-montserrat text-2xl md:text-3xl lg:text-4xl text-white font-bold leading-tight tracking-tight">
                       {sanitizeDisplay(stripHtml(phase.title))}
                     </h3>
                     
-                    <p className="font-montserrat text-white/90 text-[11px] md:text-[10px] leading-[1.8] tracking-widest uppercase italic font-medium">
+                    <p className="font-montserrat text-white/90 text-[11px] md:text-[10px] leading-[1.8] tracking-widest uppercase font-medium">
                       {sanitizeDisplay(stripHtml(phase.description))}
                     </p>
 
                     <div className="pt-4 flex items-center gap-3 opacity-100 transition-all duration-500">
                       <div className="w-1.5 h-1.5 rounded-full bg-accent shadow-[0_0_12px_#8B5CF6]" />
-                      <span className="font-jetbrains text-[8px] tracking-[0.5em] text-white uppercase font-bold">SYSTEM PROTOCOL 0{index + 1}</span>
+                      <span className="font-montserrat text-[8px] tracking-[0.5em] text-white uppercase font-bold">SYSTEM PROTOCOL 0{index + 1}</span>
                     </div>
                   </div>
 

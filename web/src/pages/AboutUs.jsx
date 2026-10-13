@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+﻿import React, { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
@@ -48,7 +48,7 @@ const AboutUs = () => {
           Our Story
         </div>
         
-        <h1 className="hero-animate text-[clamp(2.5rem,6vw,5.5rem)] font-black text-slate-900 leading-[1.05] tracking-tight mb-8">
+        <h1 className="hero-animate font-black text-slate-900 mb-8 text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] transition-colors">
           Transforming Lives Through <br className="hidden md:block" />
           Vedic Wisdom <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 to-amber-700">& Practical Remedies.</span>
         </h1>
@@ -94,7 +94,7 @@ const AboutUs = () => {
           </div>
           
           <div className="flex flex-col justify-center">
-            <h2 className="text-4xl md:text-5xl font-black text-slate-900 leading-tight mb-8">
+            <h2 className="font-black text-slate-900 mb-8 text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] transition-colors">
               Astrology that works <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-600 to-[#2171B5]">for your modern life.</span>
             </h2>
@@ -118,7 +118,7 @@ const AboutUs = () => {
         
         <div className="relative z-10 max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-black mb-6">Our Key Focus Areas</h2>
+            <h2 className="font-black mb-6 text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] transition-colors">Our Key Focus Areas</h2>
             <p className="text-lg text-white/60 max-w-2xl mx-auto">Comprehensive Astro-Vastu guidance and learning modules designed to harmonize your life.</p>
           </div>
           

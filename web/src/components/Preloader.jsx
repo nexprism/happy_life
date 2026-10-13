@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+﻿import React, { useEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
 
 const Preloader = ({ onComplete }) => {
@@ -116,24 +116,24 @@ const Preloader = ({ onComplete }) => {
 
         {/* Tactical Matrix Strings */}
         <div className="absolute top-12 left-12 flex flex-col gap-1 data-string data-string-1 items-start">
-            <span className="font-jetbrains text-[8px] tracking-[0.5em] text-accent uppercase">Brand.Intel // HAPPY LIFE ASTRO</span>
-            <span className="font-jetbrains text-[8px] tracking-[0.3em] text-white/20 uppercase">Core Status: ACTIVE</span>
+            <span className="font-montserrat text-[8px] tracking-[0.5em] text-accent uppercase">Brand.Intel // HAPPY LIFE ASTRO</span>
+            <span className="font-montserrat text-[8px] tracking-[0.3em] text-white/20 uppercase">Core Status: ACTIVE</span>
         </div>
 
         <div className="absolute top-12 right-12 flex flex-col gap-1 data-string data-string-2 text-right items-end">
-            <span className="font-jetbrains text-[8px] tracking-[0.5em] text-white/20 uppercase">Energy // Alignment</span>
-            <span className="font-jetbrains text-[8px] tracking-[0.3em] text-white/20 uppercase">Vedic Astro & Vastu</span>
+            <span className="font-montserrat text-[8px] tracking-[0.5em] text-white/20 uppercase">Energy // Alignment</span>
+            <span className="font-montserrat text-[8px] tracking-[0.3em] text-white/20 uppercase">Vedic Astro & Vastu</span>
         </div>
 
         <div className="absolute bottom-12 left-12 flex flex-col gap-1 data-string data-string-3 items-start">
-            <span className="font-jetbrains text-[8px] tracking-[0.5em] text-white/20 uppercase">System: Happy Life Portal</span>
-            <span className="font-jetbrains text-[8px] tracking-[0.3em] text-white/20 uppercase">© 2026 HAPPY LIFE ASTRO</span>
+            <span className="font-montserrat text-[8px] tracking-[0.5em] text-white/20 uppercase">System: Happy Life Portal</span>
+            <span className="font-montserrat text-[8px] tracking-[0.3em] text-white/20 uppercase">© 2026 HAPPY LIFE ASTRO</span>
         </div>
 
         {/* Logo Container */}
         <div ref={logoRef} className="relative lg:mb-20 mb-10 w-full flex justify-center">
             <div ref={logoRevealRef} className="overflow-visible lg:pr-40 lg:pl-10 pr-0 pl-0 w-fit">
-                <h1 className="font-anton text-[clamp(3.5rem,15vw,14rem)] lg:text-[clamp(4.5rem,18vw,14rem)] tracking-tighter text-normal flex leading-none drop-shadow-[0_0_80px_rgba(255,255,255,0.05)] whitespace-nowrap">
+                <h1 className="font-montserrat text-normal flex drop-shadow-[0_0_80px_rgba(255,255,255,0.05)] whitespace-nowrap text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] transition-colors">
                     HAPPY LIFE
                 </h1>
             </div>
@@ -156,10 +156,10 @@ const Preloader = ({ onComplete }) => {
             ref={signatureRef}
             className="lg:absolute lg:bottom-12 lg:right-12 lg:text-right relative text-center pointer-events-none mt-4 lg:mt-0"
           >
-            <span className="block font-jetbrains text-[8px] tracking-[0.6em] text-white/20 uppercase ">Mentorship & Guidance by</span>
+            <span className="block font-montserrat text-[8px] tracking-[0.6em] text-white/20 uppercase ">Mentorship & Guidance by</span>
             <div ref={sigRevealRef} className="overflow-hidden py-4 lg:py-6">
                 <div 
-                    className="font-signature text-4xl sm:text-5xl lg:text-6xl text-accent/90 whitespace-nowrap px-4"
+                    className="font-montserrat text-4xl sm:text-5xl lg:text-6xl text-accent/90 whitespace-nowrap px-4"
                     style={{ fontFamily: "'Mrs Saint Delafield', cursive" }}
                 >
                     Dr. Yogesh Sharma

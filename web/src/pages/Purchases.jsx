@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+﻿import React, { useState, useEffect } from 'react'
 import DashboardHeader from '../components/dashboard/DashboardHeader'
 import DashboardLoading from '../components/dashboard/DashboardLoading'
 import { gsap } from 'gsap'
@@ -58,12 +58,12 @@ const Purchases = () => {
           {/* HEADER SECTION */}
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 purchases-header">
             <div className="space-y-2">
-               <p className="font-jetbrains text-xs text-amber-800 uppercase tracking-[0.4em] font-black italic">{t('archiveLedger') || 'Archive & Ledger'}</p>
-               <h1 className="font-newsreader italic text-5xl md:text-6xl text-slate-900 font-bold tracking-tight leading-none uppercase">
+               <p className="font-montserrat text-xs text-amber-800 uppercase tracking-[0.4em] font-black">{t('archiveLedger') || 'Archive & Ledger'}</p>
+               <h1 className="font-montserrat text-slate-900 uppercase text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] transition-colors">
                   {t('myPurchases')}
                </h1>
             </div>
-            <p className="max-w-md font-jetbrains text-xs text-slate-600 font-medium leading-relaxed uppercase tracking-[0.15em] text-left md:text-right">
+            <p className="max-w-md font-montserrat text-xs text-slate-600 font-medium leading-relaxed uppercase tracking-[0.15em] text-left md:text-right">
                {t('purchasesLedgerSub') || 'Persistent record of course enrollments, consultation packages, and transaction receipts across Happy Life.'}
             </p>
           </div>
@@ -79,11 +79,11 @@ const Purchases = () => {
                   
                   {/* Table Header Bar */}
                   <div className="grid grid-cols-12 px-8 py-5 border-b border-slate-200/80 bg-slate-100/80 z-20">
-                     <div className="col-span-2 font-jetbrains text-xs text-slate-700 uppercase tracking-widest font-black">ID</div>
-                     <div className="col-span-5 font-jetbrains text-xs text-slate-700 uppercase tracking-widest font-black">{t('moduleArchive') || 'Module Archive'}</div>
-                     <div className="col-span-2 font-jetbrains text-xs text-slate-700 uppercase tracking-widest font-black text-center">{t('acquisition') || 'Acquisition'}</div>
-                     <div className="col-span-3 font-jetbrains text-xs text-slate-700 uppercase tracking-widest font-black text-right">{t('amount') || 'Amount'}</div>
-                     {/* <div className="col-span-2 font-jetbrains text-xs text-slate-700 uppercase tracking-widest font-black text-right">{t('actions') || 'Actions'}</div> */}
+                     <div className="col-span-2 font-montserrat text-xs text-slate-700 uppercase tracking-widest font-black">ID</div>
+                     <div className="col-span-5 font-montserrat text-xs text-slate-700 uppercase tracking-widest font-black">{t('moduleArchive') || 'Module Archive'}</div>
+                     <div className="col-span-2 font-montserrat text-xs text-slate-700 uppercase tracking-widest font-black text-center">{t('acquisition') || 'Acquisition'}</div>
+                     <div className="col-span-3 font-montserrat text-xs text-slate-700 uppercase tracking-widest font-black text-right">{t('amount') || 'Amount'}</div>
+                     {/* <div className="col-span-2 font-montserrat text-xs text-slate-700 uppercase tracking-widest font-black text-right">{t('actions') || 'Actions'}</div> */}
                   </div>
 
                   {/* Loading Overlay */}
@@ -96,7 +96,7 @@ const Purchases = () => {
                   {/* Error State */}
                   {error && (
                      <div className="absolute inset-0 flex items-center justify-center bg-white/80 z-10">
-                        <div className="font-jetbrains text-xs text-red-600 uppercase tracking-[0.4em] font-bold">Sync Error: {error}</div>
+                        <div className="font-montserrat text-xs text-red-600 uppercase tracking-[0.4em] font-bold">Sync Error: {error}</div>
                      </div>
                   )}
 
@@ -106,7 +106,7 @@ const Purchases = () => {
                         <div className="w-14 h-14 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-400">
                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M12 2v20M17 5H9.5a4.5 4.5 0 000 9h5a4.5 4.5 0 010 9H6" /></svg>
                         </div>
-                        <p className="font-jetbrains text-xs text-slate-600 font-bold uppercase tracking-[0.3em]">No Intellectual Acquisitions Found</p>
+                        <p className="font-montserrat text-xs text-slate-600 font-bold uppercase tracking-[0.3em]">No Intellectual Acquisitions Found</p>
                      </div>
                   )}
 
@@ -114,24 +114,24 @@ const Purchases = () => {
                   {currentItems.map((item, i) => (
                      <div key={item._id || i} className="ledger-row grid grid-cols-12 items-center px-8 py-6 bg-white hover:bg-amber-50/40 transition-colors group border-b border-slate-100 last:border-0 relative">
                         {/* Enrollment ID */}
-                        <div className="col-span-2 font-jetbrains text-xs text-slate-500 group-hover:text-amber-700 transition-colors font-bold uppercase tracking-wider">
+                        <div className="col-span-2 font-montserrat text-xs text-slate-500 group-hover:text-amber-700 transition-colors font-bold uppercase tracking-wider">
                            #{item._id?.slice(-8).toUpperCase() || 'P-0000'}
                         </div>
 
                         {/* Course Info */}
                         <div className="col-span-5 space-y-1.5">
-                           <h3 className="font-newsreader italic text-xl md:text-2xl text-slate-900 font-bold group-hover:text-amber-600 transition-colors leading-snug">
+                           <h3 className="font-montserrat text-xl md:text-2xl text-slate-900 font-bold group-hover:text-amber-600 transition-colors leading-snug">
                               {item.course?.title || (item.error ? 'Legacy Module (Deleted)' : 'Protocol Error')}
                            </h3>
                            <div className="flex items-center gap-3">
-                              <span className={`text-[9px] font-jetbrains font-bold px-3 py-0.5 rounded-full border ${
+                              <span className={`text-[9px] font-montserrat font-bold px-3 py-0.5 rounded-full border ${
                                 item.status === 'active' || item.status === 'COMPLETED'
                                   ? 'border-amber-300 bg-amber-100 text-amber-900' 
                                   : 'border-slate-200 bg-slate-100 text-slate-700'
                               }`}>{item.status?.toUpperCase() || 'PENDING'}</span>
                               
                               {item.iscompleted && (
-                                <span className="text-[9px] font-jetbrains text-amber-700 uppercase tracking-widest font-black flex items-center gap-1.5">
+                                <span className="text-[9px] font-montserrat text-amber-700 uppercase tracking-widest font-black flex items-center gap-1.5">
                                    <div className="w-2 h-2 bg-amber-500 rounded-full animate-pulse" />
                                    Certification Issued
                                 </span>
@@ -140,12 +140,12 @@ const Purchases = () => {
                         </div>
 
                         {/* Acquisition Date */}
-                        <div className="col-span-2 font-jetbrains text-xs text-slate-600 font-medium uppercase tracking-wider text-center">
+                        <div className="col-span-2 font-montserrat text-xs text-slate-600 font-medium uppercase tracking-wider text-center">
                            {item.enrolledAt ? new Date(item.enrolledAt).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }).toUpperCase() : 'N/A'}
                         </div>
 
                         {/* Amount Paid */}
-                        <div className="col-span-3 font-jetbrains text-sm text-slate-900 font-black text-right tracking-tight">
+                        <div className="col-span-3 font-montserrat text-sm text-slate-900 font-black text-right tracking-tight">
                            {item.pricePaid !== undefined ? `₹${item.pricePaid.toLocaleString()}` : 'FREE'}
                         </div>
 
@@ -156,14 +156,14 @@ const Purchases = () => {
                                 href={`https://happy-life-sx03.onrender.com/${item.certificate.certificate_url}`} 
                                 target="_blank" 
                                 rel="noreferrer"
-                                className="font-jetbrains text-xs font-bold text-amber-700 hover:text-slate-950 uppercase tracking-wider transition-colors bg-amber-100 px-3 py-1.5 rounded-full border border-amber-300/60"
+                                className="font-montserrat text-xs font-bold text-amber-700 hover:text-slate-950 uppercase tracking-wider transition-colors bg-amber-100 px-3 py-1.5 rounded-full border border-amber-300/60"
                               >
                                 Certificate
                               </a>
                            ) : (
-                              <button className="font-jetbrains text-xs font-bold text-amber-800 hover:text-slate-950 uppercase tracking-wider transition-colors px-3 py-1.5 rounded-full bg-slate-100 border border-slate-200">{t('receipt') || 'Receipt'}</button>
+                              <button className="font-montserrat text-xs font-bold text-amber-800 hover:text-slate-950 uppercase tracking-wider transition-colors px-3 py-1.5 rounded-full bg-slate-100 border border-slate-200">{t('receipt') || 'Receipt'}</button>
                            )}
-                           <button className="font-jetbrains text-xs font-bold text-slate-400 hover:text-red-600 uppercase tracking-wider transition-colors">{t('refund') || 'Refund'}</button>
+                           <button className="font-montserrat text-xs font-bold text-slate-400 hover:text-red-600 uppercase tracking-wider transition-colors">{t('refund') || 'Refund'}</button>
                         </div> */}
                      </div>
                   ))}
@@ -171,7 +171,7 @@ const Purchases = () => {
 
                {/* PAGINATION CONTROLLER */}
                <div className="flex flex-col sm:flex-row justify-between items-center gap-4 pt-4">
-                  <p className="font-jetbrains text-xs text-slate-500 font-medium uppercase tracking-[0.2em]">
+                  <p className="font-montserrat text-xs text-slate-500 font-medium uppercase tracking-[0.2em]">
                     Showing {indexOfFirstItem + 1}-{Math.min(indexOfLastItem, enrollments.length)} of {enrollments.length} Acquisitions
                   </p>
                  
@@ -179,7 +179,7 @@ const Purchases = () => {
                    <button 
                      onClick={() => currentPage > 1 && paginate(currentPage - 1)}
                      disabled={currentPage === 1}
-                     className={`font-jetbrains text-xs font-bold uppercase tracking-widest px-4 py-2 rounded-full border transition-all ${currentPage === 1 ? 'border-slate-200 text-slate-300 cursor-not-allowed' : 'border-slate-300 bg-white text-slate-700 hover:bg-accent hover:border-amber-400 hover:text-slate-950'}`}
+                     className={`font-montserrat text-xs font-bold uppercase tracking-widest px-4 py-2 rounded-full border transition-all ${currentPage === 1 ? 'border-slate-200 text-slate-300 cursor-not-allowed' : 'border-slate-300 bg-white text-slate-700 hover:bg-accent hover:border-amber-400 hover:text-slate-950'}`}
                    >
                      Prev
                    </button>
@@ -189,7 +189,7 @@ const Purchases = () => {
                          <button
                            key={num}
                            onClick={() => paginate(num)}
-                           className={`w-9 h-9 rounded-full font-jetbrains text-xs font-bold transition-all ${
+                           className={`w-9 h-9 rounded-full font-montserrat text-xs font-bold transition-all ${
                              currentPage === num 
                                ? 'bg-accent text-slate-950 shadow-sm font-black' 
                                : 'bg-white border border-slate-200 text-slate-600 hover:border-slate-300'
@@ -203,7 +203,7 @@ const Purchases = () => {
                    <button 
                      onClick={() => currentPage < totalPages && paginate(currentPage + 1)}
                      disabled={currentPage === totalPages}
-                     className={`font-jetbrains text-xs font-bold uppercase tracking-widest px-4 py-2 rounded-full border transition-all ${currentPage === totalPages ? 'border-slate-200 text-slate-300 cursor-not-allowed' : 'border-slate-300 bg-white text-slate-700 hover:bg-accent hover:border-amber-400 hover:text-slate-950'}`}
+                     className={`font-montserrat text-xs font-bold uppercase tracking-widest px-4 py-2 rounded-full border transition-all ${currentPage === totalPages ? 'border-slate-200 text-slate-300 cursor-not-allowed' : 'border-slate-300 bg-white text-slate-700 hover:bg-accent hover:border-amber-400 hover:text-slate-950'}`}
                    >
                      Next
                    </button>

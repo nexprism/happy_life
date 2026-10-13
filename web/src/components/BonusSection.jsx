@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react'
+﻿import React, { useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/all'
 
@@ -62,14 +62,14 @@ const BonusSection = ({ course }) => {
 
       {/* Heading */}
       <div className="text-center space-y-4 mb-16">
-        <span className="bonus-heading block font-jetbrains text-[9px] text-accent tracking-[0.7em] uppercase font-bold opacity-70">
+        <span className="bonus-heading block font-montserrat text-[9px] text-accent tracking-[0.7em] uppercase font-bold opacity-70">
           Exclusive Bonuses / Zero Cost
         </span>
-        <h2 className="bonus-heading font-newsreader italic text-[clamp(2rem,5vw,4rem)] text-normal font-extralight leading-tight">
+        <h2 className="bonus-heading font-montserrat text-normal text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] transition-colors">
           Unlock These For Free —{' '}
           <span className="text-accent underline-lime">No Cost, Just Value!</span>
         </h2>
-        <p className="bonus-heading font-jetbrains text-xs text-description tracking-[0.3em] uppercase">
+        <p className="bonus-heading font-montserrat text-xs text-description tracking-[0.3em] uppercase">
           (Applicable only when you buy 1 Year Plan)
         </p>
       </div>
@@ -82,18 +82,18 @@ const BonusSection = ({ course }) => {
             className="bonus-card group relative border border-white/8 bg-white/[0.01] backdrop-blur-xl p-8 flex items-center justify-between gap-6 hover:border-accent/30 hover:bg-accent/[0.02] transition-all duration-600 overflow-hidden"
           >
             {/* Background number watermark */}
-            <div className="absolute top-2 left-3 font-jetbrains text-[80px] font-black text-white/[0.02] leading-none select-none pointer-events-none group-hover:text-accent/[0.04] transition-colors duration-700">
+            <div className="absolute top-2 left-3 font-montserrat text-[80px] font-black text-white/[0.02] leading-none select-none pointer-events-none group-hover:text-accent/[0.04] transition-colors duration-700">
               {String(i + 1).padStart(2, '0')}
             </div>
 
             {/* Left: text */}
             <div className="relative z-10 space-y-3 flex-1">
-              <p className="font-jetbrains text-sm text-description font-medium tracking-wide leading-relaxed">
+              <p className="font-montserrat text-sm text-description font-medium tracking-wide leading-relaxed">
                 {b.title}
               </p>
               <div className="flex items-center gap-3">
                 <div className="w-4 h-[1px] bg-accent/40" />
-                <span className="font-jetbrains text-xs text-accent font-black tracking-[0.3em]">
+                <span className="font-montserrat text-xs text-accent font-black tracking-[0.3em]">
                   Price: {b.price}
                 </span>
               </div>
@@ -102,7 +102,7 @@ const BonusSection = ({ course }) => {
             {/* Right: FREE badge */}
             <div className="relative z-10 shrink-0 flex flex-col items-center justify-center bg-accent w-14 h-20 group-hover:scale-105 transition-transform duration-400">
               <span
-                className="font-jetbrains text-dark font-black text-[9px] tracking-[0.15em] uppercase"
+                className="font-montserrat text-dark font-black text-[9px] tracking-[0.15em] uppercase"
                 style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)', letterSpacing: '0.25em' }}
               >
                 Free

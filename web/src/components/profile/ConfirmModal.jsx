@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { createPortal } from 'react-dom';
 
 const ConfirmModal = ({ isOpen, onClose, onConfirm, title, message, confirmText = "Confirm", cancelText = "Cancel", loading = false }) => {
@@ -24,10 +24,10 @@ const ConfirmModal = ({ isOpen, onClose, onConfirm, title, message, confirmText 
            </div>
            
            <div className="space-y-2">
-              <h3 className="font-newsreader italic text-3xl text-slate-900 font-extralight tracking-tighter leading-tight">
+              <h3 className="font-montserrat text-3xl text-slate-900 font-bold tracking-tighter leading-tight">
                  {title}
               </h3>
-              <p className="font-jetbrains text-[10px] text-slate-600 uppercase tracking-[0.2em] leading-relaxed max-w-[280px] mx-auto font-medium">
+              <p className="font-montserrat text-[10px] text-slate-600 uppercase tracking-[0.2em] leading-relaxed max-w-[280px] mx-auto font-medium">
                  {message}
               </p>
            </div>
@@ -38,7 +38,7 @@ const ConfirmModal = ({ isOpen, onClose, onConfirm, title, message, confirmText 
            <button 
               onClick={onConfirm}
               disabled={loading}
-              className="w-full py-4 bg-accent text-slate-950 font-jetbrains text-[10px] font-black uppercase tracking-[0.3em] hover:brightness-105 transition-all rounded-full shadow-accent-soft disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full py-4 bg-accent text-slate-950 font-montserrat text-[10px] font-black uppercase tracking-[0.3em] hover:brightness-105 transition-all rounded-full shadow-accent-soft disabled:opacity-50 disabled:cursor-not-allowed"
            >
               <span className="relative z-10">{loading ? 'Processing...' : confirmText}</span>
            </button>
@@ -46,7 +46,7 @@ const ConfirmModal = ({ isOpen, onClose, onConfirm, title, message, confirmText 
            <button 
               onClick={onClose}
               disabled={loading}
-              className="w-full py-3.5 border border-slate-200 text-slate-700 font-jetbrains text-[10px] font-bold uppercase tracking-[0.3em] hover:bg-slate-100 transition-all rounded-full"
+              className="w-full py-3.5 border border-slate-200 text-slate-700 font-montserrat text-[10px] font-bold uppercase tracking-[0.3em] hover:bg-slate-100 transition-all rounded-full"
            >
               {cancelText}
            </button>

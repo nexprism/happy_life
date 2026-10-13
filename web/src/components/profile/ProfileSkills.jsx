@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+﻿import React, { useRef, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { updateUserProfile, deleteDocument } from '../../redux/slices/profileSlice'
 import ConfirmModal from './ConfirmModal'
@@ -74,17 +74,17 @@ const ProfileSkills = () => {
       
       {/* Skills Section */}
       <div className="space-y-6">
-         <h3 className="font-jetbrains text-[10px] text-normal uppercase tracking-[0.4em] font-black italic">My Skills</h3>
+         <h3 className="font-montserrat text-[10px] text-normal uppercase tracking-[0.4em] font-black">My Skills</h3>
          <div className="flex flex-wrap gap-2">
             {skills.map((skill, i) => (
-               <div key={i} className="px-5 py-2.5 bg-white/[0.03] border border-white/10 font-newsreader italic text-[14px] text-normal hover:border-accent hover:text-accent transition-all cursor-default">
+               <div key={i} className="px-5 py-2.5 bg-white/[0.03] border border-white/10 font-montserrat text-[14px] text-normal hover:border-accent hover:text-accent transition-all cursor-default">
                   {skill}
                </div>
             ))}
             <div className="flex items-center gap-2 px-5 py-2.5 bg-white/[0.01] border border-dashed border-white/20">
                <input 
                  type="text" placeholder="Add skill..."
-                 className="bg-transparent border-none outline-none font-jetbrains text-[10px] text-normal w-24 placeholder:opacity-30"
+                 className="bg-transparent border-none outline-none font-montserrat text-[10px] text-normal w-24 placeholder:opacity-30"
                />
                <button className="text-accent text-lg leading-none">+</button>
             </div>
@@ -93,7 +93,7 @@ const ProfileSkills = () => {
 
       {/* Documents Section */}
       <div className="space-y-6">
-         <h3 className="font-jetbrains text-[10px] text-normal uppercase tracking-[0.4em] font-black italic">Certificates</h3>
+         <h3 className="font-montserrat text-[10px] text-normal uppercase tracking-[0.4em] font-black">Certificates</h3>
          
          <div className="space-y-[1px] bg-white/5 border border-white/5 shadow-2xl max-h-[300px] overflow-y-auto">
             {documentation.length > 0 ? (
@@ -106,7 +106,7 @@ const ProfileSkills = () => {
                         </svg>
                         <div>
                            <p className="font-montserrat text-[15px] text-normal tracking-wide leading-tight">{doc.name || 'Unnamed Document'}</p>
-                           <p className="font-jetbrains text-[9px] text-normal/20 uppercase tracking-[0.2em] mt-1">{doc.Doc ? 'Verified File' : 'Pending Verification'}</p>
+                           <p className="font-montserrat text-[9px] text-normal/20 uppercase tracking-[0.2em] mt-1">{doc.Doc ? 'Verified File' : 'Pending Verification'}</p>
                         </div>
                      </div>
                      <div className="flex gap-4 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -138,7 +138,7 @@ const ProfileSkills = () => {
                ))
             ) : (
                <div className="bg-dark p-10 text-center border-b border-white/5">
-                  <p className="font-newsreader italic text-xl text-normal/20">No certificates uploaded yet.</p>
+                  <p className="font-montserrat text-xl text-normal/20">No certificates uploaded yet.</p>
                </div>
             )}
          </div>
@@ -154,10 +154,10 @@ const ProfileSkills = () => {
                <line x1="12" y1="3" x2="12" y2="15" />
             </svg>
             <div className="space-y-1">
-               <p className="font-jetbrains text-[10px] text-normal uppercase tracking-[0.4em] group-hover:text-normal transition-colors">
+               <p className="font-montserrat text-[10px] text-normal uppercase tracking-[0.4em] group-hover:text-normal transition-colors">
                   {updateLoading ? 'Uploading Assets...' : 'Upload File'}
                </p>
-               <p className="font-jetbrains text-[9px] text-normal/40 uppercase tracking-[0.2em]">MAX SIZE 10MB</p>
+               <p className="font-montserrat text-[9px] text-normal/40 uppercase tracking-[0.2em]">MAX SIZE 10MB</p>
             </div>
          </div>
       </div>

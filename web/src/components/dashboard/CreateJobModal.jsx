@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+﻿import React, { useState, useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
 import { useDispatch, useSelector } from 'react-redux'
 import { createPortal } from 'react-dom'
@@ -23,11 +23,11 @@ const CustomSelect = ({ label, value, options, onChange, name, placeholder = "Se
 
   return (
     <div className="space-y-2 relative" ref={dropdownRef}>
-      <label className="font-jetbrains text-xs font-bold text-amber-900 uppercase tracking-wider">{label}</label>
+      <label className="font-montserrat text-xs font-bold text-amber-900 uppercase tracking-wider">{label}</label>
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full bg-slate-50 border border-slate-200 px-5 py-3.5 rounded-xl font-jetbrains text-sm text-slate-900 flex items-center justify-between hover:bg-slate-100/80 transition-all outline-none focus:border-amber-500"
+        className="w-full bg-slate-50 border border-slate-200 px-5 py-3.5 rounded-xl font-montserrat text-sm text-slate-900 flex items-center justify-between hover:bg-slate-100/80 transition-all outline-none focus:border-amber-500"
       >
         <span className={!selectedOption ? 'text-slate-400' : 'text-slate-900 font-medium'}>
           {selectedOption ? selectedOption.label : placeholder}
@@ -49,7 +49,7 @@ const CustomSelect = ({ label, value, options, onChange, name, placeholder = "Se
                 onChange({ target: { name, value: option.value } })
                 setIsOpen(false)
               }}
-              className={`px-5 py-3.5 font-jetbrains text-sm cursor-pointer transition-all
+              className={`px-5 py-3.5 font-montserrat text-sm cursor-pointer transition-all
                 ${value === option.value ? 'bg-amber-400 text-slate-950 font-bold' : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900'}`}
             >
               {option.label}
@@ -241,8 +241,8 @@ const CreateJobModal = ({ isOpen, onClose, editData = null }) => {
         {/* Header */}
         <div className="flex items-center justify-between p-6 md:p-8 border-b border-slate-100 shrink-0 bg-white">
            <div className="flex flex-col">
-              <h2 className="font-newsreader italic text-3xl font-bold text-slate-900">{editData ? t('editJobPostTitle') : t('createJobPostTitle')}</h2>
-              <p className="font-jetbrains text-xs text-amber-800 uppercase tracking-widest mt-1 font-bold">
+              <h2 className="font-montserrat text-slate-900 text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] transition-colors">{editData ? t('editJobPostTitle') : t('createJobPostTitle')}</h2>
+              <p className="font-montserrat text-xs text-amber-800 uppercase tracking-widest mt-1 font-bold">
                 {editData ? t('editJobPostDesc') : t('createJobPostDesc')}
               </p>
            </div>
@@ -264,26 +264,26 @@ const CreateJobModal = ({ isOpen, onClose, editData = null }) => {
            {/* Basic Info */}
            <div className="space-y-6">
               <div className="space-y-2">
-                 <label className="font-jetbrains text-xs font-bold text-amber-900 uppercase tracking-wider">{t('jobTitleLabel')}</label>
+                 <label className="font-montserrat text-xs font-bold text-amber-900 uppercase tracking-wider">{t('jobTitleLabel')}</label>
                  <input 
                    name="title"
                    required
                    value={formData.title}
                    onChange={handleChange}
                    placeholder={t('jobTitlePlaceholder')}
-                   className="w-full bg-slate-50 border border-slate-200 px-5 py-3.5 rounded-xl font-jetbrains text-sm text-slate-900 focus:border-amber-500 outline-none transition-all placeholder:text-slate-400"
+                   className="w-full bg-slate-50 border border-slate-200 px-5 py-3.5 rounded-xl font-montserrat text-sm text-slate-900 focus:border-amber-500 outline-none transition-all placeholder:text-slate-400"
                  />
               </div>
 
               <div className="space-y-2">
-                 <label className="font-jetbrains text-xs font-bold text-amber-900 uppercase tracking-wider">{t('jobDescriptionLabel')}</label>
+                 <label className="font-montserrat text-xs font-bold text-amber-900 uppercase tracking-wider">{t('jobDescriptionLabel')}</label>
                  <textarea 
                    name="description"
                    required
                    value={formData.description}
                    onChange={handleChange}
                    placeholder={t('jobDescriptionPlaceholder')}
-                   className="w-full bg-slate-50 border border-slate-200 px-5 py-3.5 rounded-xl font-jetbrains text-sm text-slate-900 focus:border-amber-500 outline-none transition-all min-h-[120px] resize-none placeholder:text-slate-400"
+                   className="w-full bg-slate-50 border border-slate-200 px-5 py-3.5 rounded-xl font-montserrat text-sm text-slate-900 focus:border-amber-500 outline-none transition-all min-h-[120px] resize-none placeholder:text-slate-400"
                  />
               </div>
            </div>
@@ -372,7 +372,7 @@ const CreateJobModal = ({ isOpen, onClose, editData = null }) => {
                   <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center shrink-0 border border-amber-300">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-amber-800"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
                   </div>
-                  <p className="font-jetbrains text-xs text-amber-900 leading-relaxed uppercase tracking-wider font-medium">
+                  <p className="font-montserrat text-xs text-amber-900 leading-relaxed uppercase tracking-wider font-medium">
                     For <span className="font-black">{formData.mode?.replace('-', ' ')}</span> roles with INR, please enter the Min and Max budget in LPA (Lakhs Per Annum). E.g. 12 LPA.
                   </p>
                 </div>
@@ -382,8 +382,8 @@ const CreateJobModal = ({ isOpen, onClose, editData = null }) => {
                  {formData.currency === 'INR' ? (
                    <div className="space-y-4 md:col-span-2">
                      <div className="space-y-2">
-                       <label className="font-jetbrains text-xs font-bold text-amber-900 uppercase tracking-wider flex items-center gap-2">
-                         <div className="w-5 h-5 border border-amber-500 rounded flex items-center justify-center text-[10px] font-black italic">₹</div>
+                       <label className="font-montserrat text-xs font-bold text-amber-900 uppercase tracking-wider flex items-center gap-2">
+                         <div className="w-5 h-5 border border-amber-500 rounded flex items-center justify-center text-[10px] font-black">₹</div>
                          Budget in LPA (Lakhs Per Annum)
                        </label>
                        <input 
@@ -392,30 +392,30 @@ const CreateJobModal = ({ isOpen, onClose, editData = null }) => {
                          value={formData.maxBudget}
                          onChange={handleChange}
                          placeholder="e.g. 12"
-                         className="w-full bg-slate-50 border border-slate-200 px-5 py-3.5 rounded-xl font-jetbrains text-sm text-slate-900 focus:border-amber-500 outline-none placeholder:text-slate-400"
+                         className="w-full bg-slate-50 border border-slate-200 px-5 py-3.5 rounded-xl font-montserrat text-sm text-slate-900 focus:border-amber-500 outline-none placeholder:text-slate-400"
                        />
                      </div>
                    </div>
                  ) : (
                    <>
                      <div className="space-y-2">
-                        <label className="font-jetbrains text-xs font-bold text-amber-900 uppercase tracking-wider">{t('minBudgetLabel')}</label>
+                        <label className="font-montserrat text-xs font-bold text-amber-900 uppercase tracking-wider">{t('minBudgetLabel')}</label>
                         <input 
                           type="number"
                           name="minBudget"
                           value={formData.minBudget}
                           onChange={handleChange}
-                          className="w-full bg-slate-50 border border-slate-200 px-5 py-3.5 rounded-xl font-jetbrains text-sm text-slate-900 focus:border-amber-500 outline-none"
+                          className="w-full bg-slate-50 border border-slate-200 px-5 py-3.5 rounded-xl font-montserrat text-sm text-slate-900 focus:border-amber-500 outline-none"
                         />
                      </div>
                      <div className="space-y-2">
-                        <label className="font-jetbrains text-xs font-bold text-amber-900 uppercase tracking-wider">{t('maxBudgetLabel')}</label>
+                        <label className="font-montserrat text-xs font-bold text-amber-900 uppercase tracking-wider">{t('maxBudgetLabel')}</label>
                         <input 
                           type="number"
                           name="maxBudget"
                           value={formData.maxBudget}
                           onChange={handleChange}
-                          className="w-full bg-slate-50 border border-slate-200 px-5 py-3.5 rounded-xl font-jetbrains text-sm text-slate-900 focus:border-amber-500 outline-none"
+                          className="w-full bg-slate-50 border border-slate-200 px-5 py-3.5 rounded-xl font-montserrat text-sm text-slate-900 focus:border-amber-500 outline-none"
                         />
                      </div>
                    </>
@@ -428,14 +428,14 @@ const CreateJobModal = ({ isOpen, onClose, editData = null }) => {
                <h3 className="font-montserrat text-sm font-black text-slate-900 tracking-wider uppercase border-b border-slate-100 pb-2">{t('durationHeader')}</h3>
                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                     <label className="font-jetbrains text-xs font-bold text-amber-900 uppercase tracking-wider">{t('durationValueLabel')}</label>
+                     <label className="font-montserrat text-xs font-bold text-amber-900 uppercase tracking-wider">{t('durationValueLabel')}</label>
                      <input 
                        type="number"
                        name="durationValue"
                        value={formData.durationValue}
                        onChange={handleChange}
                        placeholder="e.g. 1"
-                       className="w-full bg-slate-50 border border-slate-200 px-5 py-3.5 rounded-xl font-jetbrains text-sm text-slate-900 focus:border-amber-500 outline-none"
+                       className="w-full bg-slate-50 border border-slate-200 px-5 py-3.5 rounded-xl font-montserrat text-sm text-slate-900 focus:border-amber-500 outline-none"
                      />
                   </div>
                   <CustomSelect 
@@ -461,13 +461,13 @@ const CreateJobModal = ({ isOpen, onClose, editData = null }) => {
                    value={currentSkill}
                    onChange={(e) => setCurrentSkill(e.target.value)}
                    placeholder={t('addSkillPlaceholder')}
-                   className="flex-1 bg-slate-50 border border-slate-200 px-5 py-3.5 rounded-xl font-jetbrains text-sm text-slate-900 focus:border-amber-500 outline-none placeholder:text-slate-400"
+                   className="flex-1 bg-slate-50 border border-slate-200 px-5 py-3.5 rounded-xl font-montserrat text-sm text-slate-900 focus:border-amber-500 outline-none placeholder:text-slate-400"
                    onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addSkill())}
                  />
                  <button 
                    type="button"
                    onClick={addSkill}
-                   className="bg-amber-400 text-slate-950 px-8 py-3.5 rounded-xl font-jetbrains text-xs font-black uppercase tracking-wider hover:bg-amber-500 transition-all shadow-sm"
+                   className="bg-amber-400 text-slate-950 px-8 py-3.5 rounded-xl font-montserrat text-xs font-black uppercase tracking-wider hover:bg-amber-500 transition-all shadow-sm"
                  >
                     {t('addSkillBtn')}
                  </button>
@@ -475,7 +475,7 @@ const CreateJobModal = ({ isOpen, onClose, editData = null }) => {
               <div className="flex flex-wrap gap-3">
                  {formData.skillsRequired.map(skill => (
                    <div key={skill} className="bg-amber-50 border border-amber-200 px-4 py-2 rounded-xl flex items-center gap-3">
-                      <span className="font-jetbrains text-xs text-amber-900 font-bold uppercase tracking-wider">{skill}</span>
+                      <span className="font-montserrat text-xs text-amber-900 font-bold uppercase tracking-wider">{skill}</span>
                       <button onClick={() => removeSkill(skill)} className="text-slate-400 hover:text-red-600 transition-colors">
                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M18 6L6 18M6 6l12 12"/></svg>
                       </button>
@@ -488,7 +488,7 @@ const CreateJobModal = ({ isOpen, onClose, editData = null }) => {
            <div className="space-y-6 pb-6">
               <h3 className="font-montserrat text-sm font-black text-slate-900 tracking-wider uppercase border-b border-slate-100 pb-2">{t('jobImageHeader')}</h3>
               <div className="space-y-2">
-                 <label className="font-jetbrains text-xs font-bold text-amber-900 uppercase tracking-wider">{t('thumbnailLabel')}</label>
+                 <label className="font-montserrat text-xs font-bold text-amber-900 uppercase tracking-wider">{t('thumbnailLabel')}</label>
                  <div className="flex flex-col gap-3">
                     <input 
                       type="file"
@@ -501,8 +501,8 @@ const CreateJobModal = ({ isOpen, onClose, editData = null }) => {
                       htmlFor="job-thumbnail"
                       className="w-fit bg-slate-50 border border-slate-200 px-6 py-3 rounded-xl cursor-pointer hover:bg-slate-100 transition-all flex items-center gap-3"
                     >
-                       <span className="font-jetbrains text-xs text-slate-900 font-bold uppercase tracking-wider">{t('chooseFileBtn')}</span>
-                       <span className="font-jetbrains text-xs text-slate-500 font-medium">
+                       <span className="font-montserrat text-xs text-slate-900 font-bold uppercase tracking-wider">{t('chooseFileBtn')}</span>
+                       <span className="font-montserrat text-xs text-slate-500 font-medium">
                           {formData.thumbnail ? formData.thumbnail.name : t('noFileChosen')}
                        </span>
                     </label>
@@ -516,14 +516,14 @@ const CreateJobModal = ({ isOpen, onClose, editData = null }) => {
             <button 
               type="button"
               onClick={handleClose}
-              className="font-jetbrains text-xs font-bold text-slate-600 hover:text-slate-900 uppercase tracking-wider py-3.5 px-6 rounded-xl border border-slate-200 bg-white transition-all"
+              className="font-montserrat text-xs font-bold text-slate-600 hover:text-slate-900 uppercase tracking-wider py-3.5 px-6 rounded-xl border border-slate-200 bg-white transition-all"
             >
                {t('cancelBtn')}
             </button>
            <button 
              onClick={handleSubmit}
              disabled={loading}
-             className="bg-amber-400 text-slate-950 px-8 py-3.5 rounded-xl font-jetbrains text-xs font-black uppercase tracking-wider flex items-center gap-2.5 hover:bg-amber-500 active:scale-95 transition-all shadow-md disabled:opacity-50"
+             className="bg-amber-400 text-slate-950 px-8 py-3.5 rounded-xl font-montserrat text-xs font-black uppercase tracking-wider flex items-center gap-2.5 hover:bg-amber-500 active:scale-95 transition-all shadow-md disabled:opacity-50"
            >
               {loading ? (
                 <div className="w-4 h-4 border-2 border-slate-950/30 border-t-slate-950 rounded-full animate-spin" />

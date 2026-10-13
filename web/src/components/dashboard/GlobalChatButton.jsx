@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+﻿import React, { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { gsap } from 'gsap'
 
@@ -40,7 +40,7 @@ const GlobalChatButton = () => {
         </div>
 
         {/* Label (Visible on Hover) */}
-        <div className="absolute right-20 top-1/2 -translate-y-1/2 bg-white/10 backdrop-blur-xl border border-white/10 px-4 py-2 font-jetbrains text-[8px] text-accent font-black uppercase tracking-[0.3em] opacity-0 group-hover:opacity-100 group-hover:-translate-x-2 transition-all duration-500 whitespace-nowrap pointer-events-none">
+        <div className="absolute right-20 top-1/2 -translate-y-1/2 bg-white/10 backdrop-blur-xl border border-white/10 px-4 py-2 font-montserrat text-[8px] text-accent font-black uppercase tracking-[0.3em] opacity-0 group-hover:opacity-100 group-hover:-translate-x-2 transition-all duration-500 whitespace-nowrap pointer-events-none">
            Support Protocol <span className="text-normal opacity-40 ml-2">v.2.1</span>
         </div>
       </Link>

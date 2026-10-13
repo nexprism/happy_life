@@ -42,9 +42,11 @@ import PrivacyPolicy from './pages/PrivacyPolicy'
 import Terms from './pages/Terms'
 import RefundPolicy from './pages/RefundPolicy'
 import { TrackerProvider } from './components/ActivityTracker'
+import { useSelector } from 'react-redux'
 
 import GlobalChatButton from './components/dashboard/GlobalChatButton'
 import SecureWrapper from './components/SecureWrapper'
+import ProtectedRoute from './components/ProtectedRoute'
 // import Preloader from './components/Preloader'
 import Lenis from '@studio-freight/lenis'
 import gsap from 'gsap'
@@ -86,6 +88,15 @@ const AppContent = () => {
   const isDashboard = location.pathname.startsWith('/dashboard')
   const isAuthPage = location.pathname === '/login' || location.pathname === '/signup' || location.pathname === '/checkout' || location.pathname === '/reset-password'
   const isCleanPage = isDashboard || isAuthPage
+
+  // Authentication check for dashboard elements
+  const token = useSelector((state) => state.auth?.token)
+  const storedToken = typeof window !== 'undefined' ? localStorage.getItem('edrilla_token') : null
+  const isAuthenticated = Boolean(
+    (token || storedToken) &&
+    (token !== 'null' && storedToken !== 'null') &&
+    (token !== 'undefined' && storedToken !== 'undefined')
+  )
 
   const lenisRef = React.useRef(null)
 
@@ -331,8 +342,8 @@ const AppContent = () => {
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/checkout" element={<Checkout />} />
 
-            {/* Nested Tactical Dashboard (v2.1 Routing) */}
-            <Route path="/dashboard">
+            {/* Nested Tactical Dashboard (v2.1 Routing - Protected) */}
+            <Route path="/dashboard" element={<ProtectedRoute />}>
               <Route index element={<Dashboard />} />
               <Route path="profile" element={<Profile />} />
               <Route path="purchases" element={<Purchases />} />
@@ -355,8 +366,7 @@ const AppContent = () => {
               <Route path="my-submissions" element={<MySubmissions />} />
               <Route path="my-results" element={<MyResults />} />
               <Route path="notifications" element={<Notifications />} />
-
-
+              <Route path="*" element={<Navigate to="/dashboard" replace />} />
             </Route>
 
             {/* Tactical Redirects for Legacy Paths */}
@@ -371,8 +381,8 @@ const AppContent = () => {
         {!isCleanPage && <Footer />}
       </div>
 
-      {/* Support Protocol - Persistent on Dashboards (Excluded on Messages page) */}
-      {isDashboard && location.pathname !== '/dashboard/messages' && <GlobalChatButton />}
+      {/* Support Protocol - Persistent on Dashboards for authenticated users (Excluded on Messages page) */}
+      {isDashboard && isAuthenticated && location.pathname !== '/dashboard/messages' && <GlobalChatButton />}
     </>
   )
 }

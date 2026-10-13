@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+﻿import { useEffect, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { resetPassword, clearAuthError } from '../redux/slices/authSlice'
@@ -67,7 +67,7 @@ const ResetPassword = () => {
         </Link>
 
         <p className="reset-page__eyebrow">{t('resetPasswordTitle')}</p>
-        <h1 className="reset-page__title">Set a new password</h1>
+        <h1 className="reset-page__title text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] transition-colors">Set a new password</h1>
         <p className="reset-page__copy">
           Use the token from your email link to complete the password change.
         </p>

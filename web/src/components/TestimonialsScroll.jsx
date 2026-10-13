@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react'
+﻿import React, { useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/all'
 
@@ -140,10 +140,10 @@ const TestimonialsScroll = ({ reviews = [] }) => {
 
       {/* Heading */}
       <div className="text-center mb-10 md:mb-20">
-        <span className="ts-heading block font-jetbrains text-[9px] text-accent tracking-[0.4em] md:tracking-[0.7em] uppercase font-bold opacity-70 mb-4">
+        <span className="ts-heading block font-montserrat text-[9px] text-accent tracking-[0.4em] md:tracking-[0.7em] uppercase font-bold opacity-70 mb-4">
           Verified / Testimonials
         </span>
-        <h2 className="ts-heading font-newsreader italic text-[clamp(2rem,6vw,5rem)] text-normal font-extralight leading-tight">
+        <h2 className="ts-heading font-montserrat text-normal text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] transition-colors">
           What Our Students <span className="text-accent underline-lime">Say</span>
         </h2>
       </div>
@@ -181,13 +181,13 @@ const TestimonialsScroll = ({ reviews = [] }) => {
                   <div className="absolute top-0 left-0 bottom-0 w-[2px] bg-accent scale-y-0 group-hover:scale-y-100 transition-transform duration-500 origin-top" />
 
                   {/* Watermark index */}
-                  <div className="absolute bottom-2 right-3 font-jetbrains text-[42px] md:text-[52px] font-black text-white/[0.03] leading-none pointer-events-none select-none group-hover:text-accent/[0.05] transition-colors duration-700">
+                  <div className="absolute bottom-2 right-3 font-montserrat text-[42px] md:text-[52px] font-black text-white/[0.03] leading-none pointer-events-none select-none group-hover:text-accent/[0.05] transition-colors duration-700">
                     {String((ti % displayTestimonials.length) + 1).padStart(2, '0')}
                   </div>
 
                   {/* Avatar + meta */}
                   <div className="flex items-center gap-3 mb-3">
-                    <div className="w-8 h-8 bg-accent/20 border border-accent/20 overflow-hidden flex items-center justify-center shrink-0 font-jetbrains text-[8px] text-accent font-black group-hover:bg-accent/30 transition-colors duration-400">
+                    <div className="w-8 h-8 bg-accent/20 border border-accent/20 overflow-hidden flex items-center justify-center shrink-0 font-montserrat text-[8px] text-accent font-black group-hover:bg-accent/30 transition-colors duration-400">
                       {t.image ? (
                         <img src={t.image} alt={t.name} className="w-full h-full object-cover" />
                       ) : (
@@ -195,14 +195,14 @@ const TestimonialsScroll = ({ reviews = [] }) => {
                       )}
                     </div>
                     <div>
-                      <p className="font-jetbrains text-[9px] text-description font-bold tracking-[0.2em] uppercase">{t.name}</p>
-                      <p className="font-jetbrains text-[7px] text-description/80 tracking-widest italic">{t.role}</p>
+                      <p className="font-montserrat text-[9px] text-description font-bold tracking-[0.2em] uppercase">{t.name}</p>
+                      <p className="font-montserrat text-[7px] text-description/80 tracking-widest">{t.role}</p>
                     </div>
                   </div>
 
                   <StarRating rating={t.rating} />
 
-                  <p className="font-jetbrains text-[10px] md:text-[9px] leading-[1.8] md:leading-[1.9] text-description tracking-wide">
+                  <p className="font-montserrat text-[10px] md:text-[9px] leading-[1.8] md:leading-[1.9] text-description tracking-wide">
                     "{t.text}"
                   </p>
 

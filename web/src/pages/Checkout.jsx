@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+﻿import React, { useState, useEffect, useRef } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { gsap } from 'gsap'
@@ -394,7 +394,7 @@ const Checkout = () => {
                      </span>
                   </div>
 
-                  <h2 className="font-newsreader italic text-3xl sm:text-4xl lg:text-5xl text-white leading-tight font-light drop-shadow-md">
+                  <h2 className="font-montserrat text-white drop-shadow-md text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] transition-colors">
                      {course?.title || 'Astrology Masterclass & Certification'}
                   </h2>
 
@@ -415,7 +415,7 @@ const Checkout = () => {
                   <div>
                      <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Total Enrollment Fee</p>
                      <div className="flex items-baseline gap-2 mt-1">
-                        <span className="font-newsreader italic text-4xl sm:text-5xl text-blue-400 tracking-tight leading-none drop-shadow-lg">
+                        <span className="font-montserrat text-4xl sm:text-5xl text-blue-400 tracking-tight leading-none drop-shadow-lg">
                            ₹{displayTotal}
                         </span>
                         <span className="text-xs text-blue-300/70 font-semibold uppercase">INR (Incl. GST)</span>
@@ -444,7 +444,7 @@ const Checkout = () => {
 
                   {/* Header Title */}
                   <div className="mb-2">
-                     <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
+                     <h1 className="text-slate-900 text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] transition-colors">
                         Course Enrollment
                      </h1>
                      <p className="text-sm text-slate-500 mt-1">

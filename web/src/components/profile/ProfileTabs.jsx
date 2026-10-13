@@ -1,4 +1,4 @@
-import React from 'react'
+﻿import React from 'react'
 import { useLanguage } from '../../context/LanguageContext'
 
 const ProfileTabs = ({ activeTab, setActiveTab, compact = true }) => {
@@ -15,7 +15,7 @@ const ProfileTabs = ({ activeTab, setActiveTab, compact = true }) => {
         <button
           key={tab.id}
           onClick={() => setActiveTab(tab.id)}
-          className={`flex-1 min-w-[120px] flex items-center justify-center gap-3 py-3.5 px-6 transition-all duration-300 relative overflow-hidden rounded-xl font-jetbrains text-xs font-black uppercase tracking-[0.3em]
+          className={`flex-1 min-w-[120px] flex items-center justify-center gap-3 py-3.5 px-6 transition-all duration-300 relative overflow-hidden rounded-xl font-montserrat text-xs font-black uppercase tracking-[0.3em]
             ${activeTab === tab.id 
               ? 'bg-accent text-slate-950 shadow-accent-soft scale-[1.02]' 
               : 'bg-slate-100 border border-slate-200/80 text-slate-600 hover:bg-slate-200/60 hover:text-slate-950'}`}

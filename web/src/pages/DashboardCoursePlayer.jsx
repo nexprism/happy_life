@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+﻿import React, { useEffect, useState, useRef } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { gsap } from 'gsap';
 import DashboardHeader from '../components/dashboard/DashboardHeader';
@@ -498,11 +498,11 @@ const DashboardCoursePlayer = () => {
         return (
             <div className="min-h-screen bg-dark flex flex-col items-center justify-center p-8 space-y-6">
                 <div className="bg-red-500/10 border border-red-500/20 p-12 text-center space-y-4 max-w-xl">
-                    <p className="font-jetbrains text-[10px] text-red-500 uppercase tracking-[0.4em] font-black italic">Decryption Error</p>
-                    <p className="font-newsreader italic text-2xl text-red-500/80">{error}</p>
+                    <p className="font-montserrat text-[10px] text-red-500 uppercase tracking-[0.4em] font-black">Decryption Error</p>
+                    <p className="font-montserrat text-2xl text-red-500/80">{error}</p>
                     <button 
                         onClick={() => dispatch(fetchCourseDetail(id))}
-                        className="px-12 py-4 bg-red-500/20 text-red-500 font-jetbrains text-[10px] uppercase tracking-widest hover:bg-red-500/30 transition-all"
+                        className="px-12 py-4 bg-red-500/20 text-red-500 font-montserrat text-[10px] uppercase tracking-widest hover:bg-red-500/30 transition-all"
                     >
                         Re-establish Protocol
                     </button>
@@ -522,21 +522,21 @@ const DashboardCoursePlayer = () => {
                     {/* Header Section */}
                     <div className="flex flex-col md:flex-row md:items-end justify-between items-start gap-8 player-reveal opacity-0">
                         <div className="space-y-4">
-                           <Link to="/dashboard/my-courses" className="font-jetbrains text-[8px] text-accent/40 uppercase tracking-[0.4em] hover:text-accent transition-colors flex items-center gap-2">
+                           <Link to="/dashboard/my-courses" className="font-montserrat text-[8px] text-accent/40 uppercase tracking-[0.4em] hover:text-accent transition-colors flex items-center gap-2">
                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="m15 18-6-6 6-6"/></svg>
                                Return to Curriculum
                            </Link>
-                           <h1 className="font-newsreader italic text-3xl md:text-6xl text-normal font-extralight tracking-tight leading-none uppercase">
+                           <h1 className="font-montserrat text-normal uppercase text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] transition-colors">
                                {sanitizeDisplay(currentCourse.title)}
                            </h1>
                            <div className="flex items-center gap-6 pt-2">
                                <div className="flex items-center gap-2">
                                    <div className="w-1.5 h-1.5 bg-accent rounded-full animate-pulse shadow-[0_0_10px_rgba(139, 92, 246,0.5)]" />
-                                   <span className="font-jetbrains text-[9px] text-accent font-black uppercase tracking-widest leading-none">
+                                   <span className="font-montserrat text-[9px] text-accent font-black uppercase tracking-widest leading-none">
                                        {selectedLesson ? `Viewing: ${selectedLesson.title}` : 'Session Protocol Active'}
                                    </span>
                                 </div>
-                               <span className="font-jetbrains text-[8px] text-description/20 uppercase tracking-[0.4em] leading-none">
+                               <span className="font-montserrat text-[8px] text-description/20 uppercase tracking-[0.4em] leading-none">
                                    {currentCourse.modules?.length || 0} Modules Curated
                                </span>
                            </div>
@@ -610,7 +610,7 @@ const DashboardCoursePlayer = () => {
                                             <div className="w-16 h-16 bg-red-500/10 text-red-500 border border-red-500/20 rounded-full flex items-center justify-center mx-auto">
                                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
                                             </div>
-                                            <p className="font-jetbrains text-[10px] text-red-500/80 uppercase tracking-widest">Media Source Not Found</p>
+                                            <p className="font-montserrat text-[10px] text-red-500/80 uppercase tracking-widest">Media Source Not Found</p>
                                         </div>
                                     )
                                 ) : (
@@ -618,7 +618,7 @@ const DashboardCoursePlayer = () => {
                                         <div className="w-16 h-16 bg-accent/10 text-accent border border-accent/20 rounded-full flex items-center justify-center mx-auto">
                                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zM12 6v6l4 2"/></svg>
                                         </div>
-                                        <p className="font-jetbrains text-[10px] text-accent/80 uppercase tracking-widest">Protocol Type Unrecognized</p>
+                                        <p className="font-montserrat text-[10px] text-accent/80 uppercase tracking-widest">Protocol Type Unrecognized</p>
                                     </div>
                                 )}
                                 
@@ -628,7 +628,7 @@ const DashboardCoursePlayer = () => {
                                         <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" className="text-white/20 mb-4">
                                             <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M8 11h8"/><path d="M12 15V7"/>
                                         </svg>
-                                        <p className="font-jetbrains text-[10px] text-white/50 uppercase tracking-[0.4em]">Content Protected</p>
+                                        <p className="font-montserrat text-[10px] text-white/50 uppercase tracking-[0.4em]">Content Protected</p>
                                     </div>
                                 )}
 
@@ -636,7 +636,7 @@ const DashboardCoursePlayer = () => {
                                 {user?.email && (
                                     <div className="absolute inset-0 pointer-events-none overflow-hidden select-none z-50">
                                         <div className="absolute animate-float-slow opacity-[0.03] md:opacity-[0.05] whitespace-nowrap">
-                                            <p className="font-jetbrains text-[10px] md:text-[14px] text-white tracking-[0.2em] font-black uppercase">
+                                            <p className="font-montserrat text-[10px] md:text-[14px] text-white tracking-[0.2em] font-black uppercase">
                                                 {user.email} • {user.email} • {user.email}
                                             </p>
                                         </div>
@@ -649,7 +649,7 @@ const DashboardCoursePlayer = () => {
                     {/* DRM Troubleshooting Note */}
                     {selectedLesson?.videoLessons?.[0]?.sourcePlatform === 'videocypher' && (
                         <div className="player-reveal opacity-0 py-2 border-l-2 border-accent/20 pl-4">
-                            <p className="font-jetbrains text-[8px] text-description/80 uppercase tracking-[0.4em] leading-relaxed">
+                            <p className="font-montserrat text-[8px] text-description/80 uppercase tracking-[0.4em] leading-relaxed">
                                 Security Protocol: If feed decryption fails, ensure <span className="text-accent/60 font-black">Incognito Mode</span> is disabled and <span className="text-accent/60 font-black">Protected Content</span> is allowed in system settings.
                             </p>
                         </div>
@@ -658,7 +658,7 @@ const DashboardCoursePlayer = () => {
                     {/* Curated Curriculum Accordion */}
                     <div className="player-reveal opacity-0 space-y-4">
                         <div className="flex items-center gap-4 mb-2">
-                           <p className="font-jetbrains text-[8px] text-accent uppercase tracking-[0.6em] font-black italic underline decoration-accent/20 underline-offset-4">Dossier Index</p>
+                           <p className="font-montserrat text-[8px] text-accent uppercase tracking-[0.6em] font-black underline decoration-accent/20 underline-offset-4">Dossier Index</p>
                            <div className="h-[1px] bg-white/5 flex-1" />
                         </div>
 
@@ -686,15 +686,15 @@ const DashboardCoursePlayer = () => {
                                         className="w-full flex items-center justify-between p-8 md:p-10 text-left"
                                     >
                                         <div className="flex items-center gap-6">
-                                            <div className={`w-10 h-10 border rounded-lg flex items-center justify-center font-jetbrains text-[10px] transition-all duration-700
+                                            <div className={`w-10 h-10 border rounded-lg flex items-center justify-center font-montserrat text-[10px] transition-all duration-700
                                                 ${activeAccordion === (module._id || i) ? 'bg-amber-400 text-slate-950 border-amber-400 font-black' : 'bg-slate-50 border-slate-200 text-slate-500 group-hover:border-slate-300 group-hover:text-slate-700'}`}>
                                                 {String(i + 1).padStart(2, '0')}
                                             </div>
                                             <div className="space-y-1">
-                                                <h3 className={`font-newsreader italic text-xl md:text-2xl lowercase tracking-tight transition-colors ${activeAccordion === (module._id || i) ? 'text-slate-900 font-semibold' : 'text-slate-700 group-hover:text-slate-900'}`}>
+                                                <h3 className={`font-montserrat text-xl md:text-2xl lowercase tracking-tight transition-colors ${activeAccordion === (module._id || i) ? 'text-slate-900 font-semibold' : 'text-slate-700 group-hover:text-slate-900'}`}>
                                                     {sanitizeDisplay(module.title)}
                                                 </h3>
-                                                <p className="font-jetbrains text-[8px] text-slate-500 uppercase tracking-widest">
+                                                <p className="font-montserrat text-[8px] text-slate-500 uppercase tracking-widest">
                                                     {module.lessons?.length || 0} Lessons Integrated
                                                 </p>
                                             </div>
@@ -757,16 +757,16 @@ const DashboardCoursePlayer = () => {
                             </div>
 
                             <div className="space-y-2">
-                                <p className="font-jetbrains text-[10px] text-red-500 uppercase tracking-[0.4em] font-black">Security Violation</p>
-                                <h3 className="font-newsreader italic text-3xl md:text-4xl text-normal tracking-tight">Warning Issued.</h3>
-                                <p className="font-jetbrains text-[11px] text-normal/70 uppercase tracking-widest mt-4 leading-relaxed">
+                                <p className="font-montserrat text-[10px] text-red-500 uppercase tracking-[0.4em] font-black">Security Violation</p>
+                                <h3 className="font-montserrat text-3xl md:text-4xl text-normal tracking-tight">Warning Issued.</h3>
+                                <p className="font-montserrat text-[11px] text-normal/70 uppercase tracking-widest mt-4 leading-relaxed">
                                     {securityWarning}
                                 </p>
                             </div>
 
                             <button 
                                 onClick={() => setSecurityWarning('')}
-                                className="mt-4 w-full bg-red-500/20 text-red-500 py-5 font-jetbrains text-xs font-black uppercase tracking-[0.4em] hover:bg-red-500/30 transition-all duration-300 border border-red-500/30"
+                                className="mt-4 w-full bg-red-500/20 text-red-500 py-5 font-montserrat text-xs font-black uppercase tracking-[0.4em] hover:bg-red-500/30 transition-all duration-300 border border-red-500/30"
                             >
                                 Acknowledge
                             </button>

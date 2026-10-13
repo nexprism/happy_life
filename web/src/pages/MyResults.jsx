@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useMemo } from 'react'
+﻿import React, { useEffect, useRef, useState, useMemo } from 'react'
 import { gsap } from 'gsap'
 import DashboardHeader from '../components/dashboard/DashboardHeader'
 import { useLanguage } from '../context/LanguageContext'
@@ -134,7 +134,7 @@ const MyResults = () => {
                      </svg>
                   </button>
                   <div>
-                     <h2 className="text-2xl font-bold font-newsreader">{selectedResult.quiz?.quizTitle || 'Quiz Review'}</h2>
+                     <h2 className="font-montserrat text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] transition-colors">{selectedResult.quiz?.quizTitle || 'Quiz Review'}</h2>
                      <p className="text-sm text-slate-500">Score: <span className="font-bold text-[#2171B5]">{Math.round(selectedResult.score || 0)} / {Math.round(selectedResult.totalMarks || 0)}</span> ({Math.round(selectedResult.percentage || 0)}%)</p>
                   </div>
                </div>
@@ -285,7 +285,7 @@ const MyResults = () => {
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 res-reveal">
                <div className="space-y-2">
                   <p className="font-mono text-xs text-[#2171B5] uppercase tracking-widest">{t('myActivity') || 'My Activity'}</p>
-                  <h1 className="font-newsreader italic text-5xl md:text-6xl text-slate-900 font-extralight tracking-tight leading-none">
+                  <h1 className="font-montserrat text-slate-900 text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] transition-colors">
                      My Results
                   </h1>
                </div>
@@ -349,11 +349,11 @@ const MyResults = () => {
                         <div className="grid grid-cols-2 gap-4 my-6">
                            <div className="space-y-1">
                               <p className="text-[10px] text-slate-400 uppercase tracking-widest font-mono">Score</p>
-                              <p className="font-newsreader text-3xl font-bold text-[#2171B5] italic">{Math.round(sub.score || 0)} / {Math.round(sub.totalMarks || 0)}</p>
+                              <p className="font-montserrat text-3xl font-bold text-[#2171B5]">{Math.round(sub.score || 0)} / {Math.round(sub.totalMarks || 0)}</p>
                            </div>
                            <div className="space-y-1">
                               <p className="text-[10px] text-slate-400 uppercase tracking-widest font-mono">Percentage</p>
-                              <p className="font-newsreader text-3xl font-bold text-slate-700 italic">{Number.isInteger(sub.percentage) ? sub.percentage : Number(sub.percentage).toFixed(1)}%</p>
+                              <p className="font-montserrat text-3xl font-bold text-slate-700">{Number.isInteger(sub.percentage) ? sub.percentage : Number(sub.percentage).toFixed(1)}%</p>
                            </div>
                         </div>
 

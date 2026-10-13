@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react'
+﻿import React, { useState, useRef, useEffect } from 'react'
 import { gsap } from 'gsap'
 
 const ForumFilterModal = ({ stats, tags, discourseTags, onStartTopic }) => {
@@ -88,7 +88,7 @@ const ForumFilterModal = ({ stats, tags, discourseTags, onStartTopic }) => {
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="group-hover:rotate-90 transition-transform duration-500">
             <path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/>
           </svg>
-          <div className="absolute -right-16 bg-accent text-slate-950 px-3 py-1 rounded font-jetbrains text-[8px] font-black tracking-widest opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+          <div className="absolute -right-16 bg-accent text-slate-950 px-3 py-1 rounded font-montserrat text-[8px] font-black tracking-widest opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
              FILTERS
           </div>
         </button>
@@ -111,8 +111,8 @@ const ForumFilterModal = ({ stats, tags, discourseTags, onStartTopic }) => {
            {/* Modal Header */}
            <div className="flex items-center justify-between mb-12 shrink-0">
               <div className="flex flex-col gap-1">
-                 <span className="font-jetbrains text-[9px] text-amber-700 tracking-[0.6em] font-black uppercase">Protocol Alpha</span>
-                 <h2 className="font-newsreader italic text-4xl text-slate-900 leading-none uppercase">Forum Calibration</h2>
+                 <span className="font-montserrat text-[9px] text-amber-700 tracking-[0.6em] font-black uppercase">Protocol Alpha</span>
+                 <h2 className="font-montserrat text-slate-900 uppercase text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] transition-colors">Forum Calibration</h2>
               </div>
               <button 
                 onClick={handleClose}
@@ -133,7 +133,7 @@ const ForumFilterModal = ({ stats, tags, discourseTags, onStartTopic }) => {
                         {stats.map((stat) => (
                            <div key={stat.label} className="flex items-center justify-between py-6">
                               <span className="font-montserrat text-[14px] text-slate-600 uppercase tracking-widest">{stat.label}</span>
-                              <span className="font-newsreader italic text-2xl text-slate-900">{stat.value}</span>
+                              <span className="font-montserrat text-2xl text-slate-900">{stat.value}</span>
                            </div>
                         ))}
                     </div>
@@ -141,7 +141,7 @@ const ForumFilterModal = ({ stats, tags, discourseTags, onStartTopic }) => {
 
                  <div className="p-8 bg-amber-50 border border-amber-300 rounded-2xl space-y-6 group cursor-pointer hover:bg-amber-100/60 transition-all" onClick={() => { onStartTopic(); handleClose(); }}>
                     <div className="flex items-center justify-between">
-                       <h5 className="font-jetbrains text-[9px] font-black text-amber-800 tracking-[0.4em] uppercase">Discourse Protocol</h5>
+                       <h5 className="font-montserrat text-[9px] font-black text-amber-800 tracking-[0.4em] uppercase">Discourse Protocol</h5>
                        <div className="w-8 h-8 rounded-full bg-accent flex items-center justify-center text-slate-950 group-hover:rotate-90 transition-transform duration-500">
                           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M12 5v14M5 12h14"/></svg>
                        </div>
@@ -158,7 +158,7 @@ const ForumFilterModal = ({ stats, tags, discourseTags, onStartTopic }) => {
                     <h4 className="font-montserrat text-[14px] font-black text-amber-700 tracking-[0.3em] uppercase underline underline-offset-8 decoration-amber-400/40">Popular Categories</h4>
                     <div className="flex flex-wrap gap-4 pt-4">
                        {tags.map((tag) => (
-                          <button key={tag} className="px-8 py-5 border border-slate-200 rounded-xl font-jetbrains text-[11px] font-bold text-slate-700 hover:text-amber-800 hover:border-amber-400 hover:bg-amber-50 transition-all uppercase tracking-[0.3em]">
+                          <button key={tag} className="px-8 py-5 border border-slate-200 rounded-xl font-montserrat text-[11px] font-bold text-slate-700 hover:text-amber-800 hover:border-amber-400 hover:bg-amber-50 transition-all uppercase tracking-[0.3em]">
                              {tag}
                           </button>
                        ))}
@@ -169,7 +169,7 @@ const ForumFilterModal = ({ stats, tags, discourseTags, onStartTopic }) => {
                     <h4 className="font-montserrat text-[14px] font-black text-slate-900 tracking-[0.3em] uppercase opacity-40">Discourse Tags</h4>
                     <div className="flex flex-wrap gap-3">
                        {discourseTags.map((tag) => (
-                          <button key={tag} className="px-5 py-3 border border-slate-200 rounded-lg font-jetbrains text-[9px] text-slate-600 hover:text-slate-900 transition-all uppercase tracking-widest">
+                          <button key={tag} className="px-5 py-3 border border-slate-200 rounded-lg font-montserrat text-[9px] text-slate-600 hover:text-slate-900 transition-all uppercase tracking-widest">
                              {tag}
                           </button>
                        ))}
@@ -181,7 +181,7 @@ const ForumFilterModal = ({ stats, tags, discourseTags, onStartTopic }) => {
 
            {/* Modal Footer Baseline */}
            <div className="mt-16 pt-10 border-t border-slate-100 flex items-center justify-between shrink-0">
-              <span className="font-jetbrains text-[8px] text-slate-400 tracking-[0.8em] uppercase">Calibration protocol v2.10.4</span>
+              <span className="font-montserrat text-[8px] text-slate-400 tracking-[0.8em] uppercase">Calibration protocol v2.10.4</span>
               <div className="flex gap-6">
                  <button onClick={handleClose} className="font-montserrat text-[14px] font-black text-slate-500 hover:text-slate-900 uppercase tracking-[0.3em] transition-colors">Abort</button>
                  <button onClick={handleClose} className="font-montserrat text-[14px] font-black px-6 py-2.5 bg-accent text-slate-950 rounded-full shadow-accent-soft uppercase tracking-[0.3em]">Apply Filters</button>

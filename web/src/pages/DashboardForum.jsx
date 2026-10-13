@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+﻿import React, { useEffect, useRef, useState } from 'react'
 import EmojiPicker from 'emoji-picker-react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
@@ -225,14 +225,14 @@ const DashboardForum = () => {
 
           <div className="flex flex-col gap-4">
             <div className="space-y-3">
-              <h2 className="font-newsreader italic text-2xl md:text-3xl leading-snug text-slate-900 font-bold group-hover:text-amber-600 transition-colors">
+              <h2 className="font-montserrat text-slate-900 group-hover:text-amber-600 text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] transition-colors">
                 {question.title}
               </h2>
               {/* Render All Tags */}
               {question.allTags && question.allTags.length > 0 && (
                 <div className="flex flex-wrap gap-2">
                   {question.allTags.map((tag, idx) => (
-                    <span key={idx} className="px-3 py-0.5 bg-amber-100 border border-amber-300 text-amber-900 font-jetbrains text-[10px] font-black uppercase tracking-wider rounded-full">
+                    <span key={idx} className="px-3 py-0.5 bg-amber-100 border border-amber-300 text-amber-900 font-montserrat text-[10px] font-black uppercase tracking-wider rounded-full">
                       {tag}
                     </span>
                   ))}
@@ -241,7 +241,7 @@ const DashboardForum = () => {
             </div>
 
             {question.content && (
-              <p className="font-jetbrains text-xs leading-relaxed text-slate-600 font-medium max-w-4xl line-clamp-3">
+              <p className="font-montserrat text-xs leading-relaxed text-slate-600 font-medium max-w-4xl line-clamp-3">
                 {question.content}
               </p>
             )}
@@ -328,16 +328,16 @@ const DashboardForum = () => {
                   />
                 ) : null}
                 {(!reply.profilePicture || reply.profilePicture === 'default-profile.png') && (
-                  <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center font-jetbrains text-[8px] text-accent/60 shrink-0">
+                  <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center font-montserrat text-[8px] text-accent/60 shrink-0">
                     {reply.author.substring(0, 2)}
                   </div>
                 )}
                 <div className="flex flex-col gap-2">
                   <div className="flex items-center gap-3">
                     <span className="font-montserrat text-[14px] font-bold text-normal tracking-widest uppercase">{reply.author}</span>
-                    <span className="font-jetbrains text-[8px] text-description/80 uppercase">{reply.time}</span>
+                    <span className="font-montserrat text-[8px] text-description/80 uppercase">{reply.time}</span>
                   </div>
-                  <p className="font-jetbrains text-[11px] text-description leading-relaxed">{reply.content}</p>
+                  <p className="font-montserrat text-[11px] text-description leading-relaxed">{reply.content}</p>
                 </div>
               </div>
             ))}
@@ -350,14 +350,14 @@ const DashboardForum = () => {
                 value={replyText}
                 onChange={(e) => setReplyText(e.target.value)}
                 placeholder="Contribute to this discourse..."
-                className="w-full bg-white/[0.01] border border-white/5 p-6 rounded-sm font-jetbrains text-sm text-normal placeholder:text-description/80 min-h-[120px] focus:border-accent/30 transition-all outline-none resize-none"
+                className="w-full bg-white/[0.01] border border-white/5 p-6 rounded-sm font-montserrat text-sm text-normal placeholder:text-description/80 min-h-[120px] focus:border-accent/30 transition-all outline-none resize-none"
               />
 
               <div className="absolute bottom-4 right-4 flex items-center gap-4">
                 <div className="flex items-center gap-3 mr-2">
                   {attachment && (
                     <div className="flex items-center gap-2 px-3 py-1 bg-white/5 border border-white/10 rounded-sm">
-                      <span className="font-jetbrains text-[9px] text-accent truncate max-w-[100px]">{attachment.name}</span>
+                      <span className="font-montserrat text-[9px] text-accent truncate max-w-[100px]">{attachment.name}</span>
                       <button onClick={() => setAttachment(null)} className="text-description hover:text-white">
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M18 6L6 18M6 6l12 12" /></svg>
                       </button>
@@ -410,7 +410,7 @@ const DashboardForum = () => {
                 <button
                   onClick={handlePostReply}
                   disabled={!replyText.trim()}
-                  className="bg-accent text-slate-950 font-black px-6 py-2 font-jetbrains text-[10px] uppercase tracking-widest hover:brightness-105 disabled:opacity-50 disabled:grayscale transition-all rounded"
+                  className="bg-accent text-slate-950 font-black px-6 py-2 font-montserrat text-[10px] uppercase tracking-widest hover:brightness-105 disabled:opacity-50 disabled:grayscale transition-all rounded"
                 >
                   {t('publishButton')}
                 </button>
@@ -433,8 +433,8 @@ const DashboardForum = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16 forum-dash-reveal opacity-0">
             {stats.map((stat, i) => (
               <div key={stat.label} className="bg-white border border-slate-200 p-8 rounded-2xl flex flex-col gap-2 group hover:border-amber-400 shadow-sm transition-all">
-                <span className="font-jetbrains text-[9px] text-slate-500 uppercase tracking-[0.4em] group-hover:text-amber-700 transition-colors">{stat.label}</span>
-                <span className="font-newsreader italic text-4xl text-slate-900 tracking-tighter">{stat.value}</span>
+                <span className="font-montserrat text-[9px] text-slate-500 uppercase tracking-[0.4em] group-hover:text-amber-700 transition-colors">{stat.label}</span>
+                <span className="font-montserrat text-4xl text-slate-900 tracking-tighter">{stat.value}</span>
               </div>
             ))}
           </div>
@@ -444,9 +444,9 @@ const DashboardForum = () => {
             {/* Discussion List Area */}
             <div className="md:col-span-8 lg:col-span-8 flex flex-col gap-2">
               <div className="flex items-center justify-between mb-8 forum-dash-reveal opacity-0">
-                <h1 className="font-newsreader italic text-4xl text-slate-900 font-extralight tracking-tight uppercase">{t('recentDiscourse')}</h1>
+                <h1 className="font-montserrat text-slate-900 uppercase text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] transition-colors">{t('recentDiscourse')}</h1>
                 <div className="hidden md:flex items-center gap-4">
-                  <span className="font-jetbrains text-[9px] text-slate-400 tracking-widest uppercase">{t('filterByIntelligence')}</span>
+                  <span className="font-montserrat text-[9px] text-slate-400 tracking-widest uppercase">{t('filterByIntelligence')}</span>
                   <div className="h-[1px] w-12 bg-slate-200" />
                 </div>
               </div>
@@ -455,8 +455,8 @@ const DashboardForum = () => {
                   <div className="w-16 h-16 rounded-full border border-slate-300 flex items-center justify-center mb-6">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-slate-400"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
                   </div>
-                  <h3 className="font-newsreader italic text-3xl text-slate-900 mb-2">No Discussions Yet</h3>
-                  <p className="font-jetbrains text-xs text-slate-500 uppercase tracking-widest">Be the first to start a new topic.</p>
+                  <h3 className="font-montserrat text-3xl text-slate-900 mb-2">No Discussions Yet</h3>
+                  <p className="font-montserrat text-xs text-slate-500 uppercase tracking-widest">Be the first to start a new topic.</p>
                 </div>
               )}
               {questions.map((q) => <QuestionCard key={q.id} question={q} />)}
@@ -473,13 +473,13 @@ const DashboardForum = () => {
               <div className="sidebar-dash-reveal opacity-0">
                 <button
                   onClick={() => setIsModalOpen(true)}
-                  className="w-full bg-accent text-slate-950 p-8 font-jetbrains text-[11px] font-black uppercase tracking-[0.4em] hover:scale-[1.05] active:scale-95 transition-all shadow-accent-soft flex flex-col items-center gap-4 group rounded-2xl"
+                  className="w-full bg-accent text-slate-950 p-8 font-montserrat text-[11px] font-black uppercase tracking-[0.4em] hover:scale-[1.05] active:scale-95 transition-all shadow-accent-soft flex flex-col items-center gap-4 group rounded-2xl"
                 >
                   <div className="w-12 h-12 rounded-full bg-[#4a89ff] flex items-center justify-center text-white shadow-lg group-hover:rotate-90 transition-transform duration-500">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M12 5v14M5 12h14" /></svg>
                   </div>
                   {t('startNewTopic')}
-                  <span className="text-[8px] font-normal tracking-[0.2em] opacity-60 normal-case italic">{t('contributeCollective')}</span>
+                  <span className="text-[8px] font-normal tracking-[0.2em] opacity-60 normal-case">{t('contributeCollective')}</span>
                 </button>
               </div>
 
@@ -488,7 +488,7 @@ const DashboardForum = () => {
                 <h4 className="font-montserrat text-[14px] font-black text-accent tracking-[0.3em] uppercase underline underline-offset-8 decoration-accent/20">{t('popularTags')}</h4>
                 <div className="flex flex-wrap gap-2 pt-2">
                   {tags.map((tag) => (
-                    <button key={tag} className="px-4 py-2 border border-white/50 font-jetbrains text-[8px] text-normal hover:text-accent hover:border-accent transition-all uppercase tracking-widest rounded-sm">
+                    <button key={tag} className="px-4 py-2 border border-white/50 font-montserrat text-[8px] text-normal hover:text-accent hover:border-accent transition-all uppercase tracking-widest rounded-sm">
                       {tag}
                     </button>
                   ))}
@@ -498,7 +498,7 @@ const DashboardForum = () => {
               {/* Discourse Protocol */}
               <div className="sidebar-dash-reveal opacity-0 space-y-6">
                 <h4 className="font-montserrat text-[14px] font-black text-normal tracking-[0.3em] uppercase opacity-40">{t('intelligenceNetwork')}</h4>
-                <p className="font-jetbrains text-[9px] text-description/80 leading-relaxed uppercase tracking-wider">
+                <p className="font-montserrat text-[9px] text-description/80 leading-relaxed uppercase tracking-wider">
                   Connected intelligence from 1,254 active carrier units. Share your perspective, upload attachments, and calibrate with the community.
                 </p>
               </div>
@@ -538,7 +538,7 @@ const DashboardForum = () => {
             <div className="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center group-hover:bg-accent group-hover:border-accent transition-all">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="group-hover:text-dark transition-colors"><path d="M19 12H5M12 19l-7-7 7-7" /></svg>
             </div>
-            <span className="font-jetbrains text-[11px] font-bold text-normal tracking-[0.4em] uppercase group-hover:text-accent transition-colors">{t('backToForum')}</span>
+            <span className="font-montserrat text-[11px] font-bold text-normal tracking-[0.4em] uppercase group-hover:text-accent transition-colors">{t('backToForum')}</span>
           </button>
 
           <div className="relative w-full h-full flex items-center justify-center">
@@ -558,8 +558,8 @@ const DashboardForum = () => {
               <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12" /></svg>
             </div>
             <div className="text-center">
-              <h3 className="font-newsreader italic text-2xl">Topic Published</h3>
-              <p className="font-jetbrains text-[9px] uppercase tracking-[0.3em] opacity-70">Discourse added to terminal</p>
+              <h3 className="font-montserrat text-2xl">Topic Published</h3>
+              <p className="font-montserrat text-[9px] uppercase tracking-[0.3em] opacity-70">Discourse added to terminal</p>
             </div>
           </div>
         </div>

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+﻿import React, { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
@@ -95,7 +95,7 @@ const CuratedCatalog = () => {
     <section ref={containerRef} className="relative w-full py-20 px-4 md:px-12 bg-dark perspective-mesh overflow-x-hidden">
       {/* Header Section */}
       <div className="catalog-header max-w-7xl mx-auto mb-12">
-        <h1 className="font-newsreader text-[clamp(3.5rem,8vw,6rem)] italic leading-[0.9] text-normal mb-8">
+        <h1 className="font-montserrat text-normal mb-8 text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] transition-colors">
           The Curated Catalog.
         </h1>
         <p className="font-montserrat text-[11px] text-description uppercase tracking-[0.2em] max-w-lg leading-medium mt-6">
@@ -186,7 +186,7 @@ const CuratedCatalog = () => {
         {/* Right Side: More Filters Button */}
         <Link 
           to="/courses" 
-          className="w-[75px] flex flex-col items-center justify-center gap-2 border border-white/10 font-jetbrains text-[8px] text-description font-bold tracking-[0.1em] hover:bg-white/5 hover:border-accent/40 active:scale-95 transition-all group/mob-more"
+          className="w-[75px] flex flex-col items-center justify-center gap-2 border border-white/10 font-montserrat text-[8px] text-description font-bold tracking-[0.1em] hover:bg-white/5 hover:border-accent/40 active:scale-95 transition-all group/mob-more"
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-accent transition-transform group-hover/mob-more:translate-x-0.5 group-hover/mob-more:-translate-y-0.5">
             <path d="M7 17L17 7M17 7H7M17 7V17" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
@@ -199,7 +199,7 @@ const CuratedCatalog = () => {
         {loading ? (
           <div className="col-span-full h-40" />
         ) : error ? (
-          <div className="col-span-full text-center py-20 text-red-500/40 font-jetbrains uppercase text-[10px] tracking-widest">Archive Offline</div>
+          <div className="col-span-full text-center py-20 text-red-500/40 font-montserrat uppercase text-[10px] tracking-widest">Archive Offline</div>
         ) : courses && courses.length > 0 ? (
           courses.slice(0, 6).map((item) => {
             const hasSale = Boolean(item.salePrice && item.price && Number(item.salePrice) < Number(item.price));

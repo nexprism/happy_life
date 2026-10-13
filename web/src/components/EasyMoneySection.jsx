@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react'
+﻿import React, { useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/all'
 
@@ -56,7 +56,7 @@ const EasyMoneySection = () => {
 
       {/* ══ HEADING ══ */}
       <div className="text-center space-y-4 mb-14">
-        <h2 className="em-title font-newsreader italic text-[clamp(2.8rem,7vw,5.5rem)] text-normal font-extralight leading-[0.92] tracking-tight">
+        <h2 className="em-title font-montserrat text-normal text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] transition-colors">
           Making <span className="text-accent underline-lime">$2000/month</span> is Easy
         </h2>
         <p className="em-title font-Montserrat text-[11px] text-accent tracking-[0.5em] uppercase font-bold opacity-70">
@@ -80,7 +80,7 @@ const EasyMoneySection = () => {
         </div>
         {/* Bottom HUD */}
         <div className="absolute bottom-0 left-0 right-0 z-30 flex items-center justify-between px-5 py-3 bg-gradient-to-t from-dark/90 to-transparent pointer-events-none">
-          <span className="font-Montserrat text-[8px] text-description/80 tracking-widest italic">Astrology Framework / Happy Life Astro</span>
+          <span className="font-Montserrat text-[8px] text-description/80 tracking-widest">Astrology Framework / Happy Life Astro</span>
           <div className="flex items-center gap-2">
             <div className="w-1 h-1 bg-accent rounded-full" />
             <span className="font-Montserrat text-[8px] text-accent tracking-[0.4em] uppercase">Happy Life Astro</span>
@@ -106,7 +106,7 @@ const EasyMoneySection = () => {
 
       {/* ═══ MORE THAN A COURSE ═══ */}
       <div className="em-sub text-center mb-10 space-y-6 border-t border-white/5 pt-10">
-        <h3 className="font-newsreader italic text-[clamp(1.8rem,4vw,3.2rem)] text-normal font-extralight">
+        <h3 className="font-montserrat text-[clamp(1.8rem,4vw,3.2rem)] text-normal font-bold">
           It's More Than Just a <span className="text-accent">Course</span>
         </h3>
         <p className="font-Montserrat text-sm text-description leading-[2] tracking-wide max-w-2xl mx-auto">
@@ -116,7 +116,7 @@ const EasyMoneySection = () => {
 
       {/* ═══ SOLVE YOUR BIGGEST PROBLEMS ═══ */}
       <div className="mb-10 border-t border-white/5 pt-10">
-        <h3 className="em-sub font-newsreader italic text-[clamp(1.8rem,4vw,3rem)] text-normal font-extralight text-center mb-12">
+        <h3 className="em-sub font-montserrat text-[clamp(1.8rem,4vw,3rem)] text-normal font-bold text-center mb-12">
           Solve Your Biggest <span className="text-accent">Problems</span>
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -126,7 +126,7 @@ const EasyMoneySection = () => {
               <div className="w-8 h-8 rounded-full border border-red-500/60 flex items-center justify-center shrink-0 bg-red-500/20 shadow-[0_0_15px_rgba(239,68,68,0.4)]">
                 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="4"><path d="M18 6L6 18M6 6l12 12"/></svg>
               </div>
-              <span className="font-Montserrat text-sm text-red-500 font-normal tracking-wide uppercase italic">{p}</span>
+              <span className="font-Montserrat text-sm text-red-500 font-normal tracking-wide uppercase">{p}</span>
             </div>
           ))}
         </div>
@@ -134,7 +134,7 @@ const EasyMoneySection = () => {
 
       {/* ═══ BY PROGRAM'S END (Green Glowing) ═══ */}
       <div className="mb-24 border-t border-white/5 pt-10">
-        <h3 className="em-sub font-newsreader italic text-[clamp(1.8rem,4vw,3rem)] text-normal font-extralight text-center mb-12">
+        <h3 className="em-sub font-montserrat text-[clamp(1.8rem,4vw,3rem)] text-normal font-bold text-center mb-12">
           By Program's End, You'll <span className="text-accent">Have</span>
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -151,7 +151,7 @@ const EasyMoneySection = () => {
 
       {/* ═══ FINAL CTA ═══ */}
       <div className="em-cta text-center space-y-10 border-t border-white/5 pt-10">
-        <h3 className="font-newsreader italic text-[clamp(2rem,5vw,4rem)] text-normal font-extralight">
+        <h3 className="font-montserrat text-[clamp(2rem,5vw,4rem)] text-normal font-bold">
           Stand Out from Your <span className="text-accent underline-lime">Competitors</span>
         </h3>
         <div className="flex items-center justify-center gap-8">
@@ -159,7 +159,7 @@ const EasyMoneySection = () => {
           <button className="group relative bg-accent px-16 py-8 overflow-hidden transition-all duration-500 hover:scale-[1.03] active:scale-95 flex flex-col items-center gap-2">
             <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
             <span className="relative z-10 font-Montserrat text-dark text-sm font-black tracking-[0.4em] uppercase">YES, I WANT TO BE CEO OF MY LIFE</span>
-            <span className="relative z-10 font-Montserrat text-dark/50 text-[9px] tracking-[0.2em] italic">(with Expert Guidance)</span>
+            <span className="relative z-10 font-Montserrat text-dark/50 text-[9px] tracking-[0.2em]">(with Expert Guidance)</span>
           </button>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" strokeWidth="1.5" className="opacity-30 hidden md:block rotate-180"><path d="M5 12h14m-7-7 7 7-7 7"/></svg>
         </div>

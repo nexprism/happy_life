@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+﻿import React, { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Link } from 'react-router-dom';
@@ -82,7 +82,7 @@ const AboutSnapshot = () => {
                   Who We Are
                </div>
                
-               <h2 className="snapshot-text text-4xl md:text-5xl font-black text-slate-900 leading-[1.1] mb-6">
+               <h2 className="snapshot-text font-black text-slate-900 mb-6 text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] transition-colors">
                   Your Ultimate Guide to <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 to-amber-700">Astrological Mastery.</span>
                </h2>
                

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+﻿import React, { useState, useEffect, useRef } from 'react'
 import { useSelector } from 'react-redux'
 import authorizedFetch from '../utils/apiClient'
 import DashboardHeader from '../components/dashboard/DashboardHeader'
@@ -223,9 +223,9 @@ const DashboardLiveClasses = () => {
                     <div className="space-y-4 live-reveal">
                         <div className="flex items-center gap-3">
                             <div className="w-1.5 h-1.5 bg-accent rounded-full animate-pulse" />
-                            <span className="font-jetbrains text-[10px] text-accent tracking-[0.4em] uppercase">{t('liveSignal') || 'LIVE SIGNAL'}</span>
+                            <span className="font-montserrat text-[10px] text-accent tracking-[0.4em] uppercase">{t('liveSignal') || 'LIVE SIGNAL'}</span>
                         </div>
-                        <h1 className="font-newsreader italic text-4xl md:text-6xl text-normal tracking-tighter">
+                        <h1 className="font-montserrat text-normal text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] transition-colors">
                             {t('liveClasses') || 'Live Classes'}
                         </h1>
                     </div>
@@ -246,13 +246,13 @@ const DashboardLiveClasses = () => {
                                         </svg>
                                     </div>
                                     <div className="space-y-1">
-                                        <p className="font-jetbrains text-[10px] text-yellow-400 uppercase tracking-[0.3em] font-bold">
+                                        <p className="font-montserrat text-[10px] text-yellow-400 uppercase tracking-[0.3em] font-bold">
                                             {t('meetingDisconnected') || 'Meeting Disconnected'}
                                         </p>
-                                        <p className="font-newsreader italic text-xl text-normal">
+                                        <p className="font-montserrat text-xl text-normal">
                                             {disconnectedMeeting.topic}
                                         </p>
-                                        <p className="font-jetbrains text-[9px] text-description/50 uppercase tracking-widest">
+                                        <p className="font-montserrat text-[9px] text-description/50 uppercase tracking-widest">
                                             {t('disconnectedDesc') || 'You have left or been disconnected from this session.'}
                                         </p>
                                     </div>
@@ -261,13 +261,13 @@ const DashboardLiveClasses = () => {
                                     <button
                                         onClick={() => startStreaming(disconnectedMeeting)}
                                         disabled={joining}
-                                        className="px-8 py-3 bg-yellow-500/10 border border-yellow-500/30 text-yellow-400 font-jetbrains text-[9px] font-bold tracking-[0.3em] uppercase hover:bg-yellow-500/20 transition-all disabled:opacity-40 disabled:cursor-wait"
+                                        className="px-8 py-3 bg-yellow-500/10 border border-yellow-500/30 text-yellow-400 font-montserrat text-[9px] font-bold tracking-[0.3em] uppercase hover:bg-yellow-500/20 transition-all disabled:opacity-40 disabled:cursor-wait"
                                     >
                                         {joining ? (t('reconnecting') || 'RECONNECTING...') : `↩ ${t('rejoin') || 'REJOIN'}`}
                                     </button>
                                     <button
                                         onClick={() => setDisconnectedMeeting(null)}
-                                        className="px-6 py-3 border border-white/10 text-description font-jetbrains text-[9px] tracking-[0.2em] uppercase hover:bg-white/5 transition-all"
+                                        className="px-6 py-3 border border-white/10 text-description font-montserrat text-[9px] tracking-[0.2em] uppercase hover:bg-white/5 transition-all"
                                     >
                                         {t('dismiss') || 'DISMISS'}
                                     </button>
@@ -279,7 +279,7 @@ const DashboardLiveClasses = () => {
                     {error && (
                         <div className="live-reveal p-6 border border-red-500/20 bg-red-500/5 flex items-start gap-4">
                             <div className="w-1.5 h-1.5 mt-1 bg-red-500 rounded-full animate-pulse flex-shrink-0" />
-                            <p className="font-jetbrains text-[9px] text-red-400/80 uppercase tracking-[0.15em]">{error}</p>
+                            <p className="font-montserrat text-[9px] text-red-400/80 uppercase tracking-[0.15em]">{error}</p>
                         </div>
                     )}
 
@@ -291,21 +291,21 @@ const DashboardLiveClasses = () => {
                                 </svg>
                             </div>
                             <div className="space-y-8 relative z-10">
-                                <h2 className="font-newsreader italic text-5xl md:text-6xl text-normal max-w-2xl">{activeMeeting.topic}</h2>
+                                <h2 className="font-montserrat text-normal max-w-2xl text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] transition-colors">{activeMeeting.topic}</h2>
                                 <div className="flex gap-10 flex-wrap">
                                     <div className="space-y-1">
-                                        <p className="font-jetbrains text-[8px] text-description/40 uppercase tracking-widest">Protocol</p>
-                                        <p className="font-newsreader italic text-2xl text-normal">{t('secureBroadcast') || 'SECURE BROADCAST'}</p>
+                                        <p className="font-montserrat text-[8px] text-description/40 uppercase tracking-widest">Protocol</p>
+                                        <p className="font-montserrat text-2xl text-normal">{t('secureBroadcast') || 'SECURE BROADCAST'}</p>
                                     </div>
                                     <div className="space-y-1">
-                                        <p className="font-jetbrains text-[8px] text-description/40 uppercase tracking-widest">Schedule</p>
-                                        <p className="font-newsreader italic text-2xl text-normal">
+                                        <p className="font-montserrat text-[8px] text-description/40 uppercase tracking-widest">Schedule</p>
+                                        <p className="font-montserrat text-2xl text-normal">
                                             {new Date(activeMeeting.start_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                         </p>
                                     </div>
                                     <div className="space-y-1">
-                                        <p className="font-jetbrains text-[8px] text-description/40 uppercase tracking-widest">ID / Passcode</p>
-                                        <p className="font-newsreader italic text-xl text-normal">
+                                        <p className="font-montserrat text-[8px] text-description/40 uppercase tracking-widest">ID / Passcode</p>
+                                        <p className="font-montserrat text-xl text-normal">
                                             {activeMeeting.id} / <span className="text-accent">{activeMeeting.password || 'N/A'}</span>
                                         </p>
                                     </div>
@@ -313,14 +313,14 @@ const DashboardLiveClasses = () => {
                                 <button
                                     onClick={() => startStreaming(activeMeeting)}
                                     disabled={joining}
-                                    className="px-12 py-5 bg-accent text-dark font-jetbrains text-[10px] font-black tracking-[0.4em] uppercase hover:tracking-[0.6em] transition-all disabled:opacity-40 disabled:cursor-wait"
+                                    className="px-12 py-5 bg-accent text-dark font-montserrat text-[10px] font-black tracking-[0.4em] uppercase hover:tracking-[0.6em] transition-all disabled:opacity-40 disabled:cursor-wait"
                                 >
                                     {joining ? 'ESTABLISHING...' : t('joinClass')}
                                 </button>
                             </div>
                         </div>
                     ) : (
-                        <div className="live-reveal p-20 border border-white/5 bg-white/[0.01] text-center italic text-description/40 font-newsreader text-2xl">
+                        <div className="live-reveal p-20 border border-white/5 bg-white/[0.01] text-center text-description/40 font-montserrat text-2xl">
                             {t('noClassesActive') || 'No classes currently active.'}
                         </div>
                     )}
@@ -328,18 +328,18 @@ const DashboardLiveClasses = () => {
                     {/* Always show ALL remaining meetings below the hero card */}
                     {meetings.filter(m => m.id !== activeMeeting?.id).length > 0 && (
                         <div className="space-y-4">
-                            <p className="font-jetbrains text-[9px] text-description/40 uppercase tracking-[0.3em]">{t('allScheduledClasses') || 'All Scheduled Classes'}</p>
+                            <p className="font-montserrat text-[9px] text-description/40 uppercase tracking-[0.3em]">{t('allScheduledClasses') || 'All Scheduled Classes'}</p>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 {meetings.filter(m => m.id !== activeMeeting?.id).map((m, i) => (
                                     <div key={m.id || i} className="live-reveal p-8 border border-white/5 bg-white/[0.01] space-y-4">
-                                        <h3 className="font-newsreader italic text-2xl text-normal">{m.topic}</h3>
-                                        <p className="font-jetbrains text-[8px] text-description/40 uppercase tracking-widest">
+                                        <h3 className="font-montserrat text-2xl text-normal">{m.topic}</h3>
+                                        <p className="font-montserrat text-[8px] text-description/40 uppercase tracking-widest">
                                             Scheduled: {new Date(m.start_time).toLocaleString()} | Passcode: <span className="text-accent">{m.password || 'N/A'}</span>
                                         </p>
                                         <button
                                             onClick={() => startStreaming(m)}
                                             disabled={joining}
-                                            className="px-8 py-3 border border-white/10 text-normal font-jetbrains text-[9px] tracking-[0.3em] uppercase hover:bg-white/5 transition-all disabled:opacity-40"
+                                            className="px-8 py-3 border border-white/10 text-normal font-montserrat text-[9px] tracking-[0.3em] uppercase hover:bg-white/5 transition-all disabled:opacity-40"
                                         >
                                             {joining ? 'ESTABLISHING...' : 'JOIN'}
                                         </button>

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useMemo } from 'react'
+﻿import React, { useEffect, useRef, useState, useMemo } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { gsap } from 'gsap'
 import { useDispatch, useSelector } from 'react-redux'
@@ -516,11 +516,11 @@ const Courses = () => {
         {/* Hero Title */}
         <div className={`courses-hero max-w-7xl mx-auto mb-8 ${eventList && eventList.length > 0 ? 'pt-8' : 'pt-28 md:pt-36'}`}>
           <div className="flex items-baseline gap-6 flex-wrap">
-            <h1 className="font-newsreader text-4xl md:text-6xl font-extralight italic text-normal tracking-tight">
+            <h1 className="font-montserrat text-normal text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] transition-colors">
               {t('ourCourses') || 'Our Courses'}
             </h1>
           </div>
-          <p className="font-jetbrains text-xs text-accent uppercase tracking-[0.4em] font-bold italic mt-2">
+          <p className="font-montserrat text-xs text-accent uppercase tracking-[0.4em] font-bold mt-2">
             {t('coursesSubtitle') !== 'coursesSubtitle' ? t('coursesSubtitle') : 'Curated Academic Modules & Learning Tracks'}
           </p>
         </div>
@@ -595,7 +595,7 @@ const Courses = () => {
                       <path d="M5 18L5 12M5 12L3 15M5 12L7 15" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
                       <path d="M21 18L21 2M21 2L19 5M21 2L23 5" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
-                    <h3 className="font-newsreader text-2xl italic text-normal">Difficulty</h3>
+                    <h3 className="font-montserrat text-2xl text-normal">Difficulty</h3>
                   </div>
 
                   <div className="flex flex-wrap gap-3">
@@ -622,7 +622,7 @@ const Courses = () => {
                       <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2.5" />
                       <path d="M12 6V12L16 14" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
-                    <h3 className="font-newsreader text-2xl italic text-normal">Duration</h3>
+                    <h3 className="font-montserrat text-2xl text-normal">Duration</h3>
                   </div>
 
                   <div className="grid grid-cols-2 gap-x-8 gap-y-4">
@@ -659,7 +659,7 @@ const Courses = () => {
           {/* Mobile Filter Header */}
           <div className="md:hidden flex flex-col gap-8">
             <div className="flex items-center justify-between">
-              <span className="font-jetbrains text-[8px] text-description/80 uppercase tracking-[0.2em] font-bold">
+              <span className="font-montserrat text-[8px] text-description/80 uppercase tracking-[0.2em] font-bold">
                 {activeFilter === 'TEST SERIES'
                   ? `${testSeriesData.length} COURSES AVAILABLE`
                   : activeFilter === 'BUY BOOKS'
@@ -669,7 +669,7 @@ const Courses = () => {
               {activeFilter !== 'TEST SERIES' && activeFilter !== 'BUY BOOKS' && (
                 <button
                   onClick={() => setShowAdvanced(!showAdvanced)}
-                  className="flex items-center gap-2 font-jetbrains text-[9px] font-bold tracking-[0.2em] transition-colors text-description hover:text-accent cursor-pointer"
+                  className="flex items-center gap-2 font-montserrat text-[9px] font-bold tracking-[0.2em] transition-colors text-description hover:text-accent cursor-pointer"
                 >
                   <svg width="14" height="10" viewBox="0 0 24 16" fill="none" className="transition-transform duration-500">
                     <path d="M4 4H20M7 8H17M10 12H14" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
@@ -735,7 +735,7 @@ const Courses = () => {
                     </div>
 
                     <div>
-                      <h3 className="font-newsreader text-2xl font-bold text-normal group-hover:text-accent transition-colors leading-snug">
+                      <h3 className="font-montserrat text-2xl font-bold text-normal group-hover:text-accent transition-colors leading-snug">
                         {test.title}
                       </h3>
                       <p className="mt-2 text-xs text-description line-clamp-2 leading-relaxed">
@@ -811,7 +811,7 @@ const Courses = () => {
                       <div className="text-[10px] font-mono font-bold uppercase tracking-wider text-accent">
                         {book.category}
                       </div>
-                      <h3 className="font-newsreader text-2xl font-bold text-normal group-hover:text-accent transition-colors leading-snug">
+                      <h3 className="font-montserrat text-2xl font-bold text-normal group-hover:text-accent transition-colors leading-snug">
                         {book.title}
                       </h3>
                       <p className="text-[11px] text-description font-medium">By {book.author}</p>
@@ -820,7 +820,7 @@ const Courses = () => {
                       </p>
 
                       <div className="pt-2 flex items-baseline gap-2">
-                        <span className="text-xl font-bold text-normal font-newsreader">{book.price}</span>
+                        <span className="text-xl font-bold text-normal font-montserrat">{book.price}</span>
                         <span className="text-xs text-description/60 line-through font-mono">{book.originalPrice}</span>
                       </div>
                     </div>
@@ -885,10 +885,10 @@ const Courses = () => {
         <div className="events-section max-w-7xl mx-auto pt-24 border-t border-border">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16">
             <div>
-              <h2 className="font-newsreader text-5xl md:text-6xl italic text-normal mb-4">Upcoming Events</h2>
+              <h2 className="font-montserrat text-normal mb-4 text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] transition-colors">Upcoming Events</h2>
               <p className="font-montserrat text-[11px] text-description uppercase tracking-[0.2em]">Curated experiences & intensive workshops.</p>
             </div>
-            <div className="flex items-center gap-4 text-[10px] font-jetbrains text-description">
+            <div className="flex items-center gap-4 text-[10px] font-montserrat text-description">
               <span className="text-accent">•</span> <span>{t('berlin') || 'BERLIN'}</span>
               <span className="text-accent">•</span> <span>{t('remotelyAvailable') || 'REMOTELY AVAILABLE'}</span>
             </div>
@@ -953,7 +953,7 @@ const Courses = () => {
                 <span className="text-[10px] font-mono font-bold text-amber-700 bg-amber-50 px-2.5 py-1 rounded-md uppercase">
                   {activeQuizModal.category}
                 </span>
-                <h3 className="font-newsreader text-2xl font-bold text-slate-900 mt-2">{activeQuizModal.title}</h3>
+                <h3 className="font-montserrat text-2xl font-bold text-slate-900 mt-2">{activeQuizModal.title}</h3>
               </div>
               <button
                 onClick={() => setActiveQuizModal(null)}
@@ -1037,7 +1037,7 @@ const Courses = () => {
               <div className="space-y-6">
                 <div className="text-center py-6 bg-amber-50 rounded-2xl border border-amber-200/80 space-y-2">
                   <div className="text-3xl">🎯</div>
-                  <h4 className="text-2xl font-bold font-newsreader text-slate-900">
+                  <h4 className="text-2xl font-bold font-montserrat text-slate-900">
                     Your Score: {calculateScore().score} / {calculateScore().total}
                   </h4>
                   <p className="text-sm font-mono font-bold text-amber-800">
@@ -1076,13 +1076,13 @@ const Courses = () => {
                       setQuizSubmitted(false)
                       setQuizTimer(0)
                     }}
-                    className="flex-1 py-3 rounded-xl border border-slate-300 font-inter text-xs font-bold uppercase hover:bg-slate-50 cursor-pointer"
+                    className="flex-1 py-3 rounded-xl border border-slate-300 font-montserrat text-xs font-bold uppercase hover:bg-slate-50 cursor-pointer"
                   >
                     Retake Test
                   </button>
                   <button
                     onClick={() => setActiveQuizModal(null)}
-                    className="flex-1 py-3 rounded-xl bg-slate-900 text-white font-inter text-xs font-bold uppercase hover:bg-accent hover:text-slate-950 cursor-pointer transition-colors"
+                    className="flex-1 py-3 rounded-xl bg-slate-900 text-white font-montserrat text-xs font-bold uppercase hover:bg-accent hover:text-slate-950 cursor-pointer transition-colors"
                   >
                     Close Results
                   </button>
@@ -1115,7 +1115,7 @@ const Courses = () => {
                 <span className="text-[10px] font-mono font-bold text-rose-700 bg-rose-50 px-2.5 py-1 rounded-md uppercase">
                   {activeBookModal.category} • {activeBookModal.format}
                 </span>
-                <h3 className="font-newsreader text-2xl sm:text-3xl font-bold text-slate-900 mt-2">{activeBookModal.title}</h3>
+                <h3 className="font-montserrat text-2xl sm:text-3xl font-bold text-slate-900 mt-2">{activeBookModal.title}</h3>
                 <p className="text-xs text-slate-500">By {activeBookModal.author}</p>
               </div>
               <button
@@ -1148,7 +1148,7 @@ const Courses = () => {
               {/* Sample Excerpt */}
               <div className="bg-amber-50/60 p-4 rounded-2xl border border-amber-200/80 space-y-1.5">
                 <div className="text-[10px] font-mono font-bold uppercase text-amber-900 tracking-wider">Sample Chapter Excerpt</div>
-                <p className="text-xs italic text-slate-800 leading-relaxed font-newsreader">
+                <p className="text-xs text-slate-800 leading-relaxed font-montserrat">
                   "{activeBookModal.sampleExcerpt}"
                 </p>
               </div>
@@ -1158,7 +1158,7 @@ const Courses = () => {
                 <div>
                   <div className="text-[10px] font-mono text-slate-400 uppercase">Special Launch Price</div>
                   <div className="flex items-baseline gap-2">
-                    <span className="text-2xl font-bold text-slate-900 font-newsreader">{activeBookModal.price}</span>
+                    <span className="text-2xl font-bold text-slate-900 font-montserrat">{activeBookModal.price}</span>
                     <span className="text-xs text-slate-400 line-through font-mono">{activeBookModal.originalPrice}</span>
                     <span className="text-xs font-bold text-emerald-600 font-mono">{activeBookModal.discount}</span>
                   </div>
@@ -1168,7 +1168,7 @@ const Courses = () => {
                   {!isBookPurchased ? (
                     <button
                       onClick={() => setIsBookPurchased(true)}
-                      className="w-full sm:w-auto px-6 py-3 rounded-xl bg-accent text-slate-950 font-inter text-xs font-black uppercase tracking-wider hover:scale-105 transition-transform shadow-md cursor-pointer flex items-center justify-center gap-2"
+                      className="w-full sm:w-auto px-6 py-3 rounded-xl bg-accent text-slate-950 font-montserrat text-xs font-black uppercase tracking-wider hover:scale-105 transition-transform shadow-md cursor-pointer flex items-center justify-center gap-2"
                     >
                       <span>Buy & Download eBook</span>
                       <span>→</span>
@@ -1223,7 +1223,7 @@ const Courses = () => {
                     </span>
                   )}
                 </div>
-                <h3 className="font-newsreader text-2xl sm:text-3xl font-bold text-slate-900 leading-tight">
+                <h3 className="font-montserrat text-2xl sm:text-3xl font-bold text-slate-900 leading-tight">
                   {activeEventModal.title}
                 </h3>
               </div>
@@ -1244,7 +1244,7 @@ const Courses = () => {
                   ✓
                 </div>
                 <div className="space-y-2">
-                  <h4 className="font-newsreader text-3xl font-bold text-slate-900">
+                  <h4 className="font-montserrat text-3xl font-bold text-slate-900">
                     Registration Confirmed! 🎉
                   </h4>
                   <p className="text-xs sm:text-sm text-slate-600 max-w-md mx-auto">
@@ -1372,7 +1372,7 @@ const Courses = () => {
                   <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-slate-100">
                     <div>
                       <div className="text-[10px] font-mono text-slate-400 uppercase">Registration Fee</div>
-                      <div className="text-xl font-bold font-newsreader text-slate-900">
+                      <div className="text-xl font-bold font-montserrat text-slate-900">
                         {activeEventModal.price && Number(activeEventModal.price) > 0
                           ? `₹${activeEventModal.price}`
                           : 'FREE'}

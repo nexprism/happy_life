@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+﻿import React, { useEffect, useRef, useState } from 'react'
 import EmojiPicker from 'emoji-picker-react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
@@ -246,25 +246,25 @@ const QuestionCard = ({ question }) => {
               />
             ) : null}
             {(!question.profilePicture || question.profilePicture === 'default-profile.png') && (
-              <div className="w-10 h-10 rounded-full bg-accent/10 border border-accent/20 flex items-center justify-center text-accent font-jetbrains font-bold text-sm">
+              <div className="w-10 h-10 rounded-full bg-accent/10 border border-accent/20 flex items-center justify-center text-accent font-montserrat font-bold text-sm">
                 {question.author?.charAt(0)?.toUpperCase()}
               </div>
             )}
             <div className="flex flex-col gap-0.5">
-              <span className="font-jetbrains text-xs font-bold text-accent tracking-wider uppercase">{question.authorRole} / {question.author}</span>
+              <span className="font-montserrat text-xs font-bold text-accent tracking-wider uppercase">{question.authorRole} / {question.author}</span>
             </div>
           </div>
 
           <div className="flex flex-col gap-4">
             <div className="space-y-3">
-              <h2 className="font-newsreader italic text-2xl md:text-3xl leading-snug text-normal font-bold group-hover:text-accent transition-colors">
+              <h2 className="font-montserrat text-normal group-hover:text-accent text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] transition-colors">
                 {question.title}
               </h2>
               {/* Render All Tags */}
               {question.allTags && question.allTags.length > 0 && (
                 <div className="flex flex-wrap gap-2">
                   {question.allTags.map((tag, idx) => (
-                    <span key={idx} className="px-3 py-0.5 bg-accent/10 border border-accent/20 text-accent font-jetbrains text-[10px] font-bold uppercase tracking-wider rounded-none">
+                    <span key={idx} className="px-3 py-0.5 bg-accent/10 border border-accent/20 text-accent font-montserrat text-[10px] font-bold uppercase tracking-wider rounded-none">
                       {tag}
                     </span>
                   ))}
@@ -273,7 +273,7 @@ const QuestionCard = ({ question }) => {
             </div>
             
             {question.content && (
-              <p className="font-jetbrains text-xs leading-relaxed text-description font-normal max-w-4xl line-clamp-3">
+              <p className="font-montserrat text-xs leading-relaxed text-description font-normal max-w-4xl line-clamp-3">
                 {question.content}
               </p>
             )}
@@ -317,7 +317,7 @@ const QuestionCard = ({ question }) => {
             <div className="flex items-center gap-8">
               {/* Like / Dislike Sentiment */}
               <div className="flex flex-col gap-1">
-                <span className="font-jetbrains text-[8px] text-description/60 uppercase tracking-widest font-bold">BUTTON</span>
+                <span className="font-montserrat text-[8px] text-description/60 uppercase tracking-widest font-bold">BUTTON</span>
                 <div className="flex items-center gap-3">
                    <button 
                        onClick={() => handleSentiment('like')}
@@ -325,7 +325,7 @@ const QuestionCard = ({ question }) => {
                    >
                        <svg width="14" height="14" viewBox="0 0 24 24" fill={sentiment === 'like' ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2.5"><path d="M7 11V19H17C17.55 19 18 18.55 18 18V9C18 8.45 17.55 8 17 8H12.67L13.12 4.41C13.19 3.84 12.79 3.32 12.22 3.25C12.15 3.24 12.07 3.24 12 3.24C11.55 3.24 11.13 3.42 10.82 3.73L7 7.56V11H7Z" strokeLinecap="round" strokeLinejoin="round"/></svg>
                    </button>
-                   <span className="font-jetbrains text-xs font-bold text-normal">{formatCount(likesCount)}</span>
+                   <span className="font-montserrat text-xs font-bold text-normal">{formatCount(likesCount)}</span>
                    
                    <button 
                        onClick={() => handleSentiment('dislike')}
@@ -333,16 +333,16 @@ const QuestionCard = ({ question }) => {
                    >
                        <svg width="14" height="14" viewBox="0 0 24 24" fill={sentiment === 'dislike' ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2.5" className="rotate-180"><path d="M7 11V19H17C17.55 19 18 18.55 18 18V9C18 8.45 17.55 8 17 8H12.67L13.12 4.41C13.19 3.84 12.79 3.32 12.22 3.25C12.15 3.24 12.07 3.24 12 3.24C11.55 3.24 11.13 3.42 10.82 3.73L7 7.56V11H7Z" strokeLinecap="round" strokeLinejoin="round"/></svg>
                    </button>
-                   <span className="font-jetbrains text-xs font-bold text-normal">{formatCount(dislikesCount)}</span>
+                   <span className="font-montserrat text-xs font-bold text-normal">{formatCount(dislikesCount)}</span>
                 </div>
               </div>
 
               {/* Replies Toggle Counter */}
               <div className="flex flex-col gap-1">
-                <span className="font-jetbrains text-[8px] text-description/60 uppercase tracking-widest font-bold">BUTTON</span>
+                <span className="font-montserrat text-[8px] text-description/60 uppercase tracking-widest font-bold">BUTTON</span>
                 <button 
                   onClick={() => setIsOpen(!isOpen)}
-                  className="flex items-center gap-2 px-3 py-1.5 bg-card hover:bg-dark border border-border rounded-none font-jetbrains text-xs font-bold text-normal transition-all"
+                  className="flex items-center gap-2 px-3 py-1.5 bg-card hover:bg-dark border border-border rounded-none font-montserrat text-xs font-bold text-normal transition-all"
                 >
                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-accent"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
                    <span>{repliesCount} REPLIES</span>
@@ -350,7 +350,7 @@ const QuestionCard = ({ question }) => {
               </div>
             </div>
             <div className="flex items-center gap-6">
-              <span className="hidden md:inline text-description font-jetbrains text-lg tracking-[0.5em]">...</span>
+              <span className="hidden md:inline text-description font-montserrat text-lg tracking-[0.5em]">...</span>
               <button 
                 onClick={() => setIsOpen(!isOpen)}
                 className={`w-10 h-10 border border-accent rounded-full flex items-center justify-center text-accent transition-transform duration-500 ${isOpen ? 'rotate-180' : 'rotate-0'}`}
@@ -393,7 +393,7 @@ const QuestionCard = ({ question }) => {
                       />
                     ) : null}
                     {(!reply.profilePicture || reply.profilePicture === 'default-profile.png') && (
-                      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-dark border border-border flex items-center justify-center font-jetbrains text-[9px] text-description">
+                      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-dark border border-border flex items-center justify-center font-montserrat text-[9px] text-description">
                         {reply.role || '?'}
                       </div>
                     )}
@@ -401,15 +401,15 @@ const QuestionCard = ({ question }) => {
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
                             <span className="font-montserrat text-[14px] font-bold text-normal tracking-widest">{reply.author}</span>
-                            <span className="font-jetbrains text-[9px] text-description/80">{reply.time}</span>
+                            <span className="font-montserrat text-[9px] text-description/80">{reply.time}</span>
                         </div>
                       </div>
-                      <p className="font-jetbrains text-[11px] leading-relaxed text-description tracking-wide max-w-2xl text-balance">
+                      <p className="font-montserrat text-[11px] leading-relaxed text-description tracking-wide max-w-2xl text-balance">
                         {reply.content}
                       </p>
                       <button 
                         onClick={() => handleReplyClick(reply.author, reply.id)}
-                        className="self-start font-jetbrains text-[9px] font-bold text-accent tracking-[0.2em] uppercase hover:opacity-70 transition-opacity"
+                        className="self-start font-montserrat text-[9px] font-bold text-accent tracking-[0.2em] uppercase hover:opacity-70 transition-opacity"
                       >
                         REPLY TO {reply.author.split('_')[0]}
                       </button>
@@ -437,21 +437,21 @@ const QuestionCard = ({ question }) => {
                             />
                           ) : null}
                           {(!nested.profilePicture || nested.profilePicture === 'default-profile.png') && (
-                            <div className="flex-shrink-0 w-8 h-8 rounded-full bg-dark border border-border flex items-center justify-center font-jetbrains text-[9px] text-description">
+                            <div className="flex-shrink-0 w-8 h-8 rounded-full bg-dark border border-border flex items-center justify-center font-montserrat text-[9px] text-description">
                               {nested.role}
                             </div>
                           )}
                           <div className="flex flex-col gap-3">
                             <div className="flex items-center gap-3">
                               <span className="font-montserrat text-[14px] font-bold text-normal tracking-widest">{nested.author}</span>
-                              <span className="font-jetbrains text-[9px] text-description/80">{nested.time}</span>
+                              <span className="font-montserrat text-[9px] text-description/80">{nested.time}</span>
                             </div>
-                            <p className="font-jetbrains text-[11px] leading-relaxed text-description tracking-wide max-w-2xl">
+                            <p className="font-montserrat text-[11px] leading-relaxed text-description tracking-wide max-w-2xl">
                               {nested.content}
                             </p>
                             <button 
                                 onClick={() => handleReplyClick(nested.author, reply.id)}
-                                className="self-start font-jetbrains text-[9px] font-bold text-accent tracking-[0.2em] uppercase hover:opacity-70 transition-opacity"
+                                className="self-start font-montserrat text-[9px] font-bold text-accent tracking-[0.2em] uppercase hover:opacity-70 transition-opacity"
                             >
                                 REPLY TO {nested.author.split(' ')[0]}
                             </button>
@@ -470,7 +470,7 @@ const QuestionCard = ({ question }) => {
                 <h4 className="font-montserrat text-[14px] font-bold tracking-[0.3em] uppercase text-normal">{t('postReply')}</h4>
                 {replyingTo && (
                   <div className="flex items-center gap-3 px-4 py-2 bg-accent/10 border border-accent/20 rounded-none">
-                    <span className="font-jetbrains text-[9px] text-accent tracking-widest uppercase">REPLYING TO @{replyingTo.name}</span>
+                    <span className="font-montserrat text-[9px] text-accent tracking-widest uppercase">REPLYING TO @{replyingTo.name}</span>
                     <button onClick={() => setReplyingTo(null)} className="text-accent hover:text-normal transition-colors">
                       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M18 6L6 18M6 6l12 12"/></svg>
                     </button>
@@ -481,7 +481,7 @@ const QuestionCard = ({ question }) => {
                 value={replyText}
                 onChange={(e) => setReplyText(e.target.value)}
                 placeholder={replyingTo ? `Write your response to ${replyingTo.name}...` : "Share your perspective..."}
-                className="w-full bg-transparent border-none outline-none font-newsreader italic text-xl text-normal placeholder:text-description min-h-[120px] resize-none"
+                className="w-full bg-transparent border-none outline-none font-montserrat text-xl text-normal placeholder:text-description min-h-[120px] resize-none"
               />
               <div className="pt-6 border-t border-border flex items-center justify-between">
                   <div className="relative">
@@ -513,7 +513,7 @@ const QuestionCard = ({ question }) => {
 
                   <button 
                     onClick={handlePublish}
-                    className="px-8 py-4 bg-accent text-white font-bold font-jetbrains text-[9px] tracking-[0.3em] uppercase hover:brightness-105 transition-all rounded-none"
+                    className="px-8 py-4 bg-accent text-white font-bold font-montserrat text-[9px] tracking-[0.3em] uppercase hover:brightness-105 transition-all rounded-none"
                   >
                     PUBLISH
                   </button>
@@ -555,10 +555,10 @@ const QuestionCard = ({ question }) => {
                     <div className="p-8 flex flex-col gap-14">
                         {/* Tags */}
                         <div className="flex flex-col gap-6">
-                            <h4 className="font-jetbrains text-[9px] font-bold text-description tracking-[0.3em] uppercase underline underline-offset-8 decoration-accent/30">{t('popularTags')}</h4>
+                            <h4 className="font-montserrat text-[9px] font-bold text-description tracking-[0.3em] uppercase underline underline-offset-8 decoration-accent/30">{t('popularTags')}</h4>
                             <div className="flex flex-wrap gap-2">
                                 {tags.map((tag) => (
-                                    <button key={tag} className="px-4 py-2 border border-border font-jetbrains text-[8px] text-description hover:text-accent hover:border-accent transition-all uppercase tracking-widest rounded-none">
+                                    <button key={tag} className="px-4 py-2 border border-border font-montserrat text-[8px] text-description hover:text-accent hover:border-accent transition-all uppercase tracking-widest rounded-none">
                                         {tag}
                                     </button>
                                 ))}
@@ -567,12 +567,12 @@ const QuestionCard = ({ question }) => {
 
                         {/* Stats */}
                         <div className="flex flex-col gap-6">
-                            <h4 className="font-jetbrains text-[9px] font-bold text-description tracking-[0.3em] uppercase underline underline-offset-8 decoration-accent/30">{t('forumStats')}</h4>
+                            <h4 className="font-montserrat text-[9px] font-bold text-description tracking-[0.3em] uppercase underline underline-offset-8 decoration-accent/30">{t('forumStats')}</h4>
                             <div className="grid grid-cols-1 gap-1 border-t border-border">
                                 {stats.map((stat) => (
                                     <div key={stat.label} className="flex items-center justify-between py-4 border-b border-border">
-                                        <span className="font-jetbrains text-[9px] text-description uppercase">{stat.label}</span>
-                                        <span className="font-jetbrains text-lg font-bold text-normal">{stat.value}</span>
+                                        <span className="font-montserrat text-[9px] text-description uppercase">{stat.label}</span>
+                                        <span className="font-montserrat text-lg font-bold text-normal">{stat.value}</span>
                                     </div>
                                 ))}
                             </div>
@@ -580,10 +580,10 @@ const QuestionCard = ({ question }) => {
 
                         {/* Discourse */}
                         <div className="flex flex-col gap-6">
-                            <h4 className="font-jetbrains text-[9px] font-bold text-description tracking-[0.3em] uppercase underline underline-offset-8 decoration-accent/30">{t('popularDiscourse')}</h4>
+                            <h4 className="font-montserrat text-[9px] font-bold text-description tracking-[0.3em] uppercase underline underline-offset-8 decoration-accent/30">{t('popularDiscourse')}</h4>
                             <div className="flex flex-wrap gap-2">
                                 {discourseTags.map((tag) => (
-                                    <button key={tag} className="px-4 py-2 border border-border font-jetbrains text-[8px] text-description hover:text-normal transition-all uppercase tracking-widest rounded-none">
+                                    <button key={tag} className="px-4 py-2 border border-border font-montserrat text-[8px] text-description hover:text-normal transition-all uppercase tracking-widest rounded-none">
                                         {tag}
                                     </button>
                                 ))}
@@ -599,8 +599,8 @@ const QuestionCard = ({ question }) => {
                     <div className="w-16 h-16 rounded-full border border-border flex items-center justify-center mb-6">
                       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-description"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
                     </div>
-                    <h3 className="font-newsreader italic text-3xl text-normal mb-2">No Discussions Yet</h3>
-                    <p className="font-jetbrains text-[9px] text-description uppercase tracking-widest">Be the first to start a new topic.</p>
+                    <h3 className="font-montserrat text-3xl text-normal mb-2">No Discussions Yet</h3>
+                    <p className="font-montserrat text-[9px] text-description uppercase tracking-widest">Be the first to start a new topic.</p>
                   </div>
                 )}
                 {questions.map((q) => (
@@ -626,7 +626,7 @@ const QuestionCard = ({ question }) => {
                 <div className="sidebar-reveal mb-12">
                    <button 
                      onClick={() => setIsModalOpen(true)}
-                     className="w-full bg-accent text-white p-8 md:p-10 font-jetbrains text-[11px] font-black uppercase tracking-[0.4em] hover:scale-[1.02] active:scale-95 transition-all shadow-accent-soft flex flex-col items-center justify-center text-center gap-4 group rounded-none border border-accent cursor-pointer"
+                     className="w-full bg-accent text-white p-8 md:p-10 font-montserrat text-[11px] font-black uppercase tracking-[0.4em] hover:scale-[1.02] active:scale-95 transition-all shadow-accent-soft flex flex-col items-center justify-center text-center gap-4 group rounded-none border border-accent cursor-pointer"
                    >
                       <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center shadow-lg group-hover:scale-110 transition-all duration-300">
                          <svg 
@@ -645,7 +645,7 @@ const QuestionCard = ({ question }) => {
                          </svg>
                       </div>
                       <span className="text-white font-black tracking-[0.35em] text-[12px]">{t('startNewTopic')}</span>
-                      <span className="text-[9px] font-normal tracking-[0.15em] text-white/90 normal-case italic text-center">{t('contributeCollective')}</span>
+                      <span className="text-[9px] font-normal tracking-[0.15em] text-white/90 normal-case text-center">{t('contributeCollective')}</span>
                    </button>
                 </div>
 
@@ -654,7 +654,7 @@ const QuestionCard = ({ question }) => {
                 <h4 className="font-montserrat text-[14px] font-bold text-accent tracking-[0.3em] uppercase underline underline-offset-8 decoration-accent/30 mb-2">{t('popularTags')}</h4>
                 <div className="flex flex-wrap gap-3">
                     {tags.map((tag) => (
-                      <button key={tag} className="px-5 py-3 border border-border bg-card font-jetbrains text-[9px] text-description hover:text-accent hover:border-accent transition-all uppercase tracking-widest rounded-none">
+                      <button key={tag} className="px-5 py-3 border border-border bg-card font-montserrat text-[9px] text-description hover:text-accent hover:border-accent transition-all uppercase tracking-widest rounded-none">
                         {tag}
                       </button>
                     ))}
@@ -668,7 +668,7 @@ const QuestionCard = ({ question }) => {
                     {stats.map((stat) => (
                       <div key={stat.label} className="flex items-center justify-between py-5 border-b border-border group hover:bg-dark transition-colors px-2">
                         <span className="font-montserrat text-[14px] text-description group-hover:text-normal transition-colors uppercase tracking-widest">{stat.label}</span>
-                        <span className="font-jetbrains text-lg font-bold text-normal">{stat.value}</span>
+                        <span className="font-montserrat text-lg font-bold text-normal">{stat.value}</span>
                       </div>
                     ))}
                 </div>
@@ -679,7 +679,7 @@ const QuestionCard = ({ question }) => {
                 <h4 className="font-montserrat text-[14px] font-bold text-accent tracking-[0.3em] uppercase opacity-50 mb-6 underline underline-offset-8 decoration-accent/10">{t('popularDiscourse')}</h4>
                 <div className="flex flex-wrap gap-3">
                     {discourseTags.map((tag) => (
-                      <button key={tag} className="px-5 py-3 border border-border bg-card font-jetbrains text-[9px] text-description hover:text-normal transition-all uppercase tracking-widest rounded-none">
+                      <button key={tag} className="px-5 py-3 border border-border bg-card font-montserrat text-[9px] text-description hover:text-normal transition-all uppercase tracking-widest rounded-none">
                         {tag}
                       </button>
                     ))}
@@ -717,7 +717,7 @@ const QuestionCard = ({ question }) => {
               <div className="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center group-hover:bg-accent group-hover:border-accent transition-all">
                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="group-hover:text-dark transition-colors"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
               </div>
-              <span className="font-jetbrains text-[11px] font-bold text-normal tracking-[0.4em] uppercase group-hover:text-accent transition-colors">{t('backToForum')}</span>
+              <span className="font-montserrat text-[11px] font-bold text-normal tracking-[0.4em] uppercase group-hover:text-accent transition-colors">{t('backToForum')}</span>
            </button>
 
            <div className="relative w-full h-full flex items-center justify-center">
@@ -737,8 +737,8 @@ const QuestionCard = ({ question }) => {
                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>
               </div>
               <div className="text-center">
-                 <h3 className="font-newsreader italic text-2xl">Topic Published</h3>
-                 <p className="font-jetbrains text-[9px] uppercase tracking-[0.3em] opacity-70">Discourse added to terminal</p>
+                 <h3 className="font-montserrat text-2xl">Topic Published</h3>
+                 <p className="font-montserrat text-[9px] uppercase tracking-[0.3em] opacity-70">Discourse added to terminal</p>
               </div>
            </div>
         </div>

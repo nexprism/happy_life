@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react'
+﻿import React, { useState, useEffect, useRef, useMemo } from 'react'
 import { useSearchParams, Link } from 'react-router-dom'
 import gsap from 'gsap'
 import { freePdfsData, freeClassesData, freeTestsData, freeContentCategories } from '../data/freeContentData'
@@ -166,8 +166,8 @@ const FreeContent = () => {
               <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
               100% Free Learning Portal
             </div>
-            <h1 className="font-newsreader text-4xl sm:text-6xl lg:text-7xl font-light text-slate-900 leading-tight">
-              Free <span className="italic font-normal text-amber-600">Knowledge Hub</span>
+            <h1 className="font-montserrat text-slate-900 text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] transition-colors">
+              Free <span className="font-normal text-amber-600">Knowledge Hub</span>
             </h1>
             <p className="mt-3 text-slate-600 max-w-2xl text-sm sm:text-base leading-relaxed">
               Discover authentic Vedic wisdom and Astro-Vastu knowledge with our curated repository of downloadable PDF guides, insightful video lectures & remedies by Dr. Yogesh Sharma, and astrological quizzes.
@@ -326,7 +326,7 @@ const FreeContent = () => {
                     </svg>
                   </div>
                   <div>
-                    <h2 className="text-xl sm:text-2xl font-bold font-newsreader italic text-slate-900">
+                    <h2 className="font-montserrat text-slate-900 text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] transition-colors">
                       Downloadable Study Notes & Cheatsheets
                     </h2>
                     <p className="text-xs text-slate-500 font-medium">Free PDF guides ready for instant offline reading.</p>
@@ -431,7 +431,7 @@ const FreeContent = () => {
                     </svg>
                   </div>
                   <div>
-                    <h2 className="text-xl sm:text-2xl font-bold font-newsreader italic text-slate-900">
+                    <h2 className="font-montserrat text-slate-900 text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] transition-colors">
                       Free Video Lectures & Masterclasses
                     </h2>
                     <p className="text-xs text-slate-500 font-medium">Watch comprehensive, production-grade video lessons online.</p>
@@ -545,7 +545,7 @@ const FreeContent = () => {
                     </svg>
                   </div>
                   <div>
-                    <h2 className="text-xl sm:text-2xl font-bold font-newsreader italic text-slate-900">
+                    <h2 className="font-montserrat text-slate-900 text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] transition-colors">
                       Interactive Practice Quizzes & Mock Tests
                     </h2>
                     <p className="text-xs text-slate-500 font-medium">Assess your technical depth with real-time score calculation and explanations.</p>
@@ -926,7 +926,7 @@ const FreeContent = () => {
                         >
                           {isPassed ? '✓' : '!'}
                         </div>
-                        <h4 className="text-2xl font-black text-slate-900 font-newsreader italic">
+                        <h4 className="text-2xl font-black text-slate-900 font-montserrat">
                           {isPassed ? 'Great Job! Assessment Completed' : 'Good Attempt! Keep Practicing'}
                         </h4>
                         <div className="mt-2 text-3xl font-mono font-black text-amber-600">
@@ -967,8 +967,8 @@ const FreeContent = () => {
                               <p>
                                 <strong className="text-slate-800">Correct Answer:</strong> {q.options[q.correctIndex]}
                               </p>
-                              <p className="mt-1 text-slate-500 italic">
-                                <strong className="text-slate-700 not-italic">Explanation:</strong> {q.explanation}
+                              <p className="mt-1 text-slate-500">
+                                <strong className="text-slate-700">Explanation:</strong> {q.explanation}
                               </p>
                             </div>
                           </div>

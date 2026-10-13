@@ -1,4 +1,4 @@
-import React from 'react'
+﻿import React from 'react'
 import sanitizeDisplay from '../utils/textSanitize'
 import { Link } from 'react-router-dom'
 import { useLanguage } from '../context/LanguageContext'
@@ -27,7 +27,7 @@ const CourseCard = ({ item, className = '', variant = 'course', onRegister }) =>
           className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
         />
         {item.isNew && (
-          <div className="absolute top-4 right-4 bg-accent/90 text-white px-2 py-0.5 font-jetbrains text-[8px] font-bold tracking-tighter z-30">
+          <div className="absolute top-4 right-4 bg-accent/90 text-white px-2 py-0.5 font-montserrat text-[8px] font-bold tracking-tighter z-30">
             {t('newBadge') || 'NEW'}
           </div>
         )}
@@ -35,11 +35,11 @@ const CourseCard = ({ item, className = '', variant = 'course', onRegister }) =>
 
       {/* Content Metadata */}
       <div className="flex flex-col flex-grow gap-2.5 px-1">
-        <span className="font-jetbrains text-[8px] md:text-[9px] text-accent tracking-[0.25em] font-bold uppercase pointer-events-none">
+        <span className="font-montserrat text-[8px] md:text-[9px] text-accent tracking-[0.25em] font-bold uppercase pointer-events-none">
           {item.category}
         </span>
         
-        <h3 className="font-newsreader text-2xl md:text-[28px] text-normal font-extralight tracking-tight leading-tight pointer-events-none">
+        <h3 className="font-montserrat text-2xl md:text-[28px] text-normal font-bold tracking-tight leading-tight pointer-events-none">
           {sanitizeDisplay(item.title)}
         </h3>
         

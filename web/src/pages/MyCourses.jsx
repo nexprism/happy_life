@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useLayoutEffect, useMemo } from 'react'
+﻿import React, { useEffect, useState, useLayoutEffect, useMemo } from 'react'
 import DashboardHeader from '../components/dashboard/DashboardHeader'
 import { useNavigate } from 'react-router-dom'
 import { gsap } from 'gsap'
@@ -66,22 +66,22 @@ const MyCourses = () => {
           {/* CURRICULUM DOSSIER HEADER */}
           <div className="flex flex-col md:flex-row md:items-end justify-between items-start gap-8 curriculum-header opacity-0 invisible">
             <div className="space-y-2">
-               <p className="font-jetbrains text-xs text-amber-800 uppercase tracking-[0.4em] font-black italic">{t('continuingEducation')}</p>
-               <h1 className="font-newsreader italic text-4xl md:text-6xl text-slate-900 font-bold tracking-tight leading-none uppercase">
+               <p className="font-montserrat text-xs text-amber-800 uppercase tracking-[0.4em] font-black">{t('continuingEducation')}</p>
+               <h1 className="font-montserrat text-slate-900 uppercase text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] transition-colors">
                    {t('myCurriculum')}
                </h1>
             </div>
             
             <div className="flex gap-8 md:gap-16 items-center self-end md:self-auto">
                <div className="text-right group relative">
-                  <p className="font-jetbrains text-xs text-slate-500 uppercase tracking-[0.3em] mb-1 font-bold">{t('activeCoursesLabel')}</p>
-                  <p className="font-newsreader italic text-3xl md:text-5xl text-slate-900 leading-none font-medium tracking-tighter">
+                  <p className="font-montserrat text-xs text-slate-500 uppercase tracking-[0.3em] mb-1 font-bold">{t('activeCoursesLabel')}</p>
+                  <p className="font-montserrat text-3xl md:text-5xl text-slate-900 leading-none font-medium tracking-tighter">
                      {activeCount < 10 ? `0${activeCount}` : activeCount}
                   </p>
                </div>
                <div className="text-right group relative">
-                  <p className="font-jetbrains text-xs text-slate-500 uppercase tracking-[0.3em] mb-1 font-bold">{t('completionRateLabel')}</p>
-                  <p className="font-newsreader italic text-3xl md:text-5xl text-slate-900 leading-none font-medium tracking-tighter">{avgProgress}<span className="text-amber-600">%</span></p>
+                  <p className="font-montserrat text-xs text-slate-500 uppercase tracking-[0.3em] mb-1 font-bold">{t('completionRateLabel')}</p>
+                  <p className="font-montserrat text-3xl md:text-5xl text-slate-900 leading-none font-medium tracking-tighter">{avgProgress}<span className="text-amber-600">%</span></p>
                </div>
             </div>
           </div>
@@ -97,7 +97,7 @@ const MyCourses = () => {
                   />
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-amber-600 transition-colors"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
                 </div>
-                <button className="bg-amber-100 border border-amber-300 border-l-0 px-6 py-3 font-jetbrains text-xs font-black text-amber-900 uppercase tracking-widest hover:bg-amber-400 hover:text-slate-950 transition-all duration-300 rounded-r-xl">
+                <button className="bg-amber-100 border border-amber-300 border-l-0 px-6 py-3 font-montserrat text-xs font-black text-amber-900 uppercase tracking-widest hover:bg-amber-400 hover:text-slate-950 transition-all duration-300 rounded-r-xl">
                   {t('searchBtn')}
                 </button>
              </div>
@@ -113,7 +113,7 @@ const MyCourses = () => {
                       <button 
                         key={id}
                         onClick={() => setActiveFilter(id)}
-                        className={`font-jetbrains text-xs font-black uppercase tracking-[0.2em] transition-all relative px-5 py-2.5 rounded-xl whitespace-nowrap
+                        className={`font-montserrat text-xs font-black uppercase tracking-[0.2em] transition-all relative px-5 py-2.5 rounded-xl whitespace-nowrap
                           ${activeFilter === id ? 'text-slate-950 bg-accent shadow-sm' : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'}`}
                       >
                          {label}
@@ -136,7 +136,7 @@ const MyCourses = () => {
                    <div className="w-16 h-16 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-400">
                       <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M12 2v20M17 5H9.5a4.5 4.5 0 000 9h5a4.5 4.5 0 010 9H6" /></svg>
                    </div>
-                   <p className="font-jetbrains text-xs text-slate-600 font-bold uppercase tracking-[0.3em]">No Active Modules Found in Archive</p>
+                   <p className="font-montserrat text-xs text-slate-600 font-bold uppercase tracking-[0.3em]">No Active Modules Found in Archive</p>
                 </div>
              )}
 
@@ -168,14 +168,14 @@ const MyCourses = () => {
                             const isCompleted = item.iscompleted || courseProgress >= 100
                             return (
                                <div className={`inline-flex items-center gap-2 px-3.5 py-1 rounded-full border ${isCompleted ? 'bg-green-100 border-green-300 text-green-900' : 'bg-amber-100 border-amber-300/80 text-amber-900'}`}>
-                                  <span className="font-jetbrains text-[10px] font-black uppercase tracking-wider leading-none">
+                                  <span className="font-montserrat text-[10px] font-black uppercase tracking-wider leading-none">
                                      {isCompleted ? 'Completed' : 'In Progress'}
                                   </span>
                                </div>
                             )
                          })()}
   
-                         <h2 className="font-newsreader italic text-2xl md:text-3xl text-slate-900 group-hover:text-amber-600 transition-colors duration-300 leading-tight font-bold tracking-tight line-clamp-2">
+                         <h2 className="font-montserrat text-slate-900 group-hover:text-amber-600 duration-300 line-clamp-2 text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] transition-colors">
                             {item.course?.title}
                          </h2>
   
@@ -215,7 +215,7 @@ const MyCourses = () => {
                          const courseProgress = Math.min(100, Math.max(0, Math.round(item.course?.overallProgress ?? item.progressPercentage ?? 0)))
                          return (
                             <div className="space-y-2 pt-2 mt-auto">
-                               <div className="flex justify-between items-center font-jetbrains text-xs font-bold tracking-widest uppercase">
+                               <div className="flex justify-between items-center font-montserrat text-xs font-bold tracking-widest uppercase">
                                   <span className="text-slate-500">Progress</span>
                                   <span className="text-slate-900 font-black">{courseProgress}%</span>
                                </div>
@@ -233,7 +233,7 @@ const MyCourses = () => {
                       <div className="pt-2">
                          <button 
                             onClick={() => navigate(`/dashboard/course/${item.courseId || item.course?._id || item._id}`)}
-                            className="w-full py-3.5 bg-accent text-slate-950 font-jetbrains text-xs font-black uppercase tracking-[0.3em] hover:scale-[1.02] active:scale-95 transition-all rounded-full shadow-accent-soft text-center"
+                            className="w-full py-3.5 bg-accent text-slate-950 font-montserrat text-xs font-black uppercase tracking-[0.3em] hover:scale-[1.02] active:scale-95 transition-all rounded-full shadow-accent-soft text-center"
                          >
                             Continue Learning
                          </button>

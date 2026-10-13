@@ -12,6 +12,12 @@ const MobileExclusiveModal = ({ isOpen, onClose }) => {
                 { scale: 0.9, y: 30, opacity: 0 },
                 { scale: 1, y: 0, opacity: 1, duration: 0.5, ease: 'back.out(1.4)' }
             );
+
+            const handleKeyDown = (e) => {
+                if (e.key === 'Escape') handleClose();
+            };
+            window.addEventListener('keydown', handleKeyDown);
+            return () => window.removeEventListener('keydown', handleKeyDown);
         }
     }, [isOpen]);
 
@@ -23,26 +29,35 @@ const MobileExclusiveModal = ({ isOpen, onClose }) => {
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-[3000] flex items-center justify-center p-6">
+        <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4 sm:p-6">
             {/* Backdrop */}
             <div 
                 ref={overlayRef}
                 onClick={handleClose}
-                className="absolute inset-0 bg-dark/90 backdrop-blur-xl opacity-0"
+                className="absolute inset-0 bg-slate-950/85 backdrop-blur-md opacity-0"
             />
             
             {/* Modal Content */}
             <div 
                 ref={contentRef}
-                className="relative w-full max-w-md bg-[#0d0d0d] border border-white/[0.08] rounded-[2rem] p-10 md:p-14 text-center space-y-10 shadow-[0_50px_100px_rgba(0,0,0,0.9)] overflow-hidden opacity-0"
+                className="relative w-full max-w-sm sm:max-w-md bg-[#0d0d0d] border border-white/10 rounded-3xl p-6 sm:p-8 text-center space-y-6 shadow-2xl shadow-black/80 overflow-hidden opacity-0"
             >
                 {/* Decorative Background Beam */}
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-40 h-[1px] bg-gradient-to-r from-transparent via-accent/40 to-transparent" />
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-40 h-[1px] bg-gradient-to-r from-transparent via-[#4b9ee5]/50 to-transparent" />
+
+                {/* Close Button Top Right */}
+                <button
+                    onClick={handleClose}
+                    className="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/5 hover:bg-white/15 text-slate-400 hover:text-white flex items-center justify-center transition-colors cursor-pointer text-sm"
+                    aria-label="Close"
+                >
+                    ✕
+                </button>
                 
                 {/* Icon Container */}
-                <div className="relative group">
-                    <div className="w-24 h-24 rounded-3xl bg-accent/5 border border-accent/20 flex items-center justify-center mx-auto transition-transform duration-700 group-hover:rotate-12">
-                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-accent/60 group-hover:text-accent transition-colors">
+                <div className="relative group pt-2">
+                    <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-[#2171B5]/10 border border-[#2171B5]/30 flex items-center justify-center mx-auto transition-transform duration-500 group-hover:scale-105">
+                        <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" className="text-[#4b9ee5]">
                             <path d="M22 17V5a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2z"/>
                             <path d="m15 15-6-6"/>
                             <path d="m9 15 6-6"/>
@@ -53,35 +68,34 @@ const MobileExclusiveModal = ({ isOpen, onClose }) => {
                 </div>
 
                 {/* Text Content */}
-                <div className="space-y-4">
-                    <h2 className="font-newsreader italic text-3xl md:text-4xl text-normal font-extralight tracking-tight">
-                        Mobile Exclusive <span className="text-accent">Content</span>
+                <div className="space-y-3">
+                    <h2 className="font-montserrat text-2xl sm:text-3xl font-extrabold text-white tracking-tight leading-snug">
+                        Mobile Exclusive <span className="text-[#4b9ee5]">Content</span>
                     </h2>
-                    <p className="font-jetbrains text-[11px] text-description/80 uppercase tracking-widest leading-[2]">
+                    <p className="font-montserrat text-xs sm:text-sm text-slate-300 font-normal leading-relaxed max-w-xs mx-auto">
                         This tactical transmission is restricted to mobile architecture. 
-                        <span className="block mt-2 text-accent/80 font-black decoration-accent/20 underline underline-offset-4">Download our app now to continue!</span>
+                        <span className="block mt-1 text-[#4b9ee5] font-semibold">Download our app now to continue!</span>
                     </p>
                 </div>
 
                 {/* Actions */}
-                <div className="space-y-6 pt-4">
-                    <button className="w-full bg-accent text-dark py-5 rounded-2xl font-montserrat text-[14px] font-black uppercase tracking-[0.4em] flex items-center justify-center gap-3 hover:scale-[1.03] active:scale-95 transition-all shadow-[0_15px_40px_rgba(139, 92, 246,0.15)] group/btn relative overflow-hidden">
-                        <div className="absolute inset-0 bg-white/20 -translate-x-full group-hover/btn:translate-x-full transition-transform duration-1000 ease-in-out skew-x-12" />
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                <div className="space-y-4 pt-1">
+                    <button className="w-full bg-[#2171B5] hover:bg-[#1b5c94] text-white py-3.5 px-6 rounded-xl font-montserrat text-xs sm:text-sm font-bold uppercase tracking-wider flex items-center justify-center gap-2.5 transition-all shadow-lg shadow-[#2171B5]/25 hover:shadow-[#2171B5]/40 active:scale-95 cursor-pointer">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
                         Download App
                     </button>
                     
                     <button 
                         onClick={handleClose}
-                        className="font-jetbrains text-[9px] text-description/30 uppercase tracking-[0.6em] hover:text-accent transition-colors font-black block mx-auto underline underline-offset-8 decoration-white/5 hover:decoration-accent/20"
+                        className="font-montserrat text-xs text-slate-400 hover:text-white uppercase tracking-wider font-semibold transition-colors block mx-auto underline underline-offset-4 decoration-white/10 hover:decoration-white/30 cursor-pointer"
                     >
                         Close Dispatch
                     </button>
                 </div>
 
                 {/* Security Tag */}
-                <div className="pt-4 border-t border-white/5 opacity-20">
-                    <p className="font-jetbrains text-[7px] uppercase tracking-[0.8em]">End of Transmission // Protocol 7-B</p>
+                <div className="pt-2 border-t border-white/10">
+                    <p className="font-montserrat text-[10px] text-slate-500 uppercase tracking-widest font-medium">End of Transmission // Protocol 7-B</p>
                 </div>
             </div>
         </div>

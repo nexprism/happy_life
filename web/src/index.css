@@ -43,13 +43,7 @@ textarea,
 }
 
 @theme {
-  --font-inter: "Inter", sans-serif;
   --font-montserrat: "Montserrat", sans-serif;
-  --font-newsreader: "Newsreader", serif;
-  --font-Montserrat: "Montserrat", sans-serif;
-  --font-anton: "Anton", sans-serif;
-  --font-jetbrains: "JetBrains Mono", monospace;
-  --font-signature: "Mrs Saint Delafield", cursive;
 
   /* Ocean Blue Palette (#2171B5) & Crisp Light Theme */
   --color-accent: #2171B5;
@@ -107,34 +101,74 @@ textarea,
   body {
     background-color: var(--color-dark);
     color: var(--color-normal);
-    font-family: var(--font-inter);
+    font-family: var(--font-montserrat);
+    font-style: normal;
+    font-weight: 400;
+  }
+
+  h1, h2 {
+    font-family: var(--font-montserrat);
+    font-weight: 800;
+    font-style: normal;
+    letter-spacing: -0.025em;
+    line-height: 1.15;
+  }
+
+  h3 {
+    font-family: var(--font-montserrat);
+    font-weight: 700;
+    font-style: normal;
+    letter-spacing: -0.015em;
+    line-height: 1.2;
+  }
+
+  h4, h5, h6 {
+    font-family: var(--font-montserrat);
+    font-weight: 600;
+    font-style: normal;
+  }
+
+  p {
+    font-family: var(--font-montserrat);
+    font-weight: 400;
+    font-style: normal;
+  }
+
+  button {
+    font-family: var(--font-montserrat);
+    font-weight: 700;
+    font-style: normal;
+  }
+
+  * {
+    font-style: normal;
   }
 }
 
 /* Explicit weight classes as requested */
 .newsreader-extralight {
-  font-family: var(--font-newsreader);
+  font-family: var(--font-montserrat);
   font-optical-sizing: auto;
   font-weight: 200;
   font-style: normal;
 }
 
 .newsreader-light {
-  font-family: var(--font-newsreader);
+  font-family: var(--font-montserrat);
   font-optical-sizing: auto;
   font-weight: 300;
   font-style: normal;
 }
 
 .jetbrains-extralight {
-  font-family: var(--font-jetbrains);
+  font-family: var(--font-montserrat);
   font-optical-sizing: auto;
   font-weight: 200;
   font-style: normal;
 }
 
 .jetbrains-light {
-  font-family: var(--font-jetbrains);
+  font-family: var(--font-montserrat);
   font-optical-sizing: auto;
   font-weight: 300;
   font-style: normal;
@@ -396,7 +430,7 @@ button {
 
 .news-content-html h3,
 .news-content-html h2 {
-  @apply font-newsreader italic text-3xl text-normal mt-12 mb-6;
+  @apply font-montserrat font-bold text-3xl text-normal mt-12 mb-6;
 }
 
 .news-content-html hr {
@@ -434,7 +468,7 @@ button {
 }
 
 .news-content-html blockquote {
-  @apply border-l-2 border-accent/30 bg-accent/5 p-8 italic text-lg text-accent/80 my-10;
+  @apply border-l-2 border-accent/30 bg-accent/5 p-8 text-lg font-medium text-accent/80 my-10;
 }
 
 /* Custom contrast helper overrides for the Ocean Blue theme */

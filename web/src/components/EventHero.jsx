@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+﻿import React, { useState, useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
 import RollingText from './RollingText'
 import bannerImg from '../assets/images/banner.png'
@@ -80,10 +80,10 @@ const EventHero = ({ events }) => {
             
             {/* Event Info Overlay */}
             <div className="absolute bottom-12 left-6 md:left-16 max-w-2xl z-20 space-y-2">
-              <span className="inline-block px-3 py-1 bg-accent/90 text-white font-jetbrains text-[10px] font-bold uppercase tracking-widest rounded-sm">
+              <span className="inline-block px-3 py-1 bg-accent/90 text-white font-montserrat text-[10px] font-bold uppercase tracking-widest rounded-sm">
                 {event.category || 'FEATURED EVENT'}
               </span>
-              <h2 className="font-newsreader text-2xl md:text-5xl italic text-white font-extralight tracking-tight leading-tight">
+              <h2 className="font-montserrat text-white text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] transition-colors">
                 {event.title}
               </h2>
               {event.description && (

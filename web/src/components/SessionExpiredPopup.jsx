@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 
 export default function SessionExpiredPopup({ isOpen, message, onClose }) {
   if (!isOpen) return null;
@@ -19,16 +19,16 @@ export default function SessionExpiredPopup({ isOpen, message, onClose }) {
             </div>
 
             <div className="space-y-2">
-                <p className="font-jetbrains text-[10px] text-red-500 uppercase tracking-[0.4em] font-black">Security Alert</p>
-                <h2 className="font-newsreader italic text-3xl text-normal tracking-tight">Session Expired</h2>
-                <p className="font-jetbrains text-[11px] text-normal/70 uppercase tracking-widest mt-2 leading-relaxed">
+                <p className="font-montserrat text-[10px] text-red-500 uppercase tracking-[0.4em] font-black">Security Alert</p>
+                <h2 className="font-montserrat text-normal text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] transition-colors">Session Expired</h2>
+                <p className="font-montserrat text-[11px] text-normal/70 uppercase tracking-widest mt-2 leading-relaxed">
                     {message}
                 </p>
             </div>
 
             <button 
                 onClick={onClose}
-                className="mt-4 w-full bg-red-500/20 text-red-500 py-4 font-jetbrains text-xs font-black uppercase tracking-[0.4em] hover:bg-red-500/30 transition-all duration-300 border border-red-500/30"
+                className="mt-4 w-full bg-red-500/20 text-red-500 py-4 font-montserrat text-xs font-black uppercase tracking-[0.4em] hover:bg-red-500/30 transition-all duration-300 border border-red-500/30"
             >
                 Log In Again
             </button>

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react'
+﻿import React, { useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/all'
 
@@ -65,26 +65,26 @@ const GuaranteeSection = () => {
                    Verified / Security Protocol
                  </span>
               </div>
-              <h2 className="g-reveal font-newsreader italic text-[clamp(2.8rem,9vw,6rem)] text-normal leading-[1] font-extralight tracking-tight">
+              <h2 className="g-reveal font-montserrat text-normal text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] transition-colors">
                 The 30-Day <br /> <span className="text-accent underline-lime decoration-accent/40">Integrity</span> Protocol.
               </h2>
             </div>
             
-            <p className="g-reveal font-jetbrains text-xs md:text-base text-description leading-[2.2] tracking-wide uppercase max-w-2xl">
+            <p className="g-reveal font-montserrat text-xs md:text-base text-description leading-[2.2] tracking-wide uppercase max-w-2xl">
               As with any High-Yield investment, risk is a variable. However, if you <span className="text-normal font-bold">Execute</span> the blueprint and possess an operative product—we eliminate the friction. We guarantee <span className="text-accent underline-lime">Stability & Predictability</span> within 30 days.
             </p>
 
             <div className="g-reveal pt-12 border-t border-white/10 space-y-8">
                <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                   <div className="space-y-4">
-                     <p className="font-jetbrains text-[9px] text-accent font-black tracking-[0.5em] uppercase italic">System Refund Path</p>
-                     <p className="font-jetbrains text-[9px] text-description/80 leading-relaxed uppercase tracking-widest">
+                     <p className="font-montserrat text-[9px] text-accent font-black tracking-[0.5em] uppercase">System Refund Path</p>
+                     <p className="font-montserrat text-[9px] text-description/80 leading-relaxed uppercase tracking-widest">
                         Initiate support via <span className="text-normal underline decoration-accent/20">happylifereport@gmail.com</span> for any inquiries.
                      </p>
                   </div>
                   <div className="space-y-4">
-                     <p className="font-jetbrains text-[9px] text-accent font-black tracking-[0.5em] uppercase italic">Response Speed</p>
-                     <p className="font-jetbrains text-[9px] text-description/80 leading-relaxed uppercase tracking-widest">
+                     <p className="font-montserrat text-[9px] text-accent font-black tracking-[0.5em] uppercase">Response Speed</p>
+                     <p className="font-montserrat text-[9px] text-description/80 leading-relaxed uppercase tracking-widest">
                         Total protocol reversion within <span className="text-normal">48 Hours</span> of verified log ingestion.
                      </p>
                   </div>
@@ -106,7 +106,7 @@ const GuaranteeSection = () => {
                    <div className="absolute inset-8 border border-white/5 rounded-full" />
                    
                    <div className="text-center space-y-2 relative z-10">
-                      <span className="font-newsreader italic text-7xl md:text-8xl text-accent drop-shadow-[0_0_20px_rgba(139, 92, 246,0.3)]">100</span>
+                      <span className="font-montserrat text-7xl md:text-8xl text-accent drop-shadow-[0_0_20px_rgba(139, 92, 246,0.3)]">100</span>
                       <p className="font-montserrat text-[14px] tracking-[0.8em] text-description uppercase font-black">Guarantee</p>
                    </div>
                 </div>
@@ -116,7 +116,7 @@ const GuaranteeSection = () => {
                 <div className="flex gap-4 justify-center">
                    {[1,2,3].map(i => <div key={i} className="w-1.5 h-1.5 bg-accent/40 rounded-full" />)}
                 </div>
-                <p className="font-jetbrains text-[8px] tracking-[1em] uppercase text-description/80">Vanguard protocol A-01</p>
+                <p className="font-montserrat text-[8px] tracking-[1em] uppercase text-description/80">Vanguard protocol A-01</p>
              </div>
           </div>
 

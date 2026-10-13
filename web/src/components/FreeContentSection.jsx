@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+﻿import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { freePdfsData, freeClassesData, freeTestsData } from '../data/freeContentData'
 import RollingText from './RollingText'
@@ -21,8 +21,8 @@ const FreeContentSection = () => {
             <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
             Zero Cost Open Learning
           </div>
-          <h2 className="font-newsreader text-4xl sm:text-5xl font-light text-slate-900 leading-tight">
-            Explore <span className="italic font-normal text-amber-600">Free Resources</span>
+          <h2 className="font-montserrat text-slate-900 text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] transition-colors">
+            Explore <span className="font-normal text-amber-600">Free Resources</span>
           </h2>
           <p className="mt-2 text-slate-600 text-sm max-w-xl">
             Download high-yield PDF cheat sheets, watch full video lectures, and practice interactive quizzes with zero fees.

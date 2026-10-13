@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+﻿import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { registerUser, googleLoginUser, clearAuthError, sendOtp, verifyOtp } from '../redux/slices/authSlice'
@@ -123,7 +123,7 @@ const Signup = () => {
         </div>
 
         <div className="signup-form-wrap">
-          <h1 className="signup-title">{t('joinTheCircleTitle')}</h1>
+          <h1 className="signup-title text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] transition-colors">{t('joinTheCircleTitle')}</h1>
           <p className="signup-subtitle">{t('signupSubtitle')}</p>
 
           <button type="button" className="google-btn" onClick={() => handleGoogleLogin()}>
@@ -194,13 +194,13 @@ const Signup = () => {
                 autoComplete="email"
               />
               <div className="mt-2 flex items-center gap-3">
-                <button type="button" onClick={handleSendOtp} disabled={sendingOtp} className={`px-4 py-2 bg-amber-400 text-white rounded-xl font-bold font-jetbrains text-xs ${sendingOtp ? 'opacity-50 cursor-not-allowed' : ''}`}>
+                <button type="button" onClick={handleSendOtp} disabled={sendingOtp} className={`px-4 py-2 bg-amber-400 text-white rounded-xl font-bold font-montserrat text-xs ${sendingOtp ? 'opacity-50 cursor-not-allowed' : ''}`}>
                   {sendingOtp ? t('sendingOtpBtn') : (otpSent ? t('resendOtpBtn') : t('sendOtpBtn'))}
                 </button>
                 {otpSent && (
                   <div className="flex items-center gap-2">
                     <input value={otpCode} onChange={(e) => setOtpCode(e.target.value)} placeholder={t('enterOtpPlaceholder')} className="signup-input !p-2 !h-9 !w-40" />
-                    <button type="button" onClick={handleVerifyOtp} disabled={verifyingOtp} className={`px-3 py-2 bg-amber-400 text-white rounded-xl font-bold font-jetbrains text-xs ${verifyingOtp ? 'opacity-50 cursor-not-allowed' : ''}`}>
+                    <button type="button" onClick={handleVerifyOtp} disabled={verifyingOtp} className={`px-3 py-2 bg-amber-400 text-white rounded-xl font-bold font-montserrat text-xs ${verifyingOtp ? 'opacity-50 cursor-not-allowed' : ''}`}>
                       {verifyingOtp ? t('verifyingBtn') : (otpVerifiedStore ? t('verifiedBtn') : t('verifyBtn'))}
                     </button>
                   </div>
