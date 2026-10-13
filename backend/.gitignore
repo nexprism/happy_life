@@ -11,3 +11,8 @@ config/firebase-service-account.json
 *.mpeg
 *.webm
 .env.*
+*.zip
+*.tar
+*.tar.gz
+*.rar
+*.7z

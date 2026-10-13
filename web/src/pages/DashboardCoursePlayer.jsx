@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { gsap } from 'gsap';
 import DashboardHeader from '../components/dashboard/DashboardHeader';
@@ -678,12 +678,12 @@ const DashboardCoursePlayer = () => {
                             {currentCourse.modules?.map((module, i) => (
                                 <div 
                                     key={module._id || i}
-                                    className={`group border transition-all duration-700 overflow-hidden bg-white
+                                    className={`group border transition-all duration-500 rounded-xl bg-white
                                         ${activeAccordion === (module._id || i) ? 'border-amber-400 shadow-md' : 'border-slate-200 hover:border-slate-300'}`}
                                 >
                                     <button 
                                         onClick={() => setActiveAccordion(activeAccordion === (module._id || i) ? null : (module._id || i))}
-                                        className="w-full flex items-center justify-between p-8 md:p-10 text-left"
+                                        className="w-full flex items-center justify-between p-6 md:p-8 text-left"
                                     >
                                         <div className="flex items-center gap-6">
                                             <div className={`w-10 h-10 border rounded-lg flex items-center justify-center font-montserrat text-[10px] transition-all duration-700
@@ -704,7 +704,7 @@ const DashboardCoursePlayer = () => {
                                         </div>
                                     </button>
                                     
-                                    <div className={`transition-all duration-700 ease-in-out ${activeAccordion === (module._id || i) ? 'max-h-[1200px] opacity-100' : 'max-h-0 opacity-0 overflow-hidden'}`}>
+                                    <div className={`transition-all duration-500 ease-in-out ${activeAccordion === (module._id || i) ? 'max-h-none opacity-100' : 'max-h-0 opacity-0 overflow-hidden'}`}>
                                         <div className="border-t border-slate-200 divide-y divide-slate-100">
                                             {module.lessons?.map((lesson, li) => {
                                                 const lid = lesson._id || lesson.id || li;

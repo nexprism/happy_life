@@ -466,11 +466,11 @@ const CourseAccordion = ({ courseId }) => {
 
                   {/* Lessons List */}
                   <div
-                    className={`overflow-auto transition-all duration-500 ease-in-out ${
-                      expandedModules.has(moduleId) ? "max-h-screen opacity-100" : "max-h-0 opacity-0"
+                    className={`transition-all duration-500 ease-in-out ${
+                      expandedModules.has(moduleId) ? "max-h-none opacity-100" : "max-h-0 opacity-0 overflow-hidden"
                     }`}
                   >
-                    <div className="bg-blue-50 dark:bg-white/[0.01] border-t border-blue-100 overflow-y-scroll">
+                    <div className="bg-blue-50 dark:bg-white/[0.01] border-t border-blue-100">
                       {module.lessons?.map((lesson, index) => {
                         const lessonId = lesson.id || lesson._id;
                         const checked = isLessonChecked(moduleId, lessonId);

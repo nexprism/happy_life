@@ -218,6 +218,11 @@ const AppContent = () => {
       lenisRef.current.scrollTo(0, { immediate: true })
     }
 
+    // Trigger Meta Pixel PageView on route changes for SPA navigation
+    if (typeof window.fbq === 'function') {
+      window.fbq('track', 'PageView')
+    }
+
     // Refresh ScrollTrigger after a short delay to allow components to mount
     const timer = setTimeout(() => {
       ScrollTrigger.refresh()
