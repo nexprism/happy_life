@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useRef, useState, useMemo } from 'react'
+import React, { useEffect, useRef, useState, useMemo } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { gsap } from 'gsap'
 import { useDispatch, useSelector } from 'react-redux'
@@ -508,13 +508,13 @@ const Courses = () => {
     <div ref={containerRef} className="min-h-screen bg-dark pt-0 pb-24 text-normal">
 
       {/* 1. Dynamic Hero Banner */}
-      {eventList && eventList.length > 0 && <EventHero events={eventList} />}
+      {/* {eventList && eventList.length > 0 && <EventHero events={eventList} />} */}
 
       {/* 2. Page Content Wrapper */}
       <div className="px-4 md:px-12 lg:px-20">
         
         {/* Hero Title */}
-        <div className={`courses-hero max-w-7xl mx-auto mb-8 ${eventList && eventList.length > 0 ? 'pt-8' : 'pt-28 md:pt-36'}`}>
+        <div className="courses-hero max-w-7xl mx-auto mb-8 pt-28 md:pt-36">
           <div className="flex items-baseline gap-6 flex-wrap">
             <h1 className="font-montserrat text-normal text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] transition-colors">
               {t('ourCourses') || 'Our Courses'}

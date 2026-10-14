@@ -3,7 +3,6 @@ import CourseSlider from '../components/CourseSlider'
 import LogoMarquee from '../components/LogoMarquee'
 import EventHero from '../components/EventHero'
 import StackingBanners from '../components/StackingBanners'
-import GrowthSection from '../components/GrowthSection'
 import BrandFeatures from '../components/BrandFeatures'
 import { eventData } from '../constants/events'
 
@@ -19,7 +18,6 @@ const Home = ({ isLoaded }) => {
       <LogoMarquee />
       <StackingBanners />
       <BrandFeatures />
-      <GrowthSection />
     </div>
   )
 }
