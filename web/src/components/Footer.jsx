@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { Link } from 'react-router-dom'
@@ -53,10 +53,10 @@ const Footer = () => {
         {/* Statement / Slogan Typography */}
         <div className="footer-reveal text-center space-y-1 md:space-y-1.5 mb-10 md:mb-12">
           <h2 className="font-montserrat text-white text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] transition-colors">
-            We don't do <span className="font-extrabold uppercase tracking-tighter text-white">BLACK MAGIC</span>
+            Your Birth Chart Holds Clues,
           </h2>
           <h2 className="font-montserrat text-white text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] transition-colors">
-            No overnight results <span className="font-extrabold uppercase tracking-tighter text-white">GUARANTEE</span>
+            Not Instant <span className="font-extrabold uppercase tracking-tighter text-white">MIRACLES</span>
           </h2>
         </div>
 

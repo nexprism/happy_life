@@ -446,10 +446,10 @@ const translations = {
     masterclassSub: 'Exclusive live sessions led by Dr. Yogesh Sharma on Vedic remedies and Vastu principles.',
 
     // Footer
-    sloganMagic: "We don't do",
-    sloganMagicBold: "BLACK MAGIC",
-    sloganGuarantee: "No overnight results",
-    sloganGuaranteeBold: "GUARANTEE",
+    sloganMagic: "Your Birth Chart Holds Clues,",
+    sloganMagicBold: "NOT INSTANT MIRACLES",
+    sloganGuarantee: "Your Birth Chart Holds Clues,",
+    sloganGuaranteeBold: "NOT INSTANT MIRACLES",
     ambitionExecution: "Align Your Energy, Unlock Success, and Live with Purpose",
     privacyPolicy: "Privacy Policy",
     services: "Services",
@@ -982,10 +982,10 @@ const translations = {
     masterclassSub: 'डॉ. योगेश शर्मा के नेतृत्व में वैदिक उपायों और वास्तु सिद्धांतों पर विशेष लाइव सत्र।',
 
     // Footer
-    sloganMagic: "हम नहीं करते कोई",
-    sloganMagicBold: "काला जादू",
-    sloganGuarantee: "रातों-रात चमत्कार की झूठी",
-    sloganGuaranteeBold: "गारंटी नहीं",
+    sloganMagic: "आपकी जन्म कुंडली संकेत देती है,",
+    sloganMagicBold: "तुरंत चमत्कार नहीं",
+    sloganGuarantee: "आपकी जन्म कुंडली संकेत देती है,",
+    sloganGuaranteeBold: "तुरंत चमत्कार नहीं",
     ambitionExecution: "ऊर्जा को संतुलित करें, सफलता पाएं और उद्देश्यपूर्ण जीवन जिएं",
     privacyPolicy: "गोपनीयता नीति",
     services: "सेवाएं",
