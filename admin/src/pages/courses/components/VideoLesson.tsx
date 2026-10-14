@@ -395,12 +395,25 @@ const VideoLesson: React.FC<VideoLessonProps> = ({
     }
   }, [data, error, loading, isEditMode, onSaveSuccess]);
 
+  const extractVimeoUrl = (input: string): string => {
+    if (!input || typeof input !== "string") return "";
+    const trimmed = input.trim();
+    // Extract src from <iframe ... src="..." ...> if an iframe embed code was pasted
+    const iframeMatch = trimmed.match(/<iframe[^>]+src=["']([^"']+)["']/i);
+    if (iframeMatch && iframeMatch[1]) {
+      return iframeMatch[1].replace(/&amp;/g, "&").trim();
+    }
+    return trimmed;
+  };
+
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
     const { name, value, files } = e.target as any;
     if (name === "file") {
       setForm((prev) => ({ ...prev, file: files?.[0] || null }));
+    } else if (name === "vimeoUrl") {
+      setForm((prev) => ({ ...prev, vimeoUrl: extractVimeoUrl(value) }));
     } else {
       setForm((prev) => ({ ...prev, [name]: value }));
     }
@@ -414,7 +427,7 @@ const VideoLesson: React.FC<VideoLessonProps> = ({
 
   const isValidVimeoUrl = (url: string): boolean => {
     if (!url || typeof url !== "string") return false;
-    const clean = url.trim();
+    const clean = extractVimeoUrl(url);
     const vimeoRegex =
       /^(https?:\/\/)?(www\.|player\.)?vimeo\.com\/(?:channels\/(?:\w+\/)?|groups\/[^\/]+\/videos\/|album\/(?:\d+\/)?video\/|video\/|manage\/videos\/)?(\d+)(?:\/([a-zA-Z0-9]+))?(\?.*)?$/i;
     const directIdRegex = /^\d+(?:\/[a-zA-Z0-9]+)?$/;
@@ -459,7 +472,8 @@ const VideoLesson: React.FC<VideoLessonProps> = ({
         return;
       }
     } else if (form.sourcePlatform === "vimeo") {
-      if (!form.vimeoUrl.trim()) {
+      const cleanVimeo = extractVimeoUrl(form.vimeoUrl);
+      if (!cleanVimeo) {
         setPopup({
           isVisible: true,
           message: "Please enter a Vimeo URL.",
@@ -467,7 +481,7 @@ const VideoLesson: React.FC<VideoLessonProps> = ({
         });
         return;
       }
-      if (!isValidVimeoUrl(form.vimeoUrl)) {
+      if (!isValidVimeoUrl(cleanVimeo)) {
         setPopup({
           isVisible: true,
           message: "Please enter a valid Vimeo URL.",
@@ -612,7 +626,7 @@ const VideoLesson: React.FC<VideoLessonProps> = ({
             uploadMethod: form.uploadMethod === "videoId" ? "existing_video_id" : "file",
             filePath: finalPath,
             youtubeUrl: form.sourcePlatform === "youtube" ? form.youtubeUrl : undefined,
-            vimeoUrl: form.sourcePlatform === "vimeo" ? form.vimeoUrl : undefined,
+            vimeoUrl: form.sourcePlatform === "vimeo" ? extractVimeoUrl(form.vimeoUrl) : undefined,
             // Include VdoCipher specific fields if updating VdoCipher video
             ...(form.sourcePlatform === "videocypher" && {
               quality: form.quality,
@@ -644,7 +658,7 @@ const VideoLesson: React.FC<VideoLessonProps> = ({
             filePath: finalPath,
             uploadMethod: form.uploadMethod === "videoId" ? "existing_video_id" : "file",
             youtubeUrl: form.sourcePlatform === "youtube" ? form.youtubeUrl : undefined,
-            vimeoUrl: form.sourcePlatform === "vimeo" ? form.vimeoUrl : undefined,
+            vimeoUrl: form.sourcePlatform === "vimeo" ? extractVimeoUrl(form.vimeoUrl) : undefined,
             // Include VdoCipher specific fields if uploading to VdoCipher
             ...(form.sourcePlatform === "videocypher" && {
               quality: form.quality || "auto",
@@ -820,12 +834,12 @@ const VideoLesson: React.FC<VideoLessonProps> = ({
           </label>
           <div className="relative">
             <input
-              type="url"
+              type="text"
               name="vimeoUrl"
               value={form.vimeoUrl}
               onChange={handleChange}
               className="w-full pl-11 pr-4 py-2.5 text-sm border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-200"
-              placeholder="https://vimeo.com/123456789 or https://vimeo.com/123456789/abcdef..."
+              placeholder="https://vimeo.com/123456789 or paste iframe / player link..."
               required
             />
             <div className="absolute left-3.5 top-1/2 transform -translate-y-1/2 text-sky-500">
@@ -846,7 +860,7 @@ const VideoLesson: React.FC<VideoLessonProps> = ({
           )}
           <div className="bg-sky-50/80 border border-sky-200/80 rounded-xl p-3">
             <p className="text-xs text-sky-800">
-              💡 Supports public links (<code>vimeo.com/123456789</code>), unlisted videos with privacy hash (<code>vimeo.com/123456789/abcdef</code>), and player links.
+              💡 Supports public links (<code>vimeo.com/123456789</code>), unlisted videos with privacy hash (<code>vimeo.com/123456789/abcdef</code>), player links, and embed iframe codes.
             </p>
           </div>
         </div>

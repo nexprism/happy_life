@@ -236,7 +236,8 @@ async handleVideoCypherUpload(videoFilePath, data, videoLessonId) {
 
   async handleVimeoUpload(data, videoLessonId) {
     try {
-      const vimeoUrl = data.vimeoUrl || data.secureUrl || data.url;
+      const rawVimeoUrl = data.vimeoUrl || data.secureUrl || data.url;
+      const vimeoUrl = vimeoService.cleanVimeoUrl(rawVimeoUrl);
       if (!vimeoUrl) {
         throw new Error('Vimeo URL is required');
       }
@@ -379,7 +380,8 @@ async handleVideoCypherUpload(videoFilePath, data, videoLessonId) {
 
     // Handle Vimeo video updates
     if (targetPlatform === "vimeo" && (updateData.vimeoUrl || updateData.sourcePlatform === "vimeo" || updateData.secureUrl)) {
-      const vimeoUrl = updateData.vimeoUrl || updateData.secureUrl || updateData.originalUrl;
+      const rawVimeoUrl = updateData.vimeoUrl || updateData.secureUrl || updateData.originalUrl;
+      const vimeoUrl = vimeoService.cleanVimeoUrl(rawVimeoUrl);
       if (vimeoUrl) {
         if (!vimeoService.validateVimeoUrl(vimeoUrl)) {
           throw new Error('Invalid Vimeo URL format');

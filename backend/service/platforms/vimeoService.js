@@ -18,9 +18,19 @@ class VimeoService {
    * - 123456789
    * - 123456789/abcdef1234
    */
+  cleanVimeoUrl(url) {
+    if (!url || typeof url !== 'string') return '';
+    const trimmed = url.trim();
+    const iframeMatch = trimmed.match(/<iframe[^>]+src=["']([^"']+)["']/i);
+    if (iframeMatch && iframeMatch[1]) {
+      return iframeMatch[1].replace(/&amp;/g, '&').trim();
+    }
+    return trimmed;
+  }
+
   extractVideoData(url) {
     if (!url || typeof url !== 'string') return null;
-    const cleanUrl = url.trim();
+    const cleanUrl = this.cleanVimeoUrl(url);
 
     // Check direct format "123456789" or "123456789/abcdef"
     const directMatch = cleanUrl.match(/^(\d+)(?:\/([a-zA-Z0-9]+))?$/);
