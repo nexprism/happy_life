@@ -350,7 +350,7 @@ export default function BuilderTemplateView() {
                   className={
                     isTwoCol
                       ? "grid grid-cols-1 md:grid-cols-2 gap-10 lg:gap-16 items-center"
-                      : `${getSectionWidthClass(section.maxWidth)} mx-auto space-y-12 text-center`
+                      : `${getSectionWidthClass(section.maxWidth)} mx-auto space-y-8`
                   }
                 >
                   {section.columns.map((column, cIdx) => (
