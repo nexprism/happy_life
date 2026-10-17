@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../hooks/redux";
 import { bulkEnrollStudents } from "../../store/slices/students";
-import { X } from "lucide-react";
+import { X, Download, FileSpreadsheet } from "lucide-react";
 
 interface EnrollStudentPopupProps {
   open: boolean;
@@ -85,12 +85,22 @@ const BulkUploadPopup: React.FC<EnrollStudentPopupProps> = ({
           </h2>
           <form onSubmit={handleSubmit} className="flex flex-col gap-5">
             <div className="space-y-2">
-              <label
-                htmlFor="bulk-upload-file"
-                className="text-sm font-medium text-gray-700 dark:text-gray-200"
-              >
-                Upload File (CSV/Excel)
-              </label>
+              <div className="flex items-center justify-between">
+                <label
+                  htmlFor="bulk-upload-file"
+                  className="text-sm font-medium text-gray-700 dark:text-gray-200"
+                >
+                  Upload File (CSV/Excel)
+                </label>
+                <a
+                  href="/students_bulk_upload_template.xlsx"
+                  download="students_bulk_upload_template.xlsx"
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 hover:underline"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  Download Sample Template
+                </a>
+              </div>
               <input
                 id="bulk-upload-file"
                 type="file"
@@ -100,6 +110,10 @@ const BulkUploadPopup: React.FC<EnrollStudentPopupProps> = ({
                 required
                 disabled={loading}
               />
+              <p className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1 mt-1">
+                <FileSpreadsheet className="w-3.5 h-3.5 text-gray-400" />
+                Required headers: <strong>Name</strong>, <strong>Email</strong> (Phone &amp; Password are optional)
+              </p>
             </div>
             {localError && submitted && (
               <div

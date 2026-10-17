@@ -1,6 +1,9 @@
 import UserService from "../service/userService.js";
 import ProjectAnalyticsService from "../service/ProjectAnalyticsService.js";
 import CourseEnrollment from "../models/CourseEnrollment.js"; // <-- Add this import
+import User from "../models/user.js";
+import xlsx from "xlsx";
+import bcrypt from "bcryptjs";
 
 const userService = new UserService();
 
@@ -166,6 +169,106 @@ export const getStudentAnalytics = async (req, res) => {
       message: "Failed to fetch student analytics",
       data: {},
       err: error.message
+    });
+  }
+};
+
+export const bulkImportStudents = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: "No file uploaded. Please upload a .xlsx, .xls, or .csv file.",
+      });
+    }
+
+    let workbook;
+    if (req.file.buffer) {
+      workbook = xlsx.read(req.file.buffer, { type: "buffer" });
+    } else if (req.file.path) {
+      workbook = xlsx.readFile(req.file.path);
+    } else {
+      return res.status(400).json({ success: false, message: "Unable to read uploaded file." });
+    }
+
+    const sheetName = workbook.SheetNames[0];
+    if (!sheetName) {
+      return res.status(400).json({ success: false, message: "Uploaded Excel workbook has no sheets." });
+    }
+
+    const sheet = workbook.Sheets[sheetName];
+    const rows = xlsx.utils.sheet_to_json(sheet);
+
+    if (!rows || rows.length === 0) {
+      return res.status(400).json({ success: false, message: "Excel sheet is empty. Please provide student rows." });
+    }
+
+    const created = [];
+    const skipped = [];
+    const errors = [];
+
+    for (let i = 0; i < rows.length; i++) {
+      const row = rows[i];
+      const fullName = (row["Name"] || row["Full Name"] || row["fullName"] || row["Student Name"] || "").toString().trim();
+      const rawEmail = (row["Email"] || row["email"] || row["EMAIL"] || "").toString().trim();
+      const rawPhone = (row["Phone"] || row["phone"] || row["Phone No"] || row["Mobile"] || "").toString().trim();
+      const rawPassword = (row["Password"] || row["password"] || "Student@123").toString().trim();
+
+      if (!rawEmail || !rawEmail.includes("@")) {
+        errors.push({ row: i + 2, reason: "Invalid or missing email" });
+        continue;
+      }
+
+      const email = rawEmail.toLowerCase();
+      const name = fullName || email.split("@")[0] || "Student";
+
+      // Check if user already exists
+      const existingUser = await User.findOne({ email });
+      if (existingUser) {
+        skipped.push({ email, name, reason: "User with this email already exists" });
+        continue;
+      }
+
+      const hashedPassword = await bcrypt.hash(rawPassword, 10);
+      const newUser = await User.create({
+        fullName: name,
+        email,
+        password: hashedPassword,
+        phone: rawPhone || undefined,
+        role: "student",
+        is_verify: true,
+        emailVerified: true,
+        isActive: true,
+      });
+
+      created.push({
+        _id: newUser._id,
+        fullName: newUser.fullName,
+        email: newUser.email,
+        phone: newUser.phone,
+        role: newUser.role,
+        isActive: newUser.isActive,
+        createdAt: newUser.createdAt,
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: `Bulk import completed: ${created.length} students created, ${skipped.length} skipped, ${errors.length} failed.`,
+      students: created,
+      details: {
+        createdCount: created.length,
+        skippedCount: skipped.length,
+        errorCount: errors.length,
+        skipped,
+        errors,
+      },
+    });
+  } catch (error) {
+    console.error("❌ Error in bulkImportStudents:", error);
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Failed to process bulk student import",
     });
   }
 };

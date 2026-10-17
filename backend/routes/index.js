@@ -56,6 +56,7 @@ import contentImageUpload from "../middlewares/contentImageUpload.js";
 import { isAdmin } from "../middlewares/isAdmin.js";
 import accessTokenAutoRefresh from "../middlewares/accessTokenAutoRefresh.js";
 import passport from "passport";
+import { bulkImportStudents } from "../controllers/studentController.js";
 
 import UserEngagementrouter from "./user-engagement-analytics.js";
 import projectrouter from "./project-analytics.js";
@@ -181,5 +182,20 @@ router.post(
 
 router.post('/activity-logs', (req, res) => res.status(200).json({ success: true }));
 router.post('/activity-logs/beacon', (req, res) => res.status(200).send());
+
+// Student Bulk Import route
+const excelImportUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 20 * 1024 * 1024 },
+});
+
+router.post(
+  "/bulk-import",
+  accessTokenAutoRefresh,
+  passport.authenticate("jwt", { session: false }),
+  isAdmin,
+  excelImportUpload.single("file"),
+  bulkImportStudents
+);
 
 export default router;
