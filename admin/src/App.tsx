@@ -107,6 +107,9 @@ const EbookList = lazy(() => import("./pages/Ebooks/EbookList"));
 const AddEditEbook = lazy(() => import("./pages/Ebooks/AddEditEbook"));
 const BookOrderList = lazy(() => import("./pages/Ebooks/BookOrderList"));
 const CourseFeedbacks = lazy(() => import("./pages/CourseFeedbacks/CourseFeedbacks"));
+const TemplateList = lazy(() => import("./pages/Builder/TemplateList"));
+const TemplateEditor = lazy(() => import("./pages/Builder/TemplateEditor"));
+const LeadsList = lazy(() => import("./pages/Builder/LeadsList"));
 
 
 export default function App() {
@@ -128,6 +131,9 @@ export default function App() {
 
             {/* Protected Routes - Only accessible when authenticated */}
             <Route element={<ProtectedRoute />}>
+              {/* Fullscreen Visual Builder Editor */}
+              <Route path="/builder/templates/edit/:id" element={<TemplateEditor />} />
+
               <Route element={<AppLayout />}>
                 <Route index path="/" element={<Home />} />
                 <Route path="/profile" element={<UserProfiles />} />
@@ -306,6 +312,10 @@ export default function App() {
                 <Route path="/ebooks/add" element={<AddEditEbook />} />
                 <Route path="/ebooks/edit/:id" element={<AddEditEbook />} />
                 <Route path="/ebooks/orders" element={<BookOrderList />} />
+
+                {/* Builder */}
+                <Route path="/builder/templates" element={<TemplateList />} />
+                <Route path="/builder/leads" element={<LeadsList />} />
               </Route>
             </Route>
 

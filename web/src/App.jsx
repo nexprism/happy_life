@@ -41,6 +41,8 @@ import AboutUs from './pages/AboutUs'
 import PrivacyPolicy from './pages/PrivacyPolicy'
 import Terms from './pages/Terms'
 import RefundPolicy from './pages/RefundPolicy'
+import BuilderTemplateView from './pages/BuilderTemplateView'
+import { isReservedSlug } from './constants/reservedSlugs'
 import { TrackerProvider } from './components/ActivityTracker'
 import { useSelector } from 'react-redux'
 
@@ -87,7 +89,9 @@ const AppContent = () => {
   // Tactical Path Matching
   const isDashboard = location.pathname.startsWith('/dashboard')
   const isAuthPage = location.pathname === '/login' || location.pathname === '/signup' || location.pathname === '/checkout' || location.pathname === '/reset-password'
-  const isCleanPage = isDashboard || isAuthPage
+  const pathSegments = location.pathname.split('/').filter(Boolean)
+  const isBuilderPage = pathSegments.length === 1 && !isReservedSlug(pathSegments[0])
+  const isCleanPage = isDashboard || isAuthPage || isBuilderPage
 
   // Authentication check for dashboard elements
   const token = useSelector((state) => state.auth?.token)
@@ -380,6 +384,8 @@ const AppContent = () => {
             <Route path="/my-courses" element={<Navigate to="/dashboard/my-courses" replace />} />
             <Route path="/dashboard-home" element={<Navigate to="/dashboard" replace />} />
 
+            {/* Dynamic Landing Page Builder Route */}
+            <Route path="/:slug" element={<BuilderTemplateView />} />
           </Routes>
           </SecureWrapper>
         </main>

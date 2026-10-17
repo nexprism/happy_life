@@ -72,6 +72,7 @@ import freeContentRouter from "./freeContentRoutes.js";
 import ebookRouter from "./ebookRoutes.js";
 import testSeriesRouter from "./testSeriesRoutes.js";
 import courseFeedbackRouter from "./courseFeedbackRoutes.js";
+import builderRouter from "./builderRoutes.js";
 import { Route } from "express";
 
 router.get("/", (req, res) => {
@@ -146,6 +147,7 @@ router.use("/free-content", freeContentRouter); // Free content routes
 router.use("/ebooks", ebookRouter);
 router.use("/test-series", testSeriesRouter);
 router.use("/course-feedback", courseFeedbackRouter);
+router.use("/builder", builderRouter);
 
 // Image upload route for EditorJS (requires authentication)
 const handleMulterError = (err, req, res, next) => {

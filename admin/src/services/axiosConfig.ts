@@ -1,15 +1,26 @@
 import axios, { AxiosInstance, AxiosResponse, AxiosError } from 'axios';
 
-// API base URL
-const API_BASE_URL = (
-  import.meta.env.VITE_API_BASE_URL ||
-  import.meta.env.VITE_BASE_URL ||
-  'https://happy-life-sx03.onrender.com'
-).replace(/\/+$/, '');
+// Dynamic API base URL resolution
+export const getApiBaseUrl = (): string => {
+  const envUrl = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_BASE_URL;
+
+  // If in browser on localhost/127.0.0.1, always prioritize local backend
+  if (
+    typeof window !== 'undefined' &&
+    (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+  ) {
+    if (envUrl && envUrl.includes('localhost')) {
+      return envUrl.replace(/\/+$/, '');
+    }
+    return 'http://localhost:5000';
+  }
+
+  return (envUrl || 'https://happy-life-sx03.onrender.com').replace(/\/+$/, '');
+};
 
 const axiosInstance: AxiosInstance = axios.create({
-  baseURL: API_BASE_URL,
-  timeout: 3600000, // 1 hour in milliseconds
+  baseURL: getApiBaseUrl(),
+  timeout: 60000, // 60 seconds
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
@@ -19,6 +30,7 @@ const axiosInstance: AxiosInstance = axios.create({
 // Request interceptor — attaches the JWT from localStorage to every request
 axiosInstance.interceptors.request.use(
   (config: import('axios').InternalAxiosRequestConfig): import('axios').InternalAxiosRequestConfig => {
+    config.baseURL = getApiBaseUrl();
     const token = localStorage.getItem('accessToken') || localStorage.getItem('token');
 
     // Only attach real JWTs — skip the sentinel used for cookie-based sessions

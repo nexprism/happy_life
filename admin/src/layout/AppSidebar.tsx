@@ -18,7 +18,7 @@ import {
   VideoIcon,
 } from "../icons";
 import { useSidebar } from "../context/SidebarContext";
-import { Files, Tag, UserCircle2Icon, Bell, MessageCircle, Bot } from "lucide-react";
+import { Files, Tag, UserCircle2Icon, Bell, MessageCircle, Bot, Layers } from "lucide-react";
 
 type NavSubItem = {
   name: string;
@@ -51,6 +51,14 @@ const navItems: NavItem[] = [
     icon: <MessageCircle />,
     name: "Course Feedbacks",
     path: "/course-feedbacks",
+  },
+  {
+    icon: <Layers className="w-5 h-5" />,
+    name: "Builder",
+    subItems: [
+      { name: "Templates", path: "/builder/templates" },
+      { name: "Leads", path: "/builder/leads" },
+    ],
   },
 
   {
