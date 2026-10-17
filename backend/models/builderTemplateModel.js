@@ -49,6 +49,7 @@ const sectionSchema = new mongoose.Schema(
     backgroundColor: { type: String, default: "#ffffff" },
     textColor: { type: String, default: "#1f2937" },
     paddingY: { type: String, default: "md" }, // 'sm', 'md', 'lg', 'xl'
+    maxWidth: { type: String, default: "7xl" }, // '4xl', '5xl', '6xl', '7xl', 'full'
     columns: [columnSchema],
   },
   { _id: false }
@@ -87,8 +88,8 @@ const builderTemplateSchema = new mongoose.Schema(
     },
     headerConfig: {
       enabled: { type: Boolean, default: true },
-      logoUrl: { type: String, default: "" },
-      siteTitle: { type: String, default: "Happy Life" },
+      logoUrl: { type: String, default: "/logos/osa_logo.png" },
+      siteTitle: { type: String, default: "" },
       navLinks: [
         {
           label: { type: String },

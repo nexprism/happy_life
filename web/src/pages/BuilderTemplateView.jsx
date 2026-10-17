@@ -1,6 +1,32 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { isReservedSlug } from "../constants/reservedSlugs";
+import {
+  Calendar,
+  Clock,
+  Hourglass,
+  User as UserIcon,
+  Play,
+  Video as VideoIcon,
+  Image as ImageIcon,
+} from "lucide-react";
+import {
+  LotusChakraIcon,
+  CelestialZodiacWheel,
+  getVedicIcon,
+} from "../components/VedicIcons";
+
+// Container width mapping helper
+const getSectionWidthClass = (maxWidth) => {
+  switch (maxWidth) {
+    case "4xl": return "max-w-4xl";
+    case "5xl": return "max-w-5xl";
+    case "6xl": return "max-w-6xl";
+    case "7xl": return "max-w-7xl";
+    case "full": return "max-w-full";
+    default: return "max-w-7xl";
+  }
+};
 
 // Authentic SVG Brand Icons for Happy Life
 const BrandSocialIcon = ({ network, className = "w-4 h-4" }) => {
@@ -203,12 +229,21 @@ export default function BuilderTemplateView() {
         <header className="sticky top-0 z-50 backdrop-blur-xl bg-white/95 border-b border-slate-200 shadow-xs transition-all">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-[#2171B5] to-blue-600 flex items-center justify-center text-white font-black text-sm shadow-md shadow-blue-600/20">
-                HL
-              </div>
-              <span className="font-extrabold text-lg tracking-tight text-slate-900">
-                {template.headerConfig.siteTitle || "Happy Life"}
-              </span>
+              <Link to="/" className="flex items-center hover:opacity-85 transition">
+                <img
+                  src={template.headerConfig.logoUrl || "/logos/osa_logo.png"}
+                  alt={template.headerConfig.siteTitle || "Happy Life"}
+                  className="h-9 md:h-11 w-auto object-contain"
+                  onError={(e) => {
+                    e.currentTarget.src = "/logos/osa_logo.png";
+                  }}
+                />
+              </Link>
+              {template.headerConfig.siteTitle && template.headerConfig.siteTitle !== "Happy Life" && (
+                <span className="font-extrabold text-lg tracking-tight text-slate-900">
+                  {template.headerConfig.siteTitle}
+                </span>
+              )}
             </div>
 
             <div className="flex items-center gap-6">
@@ -253,13 +288,13 @@ export default function BuilderTemplateView() {
               }}
               className="py-16 sm:py-24 relative overflow-hidden border-b border-slate-100"
             >
-              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+              <div className={`${getSectionWidthClass(section.maxWidth)} mx-auto px-4 sm:px-6 lg:px-8 relative z-10`}>
                 {/* 1-Column vs 2-Column Responsive Layout */}
                 <div
                   className={
                     isTwoCol
                       ? "grid grid-cols-1 md:grid-cols-2 gap-10 lg:gap-16 items-center"
-                      : "max-w-4xl mx-auto space-y-12 text-center"
+                      : `${getSectionWidthClass(section.maxWidth)} mx-auto space-y-12 text-center`
                   }
                 >
                   {section.columns.map((column, cIdx) => (
@@ -277,69 +312,151 @@ export default function BuilderTemplateView() {
                         <div key={comp.id || compIdx}>
                           {/* 1. HERO COMPONENT */}
                           {comp.type === "hero" && (
-                            <div className="space-y-6">
-                              {comp.content.badge && (
-                                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold tracking-wide bg-blue-50 text-[#2171B5] border border-blue-200 shadow-xs">
-                                  <span className="w-2 h-2 rounded-full bg-[#2171B5] animate-ping" />
-                                  <span>{comp.content.badge}</span>
-                                </div>
-                              )}
+                            comp.content.style === "webinar" || comp.content.eventDate ? (
+                              <div
+                                className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#071322] via-[#0d2238] to-[#17436b] text-white p-6 sm:p-10 lg:p-12 shadow-2xl border border-blue-900/50"
+                                style={
+                                  comp.content.backgroundImage
+                                    ? {
+                                        backgroundImage: `linear-gradient(rgba(7, 19, 34, 0.85), rgba(7, 19, 34, 0.95)), url(${comp.content.backgroundImage})`,
+                                        backgroundSize: "cover",
+                                        backgroundPosition: "center",
+                                      }
+                                    : {}
+                                }
+                              >
+                                {/* Cosmic Glow */}
+                                <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_var(--tw-gradient-stops))] from-blue-400/10 via-transparent to-transparent pointer-events-none" />
 
-                              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-[1.12] text-slate-900">
-                                {comp.content.title}
-                              </h1>
+                                <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                                  {/* Left Details */}
+                                  <div className="lg:col-span-7 space-y-5 text-left">
+                                    {comp.content.badge && (
+                                      <span className="inline-block px-3 py-1 text-xs font-bold uppercase tracking-wider text-blue-300 bg-blue-900/50 border border-blue-700/50 rounded-full">
+                                        {comp.content.badge}
+                                      </span>
+                                    )}
+                                    <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white font-serif tracking-tight leading-tight">
+                                      {comp.content.title || "Mega Astrology Webinar"}
+                                    </h1>
+                                    <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal">
+                                      {comp.content.subtitle ||
+                                        "Enhance your astrological understanding with our 2 Days webinar, seamlessly integrating traditional Vedic astrology with practical, modern applications. Learn to interpret birth charts and celestial influences under the guidance of Astro Arun Pandit."}
+                                    </p>
 
-                              <p className="text-base sm:text-lg text-slate-600 max-w-xl leading-relaxed font-normal">
-                                {comp.content.subtitle}
-                              </p>
-
-                              {comp.content.bulletPoints &&
-                                comp.content.bulletPoints.length > 0 && (
-                                  <ul className="space-y-3 pt-2">
-                                    {comp.content.bulletPoints.map((bp, bpi) => (
-                                      <li
-                                        key={bpi}
-                                        className="flex items-center gap-3 text-sm text-slate-700"
-                                      >
-                                        <div className="w-5 h-5 rounded-full bg-blue-50 text-[#2171B5] flex items-center justify-center shrink-0 text-xs font-bold border border-blue-200">
-                                          ✓
+                                    {/* 4 Metadata Items */}
+                                    <div className="grid grid-cols-2 gap-4 pt-2">
+                                      <div className="flex items-center gap-2.5 text-xs text-slate-200">
+                                        <Calendar className="w-4 h-4 text-blue-400 shrink-0" />
+                                        <div>
+                                          <span className="text-[10px] text-slate-400 block uppercase font-semibold">Date</span>
+                                          <span className="font-bold text-white text-xs sm:text-sm">{comp.content.eventDate || "24 Oct, 2026"}</span>
                                         </div>
-                                        <span className="font-medium">{bp}</span>
-                                      </li>
-                                    ))}
-                                  </ul>
-                                )}
+                                      </div>
+                                      <div className="flex items-center gap-2.5 text-xs text-slate-200">
+                                        <Clock className="w-4 h-4 text-blue-400 shrink-0" />
+                                        <div>
+                                          <span className="text-[10px] text-slate-400 block uppercase font-semibold">Time</span>
+                                          <span className="font-bold text-white text-xs sm:text-sm">{comp.content.eventTime || "01:00 PM"}</span>
+                                        </div>
+                                      </div>
+                                      <div className="flex items-center gap-2.5 text-xs text-slate-200">
+                                        <Hourglass className="w-4 h-4 text-blue-400 shrink-0" />
+                                        <div>
+                                          <span className="text-[10px] text-slate-400 block uppercase font-semibold">Duration</span>
+                                          <span className="font-bold text-white text-xs sm:text-sm">{comp.content.duration || "4 Hours"}</span>
+                                        </div>
+                                      </div>
+                                      <div className="flex items-center gap-2.5 text-xs text-slate-200">
+                                        <UserIcon className="w-4 h-4 text-blue-400 shrink-0" />
+                                        <div>
+                                          <span className="text-[10px] text-slate-400 block uppercase font-semibold">Mentor</span>
+                                          <span className="font-bold text-white text-xs sm:text-sm">{comp.content.mentorName || "Astro Arun Pandit"}</span>
+                                        </div>
+                                      </div>
+                                    </div>
 
-                              {comp.content.trustText && (
-                                <div className="flex items-center gap-2 pt-2 text-xs text-amber-500 font-medium">
-                                  <div className="flex text-amber-500 text-sm">
-                                    {"★".repeat(5)}
+                                    {/* Price Button CTA */}
+                                    <div className="pt-3">
+                                      <a
+                                        href={comp.content.buttonLink || comp.content.ctaLink || "#lead-form"}
+                                        className="inline-flex items-center gap-2.5 px-7 py-3.5 bg-white text-purple-900 hover:bg-slate-100 rounded-xl font-black text-sm shadow-xl transition transform hover:scale-105 active:scale-95 cursor-pointer"
+                                      >
+                                        <span>Register Now</span>
+                                        {comp.content.originalPrice && (
+                                          <span className="line-through text-slate-400 text-xs">
+                                            {comp.content.originalPrice}
+                                          </span>
+                                        )}
+                                        <span className="text-purple-700 font-extrabold text-sm sm:text-base">
+                                          {comp.content.discountPrice || "₹99/-"}
+                                        </span>
+                                      </a>
+                                    </div>
                                   </div>
-                                  <span className="text-slate-600 font-sans">
-                                    {comp.content.trustText}
-                                  </span>
-                                </div>
-                              )}
 
-                              <div className="pt-4 flex flex-wrap gap-4 items-center">
-                                {comp.content.ctaText && (
-                                  <a
-                                    href={comp.content.ctaLink || "#lead-form"}
-                                    className="px-7 py-3.5 bg-[#2171B5] hover:bg-blue-700 text-white font-bold rounded-xl text-sm shadow-lg shadow-blue-600/25 transition active:scale-95 cursor-pointer"
-                                  >
-                                    {comp.content.ctaText}
-                                  </a>
-                                )}
-                                {comp.content.secondaryCtaText && (
-                                  <a
-                                    href={comp.content.secondaryCtaLink || "#"}
-                                    className="px-6 py-3.5 bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-slate-900 font-semibold rounded-xl text-sm border border-slate-200 transition active:scale-95"
-                                  >
-                                    {comp.content.secondaryCtaText}
-                                  </a>
-                                )}
+                                  {/* Right Cutout Column */}
+                                  <div className="lg:col-span-5 relative flex items-center justify-center min-h-[260px] sm:min-h-[340px]">
+                                    <div className="absolute inset-0 flex items-center justify-center text-blue-400/40 pointer-events-none scale-110">
+                                      <CelestialZodiacWheel className="w-64 h-64 sm:w-80 sm:h-80" />
+                                    </div>
+                                    <img
+                                      src={comp.content.mentorImage || "/hero_image_2.png"}
+                                      alt={comp.content.mentorName || "Mentor"}
+                                      className="relative z-10 max-h-[280px] sm:max-h-[340px] object-contain drop-shadow-[0_15px_25px_rgba(0,0,0,0.6)]"
+                                      onError={(e) => {
+                                        e.target.src = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80";
+                                      }}
+                                    />
+                                  </div>
+                                </div>
                               </div>
-                            </div>
+                            ) : (
+                              <div className="space-y-6">
+                                {comp.content.badge && (
+                                  <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold tracking-wide bg-blue-50 text-[#2171B5] border border-blue-200 shadow-xs">
+                                    <span className="w-2 h-2 rounded-full bg-[#2171B5] animate-ping" />
+                                    <span>{comp.content.badge}</span>
+                                  </div>
+                                )}
+
+                                <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-[1.12] text-slate-900">
+                                  {comp.content.title}
+                                </h1>
+
+                                <p className="text-base sm:text-lg text-slate-600 max-w-xl leading-relaxed font-normal">
+                                  {comp.content.subtitle}
+                                </p>
+
+                                {comp.content.bulletPoints &&
+                                  comp.content.bulletPoints.length > 0 && (
+                                    <ul className="space-y-3 pt-2">
+                                      {comp.content.bulletPoints.map((bp, bpi) => (
+                                        <li
+                                          key={bpi}
+                                          className="flex items-center gap-3 text-sm text-slate-700"
+                                        >
+                                          <div className="w-5 h-5 rounded-full bg-blue-50 text-[#2171B5] flex items-center justify-center shrink-0 text-xs font-bold border border-blue-200">
+                                            ✓
+                                          </div>
+                                          <span className="font-medium">{bp}</span>
+                                        </li>
+                                      ))}
+                                    </ul>
+                                  )}
+
+                                <div className="pt-4 flex flex-wrap gap-4 items-center">
+                                  {comp.content.ctaText && (
+                                    <a
+                                      href={comp.content.ctaLink || "#lead-form"}
+                                      className="px-7 py-3.5 bg-[#2171B5] hover:bg-blue-700 text-white font-bold rounded-xl text-sm shadow-lg shadow-blue-600/25 transition active:scale-95 cursor-pointer"
+                                    >
+                                      {comp.content.ctaText}
+                                    </a>
+                                  )}
+                                </div>
+                              </div>
+                            )
                           )}
 
                           {/* 2. LEAD FORM COMPONENT */}
@@ -535,142 +652,178 @@ export default function BuilderTemplateView() {
                             </div>
                           )}
 
-                          {/* 4. ABOUT COMPONENT */}
+                          {/* 4. ABOUT COMPONENT (Why Join Webinar) */}
                           {comp.type === "about" && (
-                            <div className="space-y-5 text-left">
-                              {comp.content.tag && (
-                                <span className="inline-block px-3 py-1 text-xs font-bold uppercase tracking-wider text-[#2171B5] bg-blue-50 rounded-full border border-blue-200">
-                                  {comp.content.tag}
-                                </span>
-                              )}
-                              <h2 className="text-2xl sm:text-3xl font-black leading-tight text-slate-900">
-                                {comp.content.title}
-                              </h2>
-                              <p className="text-sm sm:text-base text-slate-600 leading-relaxed font-normal">
-                                {comp.content.description}
-                              </p>
+                            comp.content.style === "whyJoin" || comp.content.benefits ? (
+                              <div className="space-y-6 text-left">
+                                <div>
+                                  <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
+                                    {comp.content.title || "Why join the webinar?"}
+                                  </h2>
+                                  <p className="text-sm sm:text-base text-slate-500 mt-2 leading-relaxed">
+                                    {comp.content.subtitle || "This webinar will help you leverage the impact of stars in day-to-day life."}
+                                  </p>
+                                </div>
 
-                              {comp.content.items &&
-                                comp.content.items.length > 0 && (
-                                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4">
-                                    {comp.content.items.map((item, ii) => (
-                                      <div
-                                        key={ii}
-                                        className="p-5 rounded-2xl bg-slate-50 border border-slate-200 hover:border-[#2171B5]/40 transition space-y-1.5 shadow-xs"
-                                      >
-                                        <h4 className="font-bold text-sm text-[#2171B5]">
-                                          {item.title}
-                                        </h4>
-                                        <p className="text-xs text-slate-600 leading-relaxed">
-                                          {item.desc}
-                                        </p>
+                                <div className="space-y-4 pt-2">
+                                  {(comp.content.benefits || [
+                                    "Make confident and informed life decisions.",
+                                    "Manage stress and anxiety more effectively.",
+                                    "Fulfil your dreams like buying your own house.",
+                                    "Enhance your health and well-being through spiritual insights.",
+                                    "Get logical and practical remedies to tackle life's challenges.",
+                                    "Maintain stronger relationships with family and friends."
+                                  ]).map((benefit, bIdx) => (
+                                    <div key={bIdx} className="flex items-start gap-3.5">
+                                      <div className="shrink-0 mt-0.5">
+                                        <LotusChakraIcon className="w-5 h-5 sm:w-6 sm:h-6" />
                                       </div>
-                                    ))}
-                                  </div>
+                                      <p className="text-sm sm:text-base font-semibold text-slate-800 leading-snug">
+                                        {benefit}
+                                      </p>
+                                    </div>
+                                  ))}
+                                </div>
+
+                                <div className="pt-3">
+                                  <a
+                                    href={comp.content.buttonLink || "#lead-form"}
+                                    className="inline-block px-8 py-3.5 bg-[#2171B5] hover:bg-blue-700 text-white font-bold text-sm sm:text-base rounded-xl shadow-lg transition active:scale-95 cursor-pointer"
+                                  >
+                                    {comp.content.buttonText || "Register now"}
+                                  </a>
+                                </div>
+                              </div>
+                            ) : (
+                              <div className="space-y-5 text-left">
+                                {comp.content.tag && (
+                                  <span className="inline-block px-3 py-1 text-xs font-bold uppercase tracking-wider text-[#2171B5] bg-blue-50 rounded-full border border-blue-200">
+                                    {comp.content.tag}
+                                  </span>
                                 )}
+                                <h2 className="text-2xl sm:text-3xl font-black leading-tight text-slate-900">
+                                  {comp.content.title}
+                                </h2>
+                                <p className="text-sm sm:text-base text-slate-600 leading-relaxed font-normal">
+                                  {comp.content.description}
+                                </p>
+                              </div>
+                            )
+                          )}
+
+                          {/* VIDEO / MEDIA PLAYER COMPONENT */}
+                          {comp.type === "video" && (
+                            <div className="rounded-2xl sm:rounded-3xl overflow-hidden border-2 border-amber-200/80 bg-slate-900 shadow-2xl relative aspect-video flex items-center justify-center group">
+                              {comp.content.mediaType === "image" ? (
+                                <img
+                                  src={comp.content.imageUrl || "/hero_image_2.png"}
+                                  alt={comp.content.title || "Webinar Media"}
+                                  className="w-full h-full object-cover"
+                                />
+                              ) : comp.content.videoUrl && (comp.content.videoUrl.includes("youtube") || comp.content.videoUrl.includes("youtu.be")) ? (
+                                <iframe
+                                  src={comp.content.videoUrl.replace("watch?v=", "embed/")}
+                                  title={comp.content.title || "Webinar Video"}
+                                  className="w-full h-full border-0"
+                                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                  allowFullScreen
+                                />
+                              ) : (
+                                <div className="relative w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-900 to-blue-950">
+                                  <img
+                                    src={comp.content.imageUrl || "/hero_image_2.png"}
+                                    alt="Video Poster"
+                                    className="w-full h-full object-cover opacity-65"
+                                  />
+                                  <div className="absolute w-16 h-16 rounded-full bg-white/95 text-purple-900 flex items-center justify-center shadow-2xl pl-1 group-hover:scale-110 transition cursor-pointer">
+                                    <Play className="w-7 h-7 fill-purple-900" />
+                                  </div>
+                                </div>
+                              )}
                             </div>
                           )}
 
-                          {/* 5. FEATURES COMPONENT */}
+                          {/* 5. FEATURES COMPONENT (What will you learn - 6 Vedic Cards) */}
                           {comp.type === "features" && (
-                            <div className="space-y-8">
-                              <div className="space-y-2 text-center">
-                                <h2 className="text-2xl sm:text-3xl font-black text-slate-900">
-                                  {comp.content.title}
-                                </h2>
-                                {comp.content.subtitle && (
-                                  <p className="text-sm text-slate-500 max-w-2xl mx-auto">
-                                    {comp.content.subtitle}
+                            comp.content.style === "vedicModules" || comp.content.modules ? (
+                              <div className="space-y-8 text-center max-w-5xl mx-auto">
+                                <div>
+                                  <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
+                                    {comp.content.title || "What will you learn in this mega webinar?"}
+                                  </h2>
+                                  <p className="text-sm sm:text-base text-slate-500 mt-2 max-w-2xl mx-auto">
+                                    {comp.content.subtitle || "Here's the module for you to learn astrology online through our webinar..."}
+                                  </p>
+                                </div>
+
+                                {/* 2-Column Grid with 6 Cards */}
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-5 text-left">
+                                  {(comp.content.modules || [
+                                    { id: 1, iconType: "clover", title: "Improving Your Luck with Astrology", desc: "Use astrological methods to make your luck stronger." },
+                                    { id: 2, iconType: "kundali", title: "Understanding Your Birth Chart/Kundali", desc: "Learn about the secrets in your birth chart." },
+                                    { id: 3, iconType: "planets", title: "How Planets Affect Your Life", desc: "See how planets influence important parts of your life like your job, love life, and money." },
+                                    { id: 4, iconType: "yantra", title: "Basics of Vedic Astrology", desc: "Understand the simple rules that Vedic astrology is built on." },
+                                    { id: 5, iconType: "rashi", title: "Rashi/ Zodiac Signs Insights", desc: "Get special tips based on your Rashi." },
+                                    { id: 6, iconType: "lagna", title: "Deep Dive into Lagna Chart", desc: "Get a full understanding of Lagna chart." },
+                                  ]).map((mod, mIdx) => (
+                                    <div
+                                      key={mIdx}
+                                      className="p-5 sm:p-6 rounded-2xl bg-white border border-purple-100 hover:border-[#2171B5] hover:shadow-lg transition-all flex items-center gap-5"
+                                    >
+                                      <div className="shrink-0 w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center text-slate-800">
+                                        {getVedicIcon(mod.iconType)}
+                                      </div>
+                                      <div className="space-y-1">
+                                        <h3 className="font-extrabold text-base sm:text-lg text-slate-900 leading-snug">
+                                          {mod.title}
+                                        </h3>
+                                        <p className="text-xs sm:text-sm text-slate-500 leading-relaxed">
+                                          {mod.desc}
+                                        </p>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+
+                                {comp.content.bottomText && (
+                                  <p className="text-xs sm:text-sm text-slate-600 font-medium tracking-wide pt-2">
+                                    {comp.content.bottomText}
                                   </p>
                                 )}
                               </div>
-
-                              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 text-left">
-                                {(comp.content.cards || []).map((card, ci) => (
-                                  <div
-                                    key={ci}
-                                    className="p-6 rounded-2xl bg-white border border-slate-200 hover:border-[#2171B5] transition-all group hover:shadow-lg space-y-3"
-                                  >
-                                    <div className="w-10 h-10 rounded-xl bg-blue-50 text-[#2171B5] flex items-center justify-center font-bold text-base border border-blue-200 group-hover:scale-105 transition">
-                                      ★
+                            ) : (
+                              <div className="space-y-8">
+                                <div className="space-y-2 text-center">
+                                  <h2 className="text-2xl sm:text-3xl font-black text-slate-900">
+                                    {comp.content.title}
+                                  </h2>
+                                </div>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 text-left">
+                                  {(comp.content.cards || []).map((card, ci) => (
+                                    <div key={ci} className="p-6 rounded-2xl bg-white border border-slate-200 space-y-3">
+                                      <h3 className="font-bold text-base text-slate-900">{card.title}</h3>
+                                      <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">{card.desc}</p>
                                     </div>
-                                    <h3 className="font-bold text-base text-slate-900 group-hover:text-[#2171B5] transition">
-                                      {card.title}
-                                    </h3>
-                                    <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                                      {card.desc}
-                                    </p>
-                                  </div>
-                                ))}
+                                  ))}
+                                </div>
                               </div>
-                            </div>
+                            )
                           )}
 
                           {/* 6. TESTIMONIALS COMPONENT */}
                           {comp.type === "testimonials" && (
                             <div className="space-y-8">
-                              <div className="space-y-2 text-center">
-                                {comp.content.tag && (
-                                  <span className="inline-block px-3 py-1 text-xs font-bold uppercase tracking-wider text-amber-600 bg-amber-50 rounded-full border border-amber-200">
-                                    {comp.content.tag}
-                                  </span>
-                                )}
-                                <h2 className="text-2xl sm:text-3xl font-black text-slate-900">
-                                  {comp.content.title || "Student Transformations"}
-                                </h2>
-                                {comp.content.subtitle && (
-                                  <p className="text-sm text-slate-500 max-w-xl mx-auto">
-                                    {comp.content.subtitle}
-                                  </p>
-                                )}
-                              </div>
-
-                              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
-                                {(comp.content.reviews || [
-                                  {
-                                    name: "Aman Verma",
-                                    role: "Frontend Engineer @ Razorpay",
-                                    quote: "The hands-on guidance and interview prep helped me transition from a non-tech role into a high paying engineering job in 4 months.",
-                                    rating: 5,
-                                  },
-                                  {
-                                    name: "Sneha Patel",
-                                    role: "Fullstack Dev @ Swiggy",
-                                    quote: "The personalized doubt clearing and direct mentor feedback was a gamechanger. Best investment I made in my career.",
-                                    rating: 5,
-                                  },
-                                  {
-                                    name: "Rohan Nair",
-                                    role: "Product Consultant",
-                                    quote: "Clear structured syllabus with live capstone projects. The mock interviews simulated real tech rounds perfectly.",
-                                    rating: 5,
-                                  },
-                                ]).map((rev, ri) => (
-                                  <div
-                                    key={ri}
-                                    className="p-6 rounded-2xl bg-white border border-slate-200 hover:border-[#2171B5] space-y-3 shadow-xs hover:shadow-md transition"
-                                  >
-                                    <div className="flex text-amber-500 text-sm">
-                                      {"★".repeat(rev.rating || 5)}
-                                    </div>
-                                    <p className="text-xs sm:text-sm text-slate-600 italic leading-relaxed">
-                                      "{rev.quote}"
-                                    </p>
-                                    <div className="pt-2 border-t border-slate-100">
-                                      <p className="text-xs font-bold text-slate-900">{rev.name}</p>
-                                      <p className="text-[11px] text-[#2171B5]">{rev.role}</p>
-                                    </div>
-                                  </div>
-                                ))}
-                              </div>
+                              <h2 className="text-2xl sm:text-3xl font-black text-slate-900 text-center">
+                                {comp.content.title || "Student Transformations"}
+                              </h2>
                             </div>
                           )}
 
-                          {/* 7. FAQ COMPONENT */}
+                          {/* 7. FAQ COMPONENT (Screenshot 4) */}
                           {comp.type === "faq" && (
-                            <div className="space-y-6 max-w-3xl mx-auto text-left">
+                            <div className="space-y-6 max-w-4xl mx-auto text-left">
                               <div className="space-y-2 text-center">
-                                <h2 className="text-2xl sm:text-3xl font-black text-slate-900">
+                                <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
                                   {comp.content.title || "Frequently Asked Questions"}
                                 </h2>
                                 {comp.content.subtitle && (
@@ -680,24 +833,24 @@ export default function BuilderTemplateView() {
                                 )}
                               </div>
 
-                              <div className="space-y-3">
+                              <div className="space-y-3 pt-3">
                                 {(comp.content.faqs || []).map((faq, fi) => (
                                   <div
                                     key={fi}
-                                    className="rounded-2xl border border-slate-200 bg-white overflow-hidden transition shadow-xs"
+                                    className="rounded-xl border border-slate-200 bg-white shadow-xs overflow-hidden transition"
                                   >
                                     <button
                                       type="button"
                                       onClick={() => toggleFaq(fi)}
-                                      className="w-full p-4 sm:p-5 text-left flex items-center justify-between text-sm sm:text-base font-semibold text-slate-900 hover:text-[#2171B5] transition cursor-pointer"
+                                      className="w-full px-5 py-4 text-left flex items-center justify-between text-sm sm:text-base font-bold text-slate-900 hover:text-[#2171B5] transition cursor-pointer"
                                     >
                                       <span>{faq.question}</span>
-                                      <span className="text-[#2171B5] font-mono text-xl ml-4">
+                                      <span className="text-slate-500 font-bold text-lg leading-none ml-4">
                                         {openFaq[fi] ? "−" : "+"}
                                       </span>
                                     </button>
                                     {openFaq[fi] && (
-                                      <div className="px-5 pb-5 pt-1 text-xs sm:text-sm text-slate-600 border-t border-slate-100 leading-relaxed">
+                                      <div className="px-5 pb-4 pt-1 text-xs sm:text-sm text-slate-600 border-t border-slate-100 leading-relaxed">
                                         {faq.answer}
                                       </div>
                                     )}
@@ -707,29 +860,65 @@ export default function BuilderTemplateView() {
                             </div>
                           )}
 
-                          {/* 8. CTA BANNER COMPONENT */}
+                          {/* 8. CTA BANNER COMPONENT (Screenshot 5 - Still Thinking - Happy Life Blue) */}
                           {comp.type === "ctaBanner" && (
-                            <div className="p-8 sm:p-14 rounded-3xl bg-gradient-to-r from-[#2171B5] via-blue-600 to-indigo-700 text-white text-center space-y-5 shadow-xl relative overflow-hidden">
-                              {comp.content.badge && (
-                                <span className="inline-block px-3.5 py-1 text-xs font-black uppercase tracking-wider text-amber-300 bg-black/20 rounded-full border border-amber-300/30">
-                                  {comp.content.badge}
-                                </span>
-                              )}
-                              <h2 className="text-2xl sm:text-4xl font-black tracking-tight leading-tight text-white">
-                                {comp.content.title}
-                              </h2>
-                              <p className="text-sm sm:text-base text-blue-100 max-w-xl mx-auto leading-relaxed">
-                                {comp.content.subtitle}
-                              </p>
-                              <div className="pt-2">
-                                <a
-                                  href={comp.content.buttonLink || "#lead-form"}
-                                  className="inline-block px-8 py-3.5 bg-white text-blue-900 hover:bg-slate-50 font-black rounded-xl text-sm shadow-xl transition active:scale-95"
-                                >
-                                  {comp.content.buttonText || "Get Started Today →"}
-                                </a>
+                            comp.content.style === "expertCallout" || comp.content.expertImage ? (
+                              <div
+                                className="rounded-3xl p-8 sm:p-12 lg:p-14 text-white shadow-2xl relative overflow-hidden"
+                                style={{
+                                  background:
+                                    comp.content.backgroundColor === "#2171B5" || !comp.content.backgroundColor
+                                      ? "linear-gradient(135deg, #175389 0%, #2171B5 50%, #2b88d8 100%)"
+                                      : comp.content.backgroundColor,
+                                }}
+                              >
+                                <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
+                                  <div className="md:col-span-8 space-y-6 text-left">
+                                    <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white leading-tight">
+                                      {comp.content.title || "Still thinking? Let us help you take the first step."}
+                                    </h2>
+                                    {comp.content.subtitle && (
+                                      <p className="text-sm sm:text-base text-blue-100 leading-relaxed font-normal">
+                                        {comp.content.subtitle}
+                                      </p>
+                                    )}
+                                    <div>
+                                      <a
+                                        href={comp.content.buttonLink || "#lead-form"}
+                                        className="inline-block px-8 py-3.5 bg-white text-[#2171B5] hover:bg-slate-50 font-bold text-sm sm:text-base rounded-xl shadow-xl transition transform hover:scale-105 active:scale-95 cursor-pointer"
+                                      >
+                                        {comp.content.buttonText || "Talk to an expert"}
+                                      </a>
+                                    </div>
+                                  </div>
+
+                                  <div className="md:col-span-4 flex justify-center md:justify-end">
+                                    <img
+                                      src={comp.content.expertImage || "/hero_image_2.png"}
+                                      alt="Expert Mentor"
+                                      className="w-48 h-48 sm:w-60 sm:h-60 object-cover rounded-2xl shadow-2xl border-4 border-white/20"
+                                      onError={(e) => {
+                                        e.target.src = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80";
+                                      }}
+                                    />
+                                  </div>
+                                </div>
                               </div>
-                            </div>
+                            ) : (
+                              <div className="p-8 sm:p-14 rounded-3xl bg-gradient-to-r from-[#2171B5] via-blue-600 to-indigo-700 text-white text-center space-y-5 shadow-xl relative overflow-hidden">
+                                <h2 className="text-2xl sm:text-4xl font-black tracking-tight leading-tight text-white">
+                                  {comp.content.title}
+                                </h2>
+                                <div className="pt-2">
+                                  <a
+                                    href={comp.content.buttonLink || "#lead-form"}
+                                    className="inline-block px-8 py-3.5 bg-white text-blue-900 hover:bg-slate-50 font-black rounded-xl text-sm shadow-xl"
+                                  >
+                                    {comp.content.buttonText || "Get Started Today →"}
+                                  </a>
+                                </div>
+                              </div>
+                            )
                           )}
                         </div>
                       ))}

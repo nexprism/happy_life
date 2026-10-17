@@ -96,6 +96,32 @@ class BuilderService {
     data.slug = slug;
     data.createdBy = userId;
 
+    // If no footerConfig provided, supply default Happy Life Signature footer
+    if (!data.footerConfig || !data.footerConfig.headline) {
+      data.footerConfig = {
+        enabled: true,
+        templateStyle: 1,
+        headline: "Your Birth Chart Holds Clues, Not Instant MIRACLES",
+        contactEmail: "happylifereport@gmail.com",
+        tagline: "ALIGN YOUR ENERGY, UNLOCK SUCCESS, AND LIVE WITH PURPOSE",
+        backgroundColor: "#2171B5",
+        textColor: "#ffffff",
+        links: [
+          { label: "Privacy Policy", url: "/privacy-policy" },
+          { label: "Services", url: "/courses" },
+          { label: "Blog", url: "/news" },
+          { label: "Work", url: "/gig" },
+          { label: "Contact", url: "/contact" },
+        ],
+        socialLinks: {
+          facebook: "https://www.facebook.com/share/19fDGmAQnj/",
+          twitter: "https://x.com",
+          instagram: "https://www.instagram.com/happy_life_astro",
+          youtube: "https://youtube.com/@happylifeastro",
+        },
+      };
+    }
+
     // If no sections provided, provide a starter hero + lead form section
     if (!data.sections || data.sections.length === 0) {
       data.sections = this.getDefaultStarterSections(data.name);
@@ -269,58 +295,315 @@ class BuilderService {
     const timestamp = Date.now();
 
     return [
-      // 1. Hero with Glassmorphism Lead Form (2-Column Side by Side)
+      // 1. Hero Section ("Mega Astrology Webinar" - Cosmic Blue Background)
       {
         id: "sec-hero-" + timestamp,
-        name: "Hero with Lead Capture Form",
-        layout: "2-column",
-        backgroundColor: "#070c18",
+        name: "Mega Astrology Webinar Hero",
+        layout: "1-column",
+        backgroundColor: "#071322",
         textColor: "#ffffff",
-        paddingY: "xl",
+        paddingY: "lg",
         columns: [
           {
-            id: "col-hero-left",
-            width: "1/2",
+            id: "col-hero-main",
+            width: "full",
             components: [
               {
                 id: "comp-hero-" + timestamp,
                 type: "hero",
                 content: {
-                  badge: "🚀 Next-Gen Industry Cohort 2026",
-                  title: `Master High-Income Skills with ${templateName}`,
+                  style: "webinar",
+                  badge: "LIVE 2-DAYS IMMERSIVE MASTERCLASS",
+                  title: "Mega Astrology Webinar",
                   subtitle:
-                    "Accelerate your professional trajectory with hands-on live project labs, 1-on-1 industry mentorship, and dedicated recruitment pipelines.",
-                  bulletPoints: [
-                    "Live interactive bootcamps led by senior practitioners",
-                    "Real-world enterprise capstone projects for your portfolio",
-                    "Industry accredited certification upon graduation",
-                    "100% personalized placement assistance & interview prep",
+                    "Enhance your astrological understanding with our 2 Days webinar, seamlessly integrating traditional Vedic astrology with practical, modern applications. Learn to interpret birth charts and celestial influences under the guidance of Astro Arun Pandit.",
+                  eventDate: "24 Oct, 2026",
+                  eventTime: "01:00 PM",
+                  duration: "4 Hours",
+                  mentorName: "Astro Arun Pandit",
+                  originalPrice: "₹999",
+                  discountPrice: "₹99/-",
+                  buttonText: "Register Now ₹999 ₹99/-",
+                  buttonLink: "#lead-form",
+                  mentorImage: "/hero_image_2.png",
+                  backgroundImage: "",
+                },
+              },
+            ],
+          },
+        ],
+      },
+
+      // 2. Why Join Section (Benefits List + Media Player Container)
+      {
+        id: "sec-whyjoin-" + (timestamp + 1),
+        name: "Why Join The Webinar",
+        layout: "2-column",
+        backgroundColor: "#ffffff",
+        textColor: "#0F172A",
+        paddingY: "lg",
+        columns: [
+          {
+            id: "col-whyjoin-left",
+            width: "1/2",
+            components: [
+              {
+                id: "comp-whyjoin-info-" + (timestamp + 1),
+                type: "about",
+                content: {
+                  style: "whyJoin",
+                  title: "Why join the webinar?",
+                  subtitle:
+                    "This webinar will help you leverage the impact of stars in day-to-day life.",
+                  benefits: [
+                    "Make confident and informed life decisions.",
+                    "Manage stress and anxiety more effectively.",
+                    "Fulfil your dreams like buying your own house.",
+                    "Enhance your health and well-being through spiritual insights.",
+                    "Get logical and practical remedies to tackle life's challenges.",
+                    "Maintain stronger relationships with family and friends.",
                   ],
-                  trustText: "Rated 4.9/5 by 12,000+ ambitious students worldwide",
-                  ctaText: "Enroll in Program",
-                  ctaLink: "#lead-form",
-                  secondaryCtaText: "Explore Curriculum ↓",
-                  secondaryCtaLink: "#curriculum",
+                  buttonText: "Register now",
+                  buttonLink: "#lead-form",
                 },
               },
             ],
           },
           {
-            id: "col-hero-right",
+            id: "col-whyjoin-right",
             width: "1/2",
             components: [
               {
-                id: "comp-lead-" + (timestamp + 1),
+                id: "comp-whyjoin-media-" + (timestamp + 1),
+                type: "video",
+                content: {
+                  mediaType: "video",
+                  title: "Sneak Peek: Webinar Overview",
+                  videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+                  imageUrl: "/hero_image_2.png",
+                  autoPlay: false,
+                },
+              },
+            ],
+          },
+        ],
+      },
+
+      // 3. Curriculum Cards ("What will you learn in this mega webinar?")
+      {
+        id: "sec-learn-" + (timestamp + 2),
+        name: "What You Will Learn",
+        layout: "1-column",
+        backgroundColor: "#ffffff",
+        textColor: "#0F172A",
+        paddingY: "lg",
+        columns: [
+          {
+            id: "col-learn-main",
+            width: "full",
+            components: [
+              {
+                id: "comp-learn-" + (timestamp + 2),
+                type: "features",
+                content: {
+                  style: "vedicModules",
+                  title: "What will you learn in this mega webinar?",
+                  subtitle:
+                    "Here's the module for you to learn astrology online through our webinar...",
+                  modules: [
+                    {
+                      id: 1,
+                      iconType: "clover",
+                      title: "Improving Your Luck with Astrology",
+                      desc: "Use astrological methods to make your luck stronger.",
+                    },
+                    {
+                      id: 2,
+                      iconType: "kundali",
+                      title: "Understanding Your Birth Chart/Kundali",
+                      desc: "Learn about the secrets in your birth chart.",
+                    },
+                    {
+                      id: 3,
+                      iconType: "planets",
+                      title: "How Planets Affect Your Life",
+                      desc: "See how planets influence important parts of your life like your job, love life, and money.",
+                    },
+                    {
+                      id: 4,
+                      iconType: "yantra",
+                      title: "Basics of Vedic Astrology",
+                      desc: "Understand the simple rules that Vedic astrology is built on.",
+                    },
+                    {
+                      id: 5,
+                      iconType: "rashi",
+                      title: "Rashi/ Zodiac Signs Insights",
+                      desc: "Get special tips based on your Rashi.",
+                    },
+                    {
+                      id: 6,
+                      iconType: "lagna",
+                      title: "Deep Dive into Lagna Chart",
+                      desc: "Get a full understanding of Lagna chart.",
+                    },
+                  ],
+                  bottomText:
+                    "This webinar will equip you with actionable insights...",
+                },
+              },
+            ],
+          },
+        ],
+      },
+
+      // 4. Frequently Asked Questions (Accordion)
+      {
+        id: "sec-faq-" + (timestamp + 3),
+        name: "Frequently Asked Questions",
+        layout: "1-column",
+        backgroundColor: "#ffffff",
+        textColor: "#0F172A",
+        paddingY: "lg",
+        columns: [
+          {
+            id: "col-faq-main",
+            width: "full",
+            components: [
+              {
+                id: "comp-faq-" + (timestamp + 3),
+                type: "faq",
+                content: {
+                  title: "Frequently Asked Questions",
+                  subtitle:
+                    "Find fast answers to all common questions regarding webinar timings, joining, and materials.",
+                  faqs: [
+                    {
+                      question: "Is there a registration fee for the webinar?",
+                      answer:
+                        "Yes, there is a nominal fee of ₹99 (discounted from ₹999) to cover online portal streaming costs and personal study materials.",
+                    },
+                    {
+                      question: "Where can I join the webinar?",
+                      answer:
+                        "Upon successful registration, your private meeting link and calendar invites will be sent directly to your registered WhatsApp number and Email.",
+                    },
+                    {
+                      question: "Where will the webinar take place?",
+                      answer:
+                        "The webinar takes place live on Zoom / private streaming portal. You can easily join from any smartphone, tablet, or PC.",
+                    },
+                    {
+                      question: "Who should attend this webinar?",
+                      answer:
+                        "Anyone curious about Vedic astrology, deciphering their birth chart, discovering life timing, planetary remedies, and self-empowerment.",
+                    },
+                    {
+                      question:
+                        "Will there be reminders sent out before the webinar begins?",
+                      answer:
+                        "Yes, our automated assistant sends alerts 24 hours, 2 hours, and 15 minutes before the session kicks off.",
+                    },
+                    {
+                      question: "What should I have ready for the webinar?",
+                      answer:
+                        "Please keep your exact date of birth, time of birth, and place of birth ready so you can map your personal planetary positions.",
+                    },
+                    {
+                      question:
+                        "Can I participate in this webinar with my family or partners?",
+                      answer:
+                        "Yes! Family members can attend together from one screen or register separately for individual chart consultations.",
+                    },
+                    {
+                      question: "Is the Webinar Refundable?",
+                      answer:
+                        "Yes, we offer a 100% no-questions-asked satisfaction guarantee if you attend the opening session and do not find it transformative.",
+                    },
+                  ],
+                },
+              },
+            ],
+          },
+        ],
+      },
+
+      // 5. Action Banner (Still Thinking - Happy Life Ocean Blue)
+      {
+        id: "sec-cta-" + (timestamp + 4),
+        name: "Still Thinking CTA Banner",
+        layout: "1-column",
+        backgroundColor: "#ffffff",
+        textColor: "#ffffff",
+        paddingY: "md",
+        columns: [
+          {
+            id: "col-cta-main",
+            width: "full",
+            components: [
+              {
+                id: "comp-cta-" + (timestamp + 4),
+                type: "ctaBanner",
+                content: {
+                  style: "expertCallout",
+                  title: "Still thinking? Let us help you take the first step.",
+                  subtitle:
+                    "Connect directly with our Vedic astrology team to get personalized guidance.",
+                  buttonText: "Talk to an expert",
+                  buttonLink: "#lead-form",
+                  expertImage: "/hero_image_2.png",
+                  backgroundColor: "#2171B5",
+                },
+              },
+            ],
+          },
+        ],
+      },
+
+      // 6. Registration Lead Form
+      {
+        id: "sec-lead-" + (timestamp + 5),
+        name: "Webinar Registration Form",
+        layout: "1-column",
+        backgroundColor: "#f8fafc",
+        textColor: "#0F172A",
+        paddingY: "lg",
+        columns: [
+          {
+            id: "col-lead-main",
+            width: "full",
+            components: [
+              {
+                id: "comp-lead-" + (timestamp + 5),
                 type: "leadForm",
                 content: {
-                  badge: "⚡ LIMITED COHORT SEATS",
-                  title: "Book Free VIP Consultation",
-                  subtitle: "Fill in your details to receive syllabus pack & a dedicated advisor call.",
-                  buttonText: "Claim Free Consultation →",
+                  badge: "LIMITED SEATS AVAILABLE",
+                  title: "Secure Your Webinar Seat Today",
+                  subtitle:
+                    "Fill out your details to receive immediate confirmation and birth chart preparatory kit.",
+                  buttonText: "Complete Registration (₹99) →",
                   fields: [
-                    { name: "name", label: "Full Name", type: "text", required: true, placeholder: "e.g. Rahul Sharma" },
-                    { name: "email", label: "Email Address", type: "email", required: true, placeholder: "e.g. rahul@example.com" },
-                    { name: "phone", label: "WhatsApp / Phone Number", type: "tel", required: true, placeholder: "e.g. +91 98765 43210" },
+                    {
+                      name: "name",
+                      label: "Full Name",
+                      type: "text",
+                      required: true,
+                      placeholder: "Enter your full name...",
+                    },
+                    {
+                      name: "phone",
+                      label: "WhatsApp Number",
+                      type: "tel",
+                      required: true,
+                      placeholder: "+91 98765 43210",
+                    },
+                    {
+                      name: "email",
+                      label: "Email Address",
+                      type: "email",
+                      required: true,
+                      placeholder: "yourname@example.com",
+                    },
                     {
                       name: "source",
                       label: "Where did you find out about us?",
@@ -329,196 +612,27 @@ class BuilderService {
                       options: [
                         "Instagram",
                         "YouTube",
-                        "LinkedIn",
-                        "Google Search",
                         "Facebook",
                         "Twitter / X",
                         "Friend / Referral",
+                        "Google Search",
                         "Other",
                       ],
-                      placeholder: "Select social media / referral channel...",
+                      placeholder: "Select source...",
                     },
-                    { name: "notes", label: "Your Learning Goal or Query", type: "textarea", required: false, placeholder: "Tell us about your background or goals..." },
+                    {
+                      name: "notes",
+                      label: "Any specific query or life focus area?",
+                      type: "textarea",
+                      required: false,
+                      placeholder:
+                        "e.g. Career growth, health, marriage, business...",
+                    },
                   ],
-                  guaranteeText: "🔒 100% Privacy. Zero spam. Advisor connects within 24h.",
-                  successMessage: "🎉 Success! Your consultation spot has been reserved. Our advisor will reach out shortly.",
-                },
-              },
-            ],
-          },
-        ],
-      },
-
-      // 2. Metric / Stats Credibility Strip (1-Column)
-      {
-        id: "sec-stats-" + (timestamp + 2),
-        name: "Key Milestones & Credibility",
-        layout: "1-column",
-        backgroundColor: "#0d1527",
-        textColor: "#ffffff",
-        paddingY: "md",
-        columns: [
-          {
-            id: "col-stats",
-            width: "full",
-            components: [
-              {
-                id: "comp-stats-" + (timestamp + 2),
-                type: "stats",
-                content: {
-                  title: "Numbers That Speak For Themselves",
-                  subtitle: "Empowering students across India to break into top tier tech & creative careers",
-                  stats: [
-                    { number: "15,000+", label: "Graduated Students", icon: "GraduationCap" },
-                    { number: "98.4%", label: "Career Placement Rate", icon: "TrendingUp" },
-                    { number: "4.9 / 5.0", label: "Average Review Rating", icon: "Star" },
-                    { number: "120+", label: "Hiring Enterprise Partners", icon: "Building2" },
-                  ],
-                },
-              },
-            ],
-          },
-        ],
-      },
-
-      // 3. Why Happy Life Advantage (2-Column Side by Side)
-      {
-        id: "sec-about-" + (timestamp + 3),
-        name: "About Program & Real-World Edge",
-        layout: "2-column",
-        backgroundColor: "#070c18",
-        textColor: "#ffffff",
-        paddingY: "lg",
-        columns: [
-          {
-            id: "col-about-left",
-            width: "1/2",
-            components: [
-              {
-                id: "comp-about-" + (timestamp + 3),
-                type: "about",
-                content: {
-                  tag: "WHY HAPPY LIFE?",
-                  title: "A Complete Ecosystem Built for Your Professional Breakthrough",
-                  description:
-                    "Traditional universities and theoretical tutorials leave you stranded with outdated concepts. At Happy Life, you build production-ready projects under real pressure, with senior architects reviewing your every milestone.",
-                  items: [
-                    { title: "Direct Industry Mentorship", desc: "Weekly 1-on-1 doubt solving with senior leads working at tier-1 firms." },
-                    { title: "Guaranteed Placement Pipeline", desc: "Exclusive access to private hiring drives, resume teardowns & mock HR panels." },
-                    { title: "Lifelong Alumni Network", desc: "Join an elite community of founders, creators, and engineers sharing real opportunities." },
-                  ],
-                },
-              },
-            ],
-          },
-          {
-            id: "col-about-right",
-            width: "1/2",
-            components: [
-              {
-                id: "comp-features-preview-" + (timestamp + 3),
-                type: "ctaBanner",
-                content: {
-                  badge: "CURRICULUM HIGHLIGHT",
-                  title: "Industry Aligned Modern Syllabus",
-                  subtitle: "Updated every quarter to match modern engineering and market standards. Zero fluff, 100% actionable execution.",
-                  buttonText: "Request Syllabus Pack ↓",
-                  buttonLink: "#lead-form",
-                },
-              },
-            ],
-          },
-        ],
-      },
-
-      // 4. Detailed Features Grid (1-Column)
-      {
-        id: "sec-features-" + (timestamp + 4),
-        name: "What You Will Master",
-        layout: "1-column",
-        backgroundColor: "#0b1222",
-        textColor: "#ffffff",
-        paddingY: "lg",
-        columns: [
-          {
-            id: "col-features",
-            width: "full",
-            components: [
-              {
-                id: "comp-features-" + (timestamp + 4),
-                type: "features",
-                content: {
-                  title: "Comprehensive Practical Capabilities",
-                  subtitle: "Engineered from the ground up to make you indispensable in today's demanding market.",
-                  cards: [
-                    { title: "Architectural Fundamentals", desc: "Build rock-solid conceptual grounding that survives tech trends." },
-                    { title: "Live Real-World Projects", desc: "Ship enterprise applications that prove your practical competence." },
-                    { title: "AI & Automation Mastery", desc: "Harness cutting-edge AI workflows to deliver 10x faster output." },
-                    { title: "Code Reviews & Best Practices", desc: "Learn clean code patterns, performance optimization, and testing." },
-                    { title: "Client Acquisition & Sales", desc: "Master communication, pitching, and value negotiation with confidence." },
-                    { title: "Interview Guarantee Pipeline", desc: "Tailored portfolio and direct referrals to active hiring partners." },
-                  ],
-                },
-              },
-            ],
-          },
-        ],
-      },
-
-      // 5. Frequently Asked Questions (1-Column)
-      {
-        id: "sec-faq-" + (timestamp + 5),
-        name: "Frequently Asked Questions",
-        layout: "1-column",
-        backgroundColor: "#070c18",
-        textColor: "#ffffff",
-        paddingY: "lg",
-        columns: [
-          {
-            id: "col-faq",
-            width: "full",
-            components: [
-              {
-                id: "comp-faq-" + (timestamp + 5),
-                type: "faq",
-                content: {
-                  title: "Got Questions? We Have Answers",
-                  subtitle: "Everything you need to know before joining the program.",
-                  faqs: [
-                    { question: "Is this program suitable for complete beginners?", answer: "Yes! The curriculum is designed in structured progressive tiers, starting from ground fundamentals before moving to advanced real-world implementations." },
-                    { question: "Are the live sessions recorded if I miss one?", answer: "Yes, all sessions are recorded in full HD and made available immediately in your Happy Life student dashboard with lifetime access." },
-                    { question: "What kind of placement support will I receive?", answer: "You get dedicated resume reviews, portfolio audits, mock interviews, and direct referral opportunities through our 120+ hiring partner network." },
-                    { question: "Will I receive an official certificate?", answer: "Yes, you receive an accredited, verifiable Happy Life graduation certificate that you can showcase on LinkedIn and your resume." },
-                  ],
-                },
-              },
-            ],
-          },
-        ],
-      },
-
-      // 6. Urgency High-Converting CTA Banner (1-Column)
-      {
-        id: "sec-cta-" + (timestamp + 6),
-        name: "Final Action & Enrollment Call",
-        layout: "1-column",
-        backgroundColor: "#0d1527",
-        textColor: "#ffffff",
-        paddingY: "lg",
-        columns: [
-          {
-            id: "col-cta-final",
-            width: "full",
-            components: [
-              {
-                id: "comp-cta-" + (timestamp + 6),
-                type: "ctaBanner",
-                content: {
-                  badge: "🔥 SEATS CLOSING SOON",
-                  title: "Step Into Your Dream Career Today",
-                  subtitle: "Don't spend another year wondering what if. Join thousands of successful alumni who transformed their lives with Happy Life.",
-                  buttonText: "Claim Your Spot Now →",
-                  buttonLink: "#lead-form",
+                  guaranteeText:
+                    "🔒 Instant WhatsApp confirmation. Secure payment gateway. 100% money-back guarantee.",
+                  successMessage:
+                    "🎉 Registration complete! Check your WhatsApp for webinar link and schedule.",
                 },
               },
             ],
@@ -526,7 +640,6 @@ class BuilderService {
         ],
       },
     ];
-  }
-}
+  }}
 
 export default new BuilderService();

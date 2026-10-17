@@ -13,10 +13,12 @@ import {
   updateLeadStatus,
   deleteLead,
   exportLeadsCsv,
+  uploadFile,
 } from "../controllers/builderController.js";
 import accessTokenAutoRefresh from "../middlewares/accessTokenAutoRefresh.js";
 import passport from "passport";
 import { isAdmin } from "../middlewares/isAdmin.js";
+import { upload } from "../middlewares/upload-middleware.js";
 
 const router = express.Router();
 
@@ -48,6 +50,7 @@ const adminAuth = [
 ];
 
 // Template routes
+router.post("/upload", adminAuth, upload.single("file"), uploadFile);
 router.get("/templates", adminAuth, getAllTemplates);
 router.post("/templates", adminAuth, createTemplate);
 router.get("/templates/:id", adminAuth, getTemplateById);

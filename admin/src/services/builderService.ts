@@ -30,6 +30,7 @@ export interface SectionItem {
   backgroundColor: string;
   textColor?: string;
   paddingY?: "sm" | "md" | "lg" | "xl";
+  maxWidth?: "4xl" | "5xl" | "6xl" | "7xl" | "full" | string;
   columns: ColumnItem[];
 }
 
@@ -148,6 +149,16 @@ export const builderService = {
     const res = await axiosInstance.get("/builder/leads/export", {
       params: { templateId },
       responseType: "blob",
+    });
+    return res.data;
+  },
+
+  // Media Upload (Image & Video)
+  uploadMedia: async (file: File) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    const res = await axiosInstance.post("/builder/upload", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
     });
     return res.data;
   },

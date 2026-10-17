@@ -260,3 +260,26 @@ export const exportLeadsCsv = async (req, res) => {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
+
+// Admin: Upload Media (Images / Videos) for Builder
+export const uploadFile = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: "No file uploaded" });
+    }
+    const baseUrl = process.env.BASE_URL || `http://localhost:${process.env.PORT || 5000}`;
+    const fileUrl = `${baseUrl}/uploads/${req.file.filename}`;
+    return res.status(200).json({
+      success: true,
+      message: "File uploaded successfully",
+      url: fileUrl,
+      fileName: req.file.filename,
+      originalName: req.file.originalname,
+      mimetype: req.file.mimetype,
+      size: req.file.size,
+    });
+  } catch (error) {
+    console.error("❌ Error uploading file in builder:", error);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};

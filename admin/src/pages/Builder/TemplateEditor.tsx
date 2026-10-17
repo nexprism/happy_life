@@ -42,10 +42,44 @@ import {
   Sliders,
   Palette,
   CheckCircle2,
+  Upload,
 } from "lucide-react";
 import toast from "react-hot-toast";
+import {
+  Calendar,
+  Clock,
+  Hourglass,
+  User as UserIcon,
+  Play,
+  Video as VideoIcon,
+  Image as ImageIcon,
+  Minus,
+} from "lucide-react";
+import {
+  LotusChakraIcon,
+  CelestialZodiacWheel,
+  getVedicIcon,
+} from "../../components/VedicIcons";
 
 type ViewportMode = "desktop" | "tablet" | "mobile";
+
+export const getMaxWidthClass = (width?: string) => {
+  switch (width) {
+    case "4xl":
+      return "max-w-4xl";
+    case "5xl":
+      return "max-w-5xl";
+    case "6xl":
+      return "max-w-6xl";
+    case "7xl":
+      return "max-w-7xl";
+    case "full":
+      return "max-w-full";
+    default:
+      return "max-w-7xl";
+  }
+};
+
 
 // 1. Sections Categories definition matching the user's screenshots
 interface SectionCategory {
@@ -55,16 +89,16 @@ interface SectionCategory {
 }
 
 const SECTION_CATEGORIES: SectionCategory[] = [
-  { id: "headers", name: "Headers", icon: Compass },
+  { id: "happy_life_webinar", name: "⭐ Happy Life Webinar", icon: Sparkles },
   { id: "hero", name: "Hero Section", icon: Sidebar },
-  { id: "assessment", name: "Assessment Exam", icon: LayoutGrid },
-  { id: "ai_recommendations", name: "AI Recommendations", icon: LayoutGrid },
-  { id: "counselor", name: "Counselor Match", icon: LayoutGrid },
-  { id: "college_hub", name: "College Match Hub", icon: LayoutGrid },
-  { id: "app_tracker", name: "Application Tracker", icon: LayoutGrid },
-  { id: "admin_analytics", name: "Admin Analytics", icon: LayoutGrid },
-  { id: "faq", name: "FAQ Accordion", icon: LayoutGrid },
-  { id: "footers", name: "Footers", icon: PanelBottom },
+  { id: "why_join", name: "Why Join Webinar", icon: LayoutGrid },
+  { id: "vedic_learn", name: "What You'll Learn", icon: LayoutGrid },
+  { id: "faq", name: "FAQ Accordion", icon: HelpCircle },
+  { id: "cta_banner", name: "Still Thinking Banner", icon: LayoutGrid },
+  { id: "assessment", name: "Registration Form", icon: LayoutGrid },
+  { id: "footers", name: "Happy Life Footers", icon: PanelBottom },
+  { id: "headers", name: "Headers", icon: Compass },
+  { id: "admin_analytics", name: "Stats & Metrics", icon: LayoutGrid },
 ];
 
 // Authentic SVG Brand Icons for Happy Life
@@ -111,6 +145,38 @@ export default function TemplateEditor() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [viewport, setViewport] = useState<ViewportMode>("desktop");
+  const [desktopCanvasWidth, setDesktopCanvasWidth] = useState<"5xl" | "6xl" | "7xl" | "full">("7xl");
+  const [uploadingMediaField, setUploadingMediaField] = useState<string | null>(null);
+
+  const handleMediaUpload = async (
+    file: File,
+    fieldKey: string,
+    onSuccess: (url: string) => void
+  ) => {
+    if (!file) return;
+    const isVideo = file.type.startsWith("video/");
+    const isImage = file.type.startsWith("image/");
+    if (!isVideo && !isImage) {
+      toast.error("Please upload a valid image or video file");
+      return;
+    }
+    const toastId = toast.loading(`Uploading ${isVideo ? "video" : "image"} (${(file.size / (1024 * 1024)).toFixed(1)}MB)...`);
+    setUploadingMediaField(fieldKey);
+    try {
+      const res = await builderService.uploadMedia(file);
+      if (res?.success && res.url) {
+        toast.success(`${isVideo ? "Video" : "Image"} uploaded successfully!`, { id: toastId });
+        onSuccess(res.url);
+      } else {
+        toast.error(res?.message || "Upload failed", { id: toastId });
+      }
+    } catch (err: any) {
+      console.error("Upload error:", err);
+      toast.error(err?.response?.data?.message || err.message || "Failed to upload media", { id: toastId });
+    } finally {
+      setUploadingMediaField(null);
+    }
+  };
   const isMobileView = viewport === "mobile";
 
   // Selected Section Category on the Left Panel (e.g. "hero", "assessment")
@@ -131,6 +197,7 @@ export default function TemplateEditor() {
 
   // Base font size slider for Style Theme Colors
   const [baseFontSize, setBaseFontSize] = useState<number>(14);
+  const [openFaqs, setOpenFaqs] = useState<{ [index: number]: boolean }>({ 0: true });
 
   // Load template
   useEffect(() => {
@@ -329,7 +396,403 @@ export default function TemplateEditor() {
     setTemplate({ ...template, sections: updated });
   };
 
-  // Component operations
+  
+  // Helper to construct all 6 Webinar Sections matching user screenshots
+  const getHappyLifeWebinarSections = (templateName?: string): SectionItem[] => {
+    const timestamp = Date.now();
+    return [
+      // 1. Hero Section ("Mega Astrology Webinar")
+      {
+        id: "sec-hero-" + timestamp,
+        name: "Mega Astrology Webinar Hero",
+        layout: "1-column",
+        backgroundColor: "#071322",
+        textColor: "#ffffff",
+        paddingY: "lg",
+        columns: [
+          {
+            id: "col-hero-main",
+            width: "full",
+            components: [
+              {
+                id: "comp-hero-" + timestamp,
+                type: "hero",
+                content: {
+                  style: "webinar",
+                  badge: "LIVE 2-DAYS IMMERSIVE MASTERCLASS",
+                  title: "Mega Astrology Webinar",
+                  subtitle:
+                    "Enhance your astrological understanding with our 2 Days webinar, seamlessly integrating traditional Vedic astrology with practical, modern applications. Learn to interpret birth charts and celestial influences under the guidance of Astro Arun Pandit.",
+                  eventDate: "24 Oct, 2026",
+                  eventTime: "01:00 PM",
+                  duration: "4 Hours",
+                  mentorName: "Astro Arun Pandit",
+                  originalPrice: "₹999",
+                  discountPrice: "₹99/-",
+                  buttonText: "Register Now ₹999 ₹99/-",
+                  buttonLink: "#lead-form",
+                  mentorImage: "/hero_image_2.png",
+                  backgroundImage: "",
+                },
+              },
+            ],
+          },
+        ],
+      },
+
+      // 2. Why Join Section (Benefits + Media Player)
+      {
+        id: "sec-whyjoin-" + (timestamp + 1),
+        name: "Why Join The Webinar",
+        layout: "2-column",
+        backgroundColor: "#ffffff",
+        textColor: "#0F172A",
+        paddingY: "lg",
+        columns: [
+          {
+            id: "col-whyjoin-left",
+            width: "1/2",
+            components: [
+              {
+                id: "comp-whyjoin-info-" + (timestamp + 1),
+                type: "about",
+                content: {
+                  style: "whyJoin",
+                  title: "Why join the webinar?",
+                  subtitle:
+                    "This webinar will help you leverage the impact of stars in day-to-day life.",
+                  benefits: [
+                    "Make confident and informed life decisions.",
+                    "Manage stress and anxiety more effectively.",
+                    "Fulfil your dreams like buying your own house.",
+                    "Enhance your health and well-being through spiritual insights.",
+                    "Get logical and practical remedies to tackle life's challenges.",
+                    "Maintain stronger relationships with family and friends.",
+                  ],
+                  buttonText: "Register now",
+                  buttonLink: "#lead-form",
+                },
+              },
+            ],
+          },
+          {
+            id: "col-whyjoin-right",
+            width: "1/2",
+            components: [
+              {
+                id: "comp-whyjoin-media-" + (timestamp + 1),
+                type: "video",
+                content: {
+                  mediaType: "video",
+                  title: "Sneak Peek: Webinar Overview",
+                  videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+                  imageUrl: "/hero_image_2.png",
+                  autoPlay: false,
+                },
+              },
+            ],
+          },
+        ],
+      },
+
+      // 3. Curriculum Cards (What will you learn)
+      {
+        id: "sec-learn-" + (timestamp + 2),
+        name: "What You Will Learn",
+        layout: "1-column",
+        backgroundColor: "#ffffff",
+        textColor: "#0F172A",
+        paddingY: "lg",
+        columns: [
+          {
+            id: "col-learn-main",
+            width: "full",
+            components: [
+              {
+                id: "comp-learn-" + (timestamp + 2),
+                type: "features",
+                content: {
+                  style: "vedicModules",
+                  title: "What will you learn in this mega webinar?",
+                  subtitle:
+                    "Here's the module for you to learn astrology online through our webinar...",
+                  modules: [
+                    {
+                      id: 1,
+                      iconType: "clover",
+                      title: "Improving Your Luck with Astrology",
+                      desc: "Use astrological methods to make your luck stronger.",
+                    },
+                    {
+                      id: 2,
+                      iconType: "kundali",
+                      title: "Understanding Your Birth Chart/Kundali",
+                      desc: "Learn about the secrets in your birth chart.",
+                    },
+                    {
+                      id: 3,
+                      iconType: "planets",
+                      title: "How Planets Affect Your Life",
+                      desc: "See how planets influence important parts of your life like your job, love life, and money.",
+                    },
+                    {
+                      id: 4,
+                      iconType: "yantra",
+                      title: "Basics of Vedic Astrology",
+                      desc: "Understand the simple rules that Vedic astrology is built on.",
+                    },
+                    {
+                      id: 5,
+                      iconType: "rashi",
+                      title: "Rashi/ Zodiac Signs Insights",
+                      desc: "Get special tips based on your Rashi.",
+                    },
+                    {
+                      id: 6,
+                      iconType: "lagna",
+                      title: "Deep Dive into Lagna Chart",
+                      desc: "Get a full understanding of Lagna chart.",
+                    },
+                  ],
+                  bottomText:
+                    "This webinar will equip you with actionable insights...",
+                },
+              },
+            ],
+          },
+        ],
+      },
+
+      // 4. Frequently Asked Questions (Collapsible Accordion)
+      {
+        id: "sec-faq-" + (timestamp + 3),
+        name: "Frequently Asked Questions",
+        layout: "1-column",
+        backgroundColor: "#ffffff",
+        textColor: "#0F172A",
+        paddingY: "lg",
+        columns: [
+          {
+            id: "col-faq-main",
+            width: "full",
+            components: [
+              {
+                id: "comp-faq-" + (timestamp + 3),
+                type: "faq",
+                content: {
+                  title: "Frequently Asked Questions",
+                  subtitle:
+                    "Find fast answers to all common questions regarding webinar timings, joining, and materials.",
+                  faqs: [
+                    {
+                      question: "Is there a registration fee for the webinar?",
+                      answer:
+                        "Yes, there is a nominal fee of ₹99 (discounted from ₹999) to cover online portal streaming costs and personal study materials.",
+                    },
+                    {
+                      question: "Where can I join the webinar?",
+                      answer:
+                        "Upon successful registration, your private meeting link and calendar invites will be sent directly to your registered WhatsApp number and Email.",
+                    },
+                    {
+                      question: "Where will the webinar take place?",
+                      answer:
+                        "The webinar takes place live on Zoom / private streaming portal. You can easily join from any smartphone, tablet, or PC.",
+                    },
+                    {
+                      question: "Who should attend this webinar?",
+                      answer:
+                        "Anyone curious about Vedic astrology, deciphering their birth chart, discovering life timing, planetary remedies, and self-empowerment.",
+                    },
+                    {
+                      question:
+                        "Will there be reminders sent out before the webinar begins?",
+                      answer:
+                        "Yes, our automated assistant sends alerts 24 hours, 2 hours, and 15 minutes before the session kicks off.",
+                    },
+                    {
+                      question: "What should I have ready for the webinar?",
+                      answer:
+                        "Please keep your exact date of birth, time of birth, and place of birth ready so you can map your personal planetary positions.",
+                    },
+                    {
+                      question:
+                        "Can I participate in this webinar with my family or partners?",
+                      answer:
+                        "Yes! Family members can attend together from one screen or register separately for individual chart consultations.",
+                    },
+                    {
+                      question: "Is the Webinar Refundable?",
+                      answer:
+                        "Yes, we offer a 100% no-questions-asked satisfaction guarantee if you attend the opening session and do not find it transformative.",
+                    },
+                  ],
+                },
+              },
+            ],
+          },
+        ],
+      },
+
+      // 5. Action CTA Banner (Still Thinking - Happy Life Ocean Blue)
+      {
+        id: "sec-cta-" + (timestamp + 4),
+        name: "Still Thinking CTA Banner",
+        layout: "1-column",
+        backgroundColor: "#ffffff",
+        textColor: "#ffffff",
+        paddingY: "md",
+        columns: [
+          {
+            id: "col-cta-main",
+            width: "full",
+            components: [
+              {
+                id: "comp-cta-" + (timestamp + 4),
+                type: "ctaBanner",
+                content: {
+                  style: "expertCallout",
+                  title: "Still thinking? Let us help you take the first step.",
+                  subtitle:
+                    "Connect directly with our Vedic astrology team to get personalized guidance.",
+                  buttonText: "Talk to an expert",
+                  buttonLink: "#lead-form",
+                  expertImage: "/hero_image_2.png",
+                  backgroundColor: "#2171B5",
+                },
+              },
+            ],
+          },
+        ],
+      },
+
+      // 6. Registration Lead Form
+      {
+        id: "sec-lead-" + (timestamp + 5),
+        name: "Webinar Registration Form",
+        layout: "1-column",
+        backgroundColor: "#f8fafc",
+        textColor: "#0F172A",
+        paddingY: "lg",
+        columns: [
+          {
+            id: "col-lead-main",
+            width: "full",
+            components: [
+              {
+                id: "comp-lead-" + (timestamp + 5),
+                type: "leadForm",
+                content: {
+                  badge: "LIMITED SEATS AVAILABLE",
+                  title: "Register for Mega Astrology Webinar",
+                  subtitle:
+                    "Claim your ₹99 seat before early access passes run out.",
+                  buttonText: "Complete Registration (₹99)",
+                  fields: [
+                    {
+                      name: "name",
+                      label: "Full Name",
+                      type: "text",
+                      required: true,
+                      placeholder: "e.g. Rahul Sharma",
+                    },
+                    {
+                      name: "phone",
+                      label: "WhatsApp Number",
+                      type: "tel",
+                      required: true,
+                      placeholder: "+91 9876543210",
+                    },
+                    {
+                      name: "email",
+                      label: "Email Address",
+                      type: "email",
+                      required: true,
+                      placeholder: "rahul@example.com",
+                    },
+                    {
+                      name: "source",
+                      label: "Where did you find out about us?",
+                      type: "select",
+                      required: true,
+                      options: [
+                        "Instagram",
+                        "YouTube",
+                        "LinkedIn",
+                        "Google Search",
+                        "Facebook",
+                        "Twitter / X",
+                        "Friend / Referral",
+                        "Other",
+                      ],
+                      placeholder: "Select social media / referral channel...",
+                    },
+                    {
+                      name: "birthDetails",
+                      label: "Date & Place of Birth (Optional)",
+                      type: "text",
+                      required: false,
+                      placeholder: "e.g. 15 Aug 1995, New Delhi",
+                    },
+                  ],
+                  guaranteeText:
+                    "🔒 100% Privacy. Instant webinar link dispatched to WhatsApp & Email.",
+                  successMessage:
+                    "🎉 Registration confirmed! Your access pass has been dispatched.",
+                },
+              },
+            ],
+          },
+        ],
+      },
+    ];
+  };
+
+  // One-click apply full Happy Life Webinar Default Template
+  const handleApplyHappyLifeWebinarTemplate = () => {
+    if (!template) return;
+    if (
+      template.sections &&
+      template.sections.length > 0 &&
+      !window.confirm("Apply the 'Happy Life' Webinar Default Template? This will replace canvas sections with all 6 screenshot sections.")
+    ) {
+      return;
+    }
+
+    const sections = getHappyLifeWebinarSections(template.name);
+    setTemplate({
+      ...template,
+      sections,
+      footerConfig: {
+        enabled: true,
+        templateStyle: 1,
+        headline: "Your Birth Chart Holds Clues, Not Instant MIRACLES",
+        tagline: "ALIGN YOUR ENERGY, UNLOCK SUCCESS, AND LIVE WITH PURPOSE",
+        contactEmail: "happylifereport@gmail.com",
+        backgroundColor: "#2171B5",
+        textColor: "#ffffff",
+        copyrightText: "© 2026 Happy Life. All rights reserved.",
+        links: [
+          { label: "Privacy Policy", url: "/privacy-policy" },
+          { label: "Services", url: "/courses" },
+          { label: "Blog", url: "/news" },
+          { label: "Work", url: "/gig" },
+          { label: "Contact", url: "/contact" },
+        ],
+        socialLinks: {
+          facebook: "https://www.facebook.com/share/19fDGmAQnj/",
+          twitter: "https://x.com",
+          instagram: "https://www.instagram.com/happy_life_astro",
+          youtube: "https://youtube.com/@happylifeastro",
+        },
+      },
+    });
+    setSelectedItem({ type: "section", sectionIndex: 0 });
+    setIsInspectorOpen(true);
+    toast.success("Loaded 'Happy Life' Default Template with all screenshot sections!");
+  };
+
+// Component operations
   const handleAddComponent = (
     sectionIndex: number,
     columnIndex: number,
@@ -372,6 +835,150 @@ export default function TemplateEditor() {
     if (!template) return;
     const timestamp = Date.now();
     let newSec: SectionItem;
+
+    if (catId === "happy_life_webinar") {
+      handleApplyHappyLifeWebinarTemplate();
+      return;
+    }
+
+    if (catId === "why_join") {
+      newSec = {
+        id: "sec-whyjoin-" + timestamp,
+        name: "Why Join Webinar Section",
+        layout: "2-column",
+        backgroundColor: "#ffffff",
+        textColor: "#0F172A",
+        paddingY: "lg",
+        columns: [
+          {
+            id: "col-left-" + timestamp,
+            width: "1/2",
+            components: [
+              {
+                id: "comp-whyjoin-info-" + timestamp,
+                type: "about",
+                content: {
+                  style: "whyJoin",
+                  title: "Why join the webinar?",
+                  subtitle: "This webinar will help you leverage the impact of stars in day-to-day life.",
+                  benefits: [
+                    "Make confident and informed life decisions.",
+                    "Manage stress and anxiety more effectively.",
+                    "Fulfil your dreams like buying your own house.",
+                    "Enhance your health and well-being through spiritual insights.",
+                    "Get logical and practical remedies to tackle life's challenges.",
+                    "Maintain stronger relationships with family and friends.",
+                  ],
+                  buttonText: "Register now",
+                  buttonLink: "#lead-form",
+                },
+              },
+            ],
+          },
+          {
+            id: "col-right-" + timestamp,
+            width: "1/2",
+            components: [
+              {
+                id: "comp-whyjoin-media-" + timestamp,
+                type: "video",
+                content: {
+                  mediaType: "video",
+                  title: "Sneak Peek: Webinar Overview",
+                  videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+                  imageUrl: "/hero_image_2.png",
+                  autoPlay: false,
+                },
+              },
+            ],
+          },
+        ],
+      };
+      setTemplate({ ...template, sections: [...template.sections, newSec] });
+      setSelectedItem({ type: "section", sectionIndex: template.sections.length });
+      setIsInspectorOpen(true);
+      toast.success("Added 'Why Join' Section!");
+      return;
+    }
+
+    if (catId === "vedic_learn") {
+      newSec = {
+        id: "sec-learn-" + timestamp,
+        name: "What You Will Learn Section",
+        layout: "1-column",
+        backgroundColor: "#ffffff",
+        textColor: "#0F172A",
+        paddingY: "lg",
+        columns: [
+          {
+            id: "col-full-" + timestamp,
+            width: "full",
+            components: [
+              {
+                id: "comp-learn-" + timestamp,
+                type: "features",
+                content: {
+                  style: "vedicModules",
+                  title: "What will you learn in this mega webinar?",
+                  subtitle: "Here's the module for you to learn astrology online through our webinar...",
+                  modules: [
+                    { id: 1, iconType: "clover", title: "Improving Your Luck with Astrology", desc: "Use astrological methods to make your luck stronger." },
+                    { id: 2, iconType: "kundali", title: "Understanding Your Birth Chart/Kundali", desc: "Learn about the secrets in your birth chart." },
+                    { id: 3, iconType: "planets", title: "How Planets Affect Your Life", desc: "See how planets influence important parts of your life like your job, love life, and money." },
+                    { id: 4, iconType: "yantra", title: "Basics of Vedic Astrology", desc: "Understand the simple rules that Vedic astrology is built on." },
+                    { id: 5, iconType: "rashi", title: "Rashi/ Zodiac Signs Insights", desc: "Get special tips based on your Rashi." },
+                    { id: 6, iconType: "lagna", title: "Deep Dive into Lagna Chart", desc: "Get a full understanding of Lagna chart." },
+                  ],
+                  bottomText: "This webinar will equip you with actionable insights...",
+                },
+              },
+            ],
+          },
+        ],
+      };
+      setTemplate({ ...template, sections: [...template.sections, newSec] });
+      setSelectedItem({ type: "section", sectionIndex: template.sections.length });
+      setIsInspectorOpen(true);
+      toast.success("Added 'What You Will Learn' Section!");
+      return;
+    }
+
+    if (catId === "cta_banner") {
+      newSec = {
+        id: "sec-cta-" + timestamp,
+        name: "Still Thinking CTA Banner",
+        layout: "1-column",
+        backgroundColor: "#ffffff",
+        textColor: "#ffffff",
+        paddingY: "md",
+        columns: [
+          {
+            id: "col-cta-main-" + timestamp,
+            width: "full",
+            components: [
+              {
+                id: "comp-cta-" + timestamp,
+                type: "ctaBanner",
+                content: {
+                  style: "expertCallout",
+                  title: "Still thinking? Let us help you take the first step.",
+                  subtitle: "Connect directly with our Vedic astrology team to get personalized guidance.",
+                  buttonText: "Talk to an expert",
+                  buttonLink: "#lead-form",
+                  expertImage: "/hero_image_2.png",
+                  backgroundColor: "#2171B5",
+                },
+              },
+            ],
+          },
+        ],
+      };
+      setTemplate({ ...template, sections: [...template.sections, newSec] });
+      setSelectedItem({ type: "section", sectionIndex: template.sections.length });
+      setIsInspectorOpen(true);
+      toast.success("Added 'Still Thinking' Banner!");
+      return;
+    }
 
     if (catId === "headers") {
       setTemplate({
@@ -940,6 +1547,116 @@ export default function TemplateEditor() {
     );
   }
 
+
+  // Reusable Media Upload Component for Images & Videos
+  const MediaUploadField = ({
+    label,
+    value,
+    onChange,
+    accept = "image/*",
+    type = "image",
+    placeholder = "/hero_image_2.png",
+    fieldKey,
+  }: {
+    label: string;
+    value: string;
+    onChange: (val: string) => void;
+    accept?: string;
+    type?: "image" | "video";
+    placeholder?: string;
+    fieldKey: string;
+  }) => {
+    const isCurrentUploading = uploadingMediaField === fieldKey;
+
+    return (
+      <div className="space-y-1.5 p-3 rounded-xl bg-slate-50 border border-slate-200">
+        <div className="flex items-center justify-between">
+          <label className="text-[11px] font-bold text-slate-700">{label}</label>
+          {type === "image" && (
+            <button
+              type="button"
+              onClick={() => onChange("/hero_image_2.png")}
+              className="text-[10px] text-[#2171B5] hover:underline font-semibold flex items-center gap-1 cursor-pointer"
+              title="Use website hero cutout image"
+            >
+              Use Hero Photo
+            </button>
+          )}
+        </div>
+
+        <div className="flex gap-2 items-center">
+          <input
+            type="text"
+            value={value || ""}
+            onChange={(e) => onChange(e.target.value)}
+            placeholder={placeholder}
+            className="flex-1 px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-mono"
+          />
+
+          <label
+            className={`px-2.5 py-1.5 rounded-lg border text-xs font-bold flex items-center gap-1.5 cursor-pointer transition shrink-0 ${
+              isCurrentUploading
+                ? "bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed"
+                : "bg-white hover:bg-blue-50 text-[#2171B5] border-blue-300 hover:border-[#2171B5] shadow-xs active:scale-95"
+            }`}
+          >
+            {isCurrentUploading ? (
+              <Loader2 className="w-3.5 h-3.5 animate-spin text-[#2171B5]" />
+            ) : (
+              <Upload className="w-3.5 h-3.5" />
+            )}
+            <span>{isCurrentUploading ? "Uploading..." : "Upload"}</span>
+            <input
+              type="file"
+              accept={accept}
+              disabled={isCurrentUploading}
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) {
+                  handleMediaUpload(file, fieldKey, (url) => onChange(url));
+                }
+              }}
+              className="hidden"
+            />
+          </label>
+        </div>
+
+        {/* Media Preview */}
+        {value && (
+          <div className="flex items-center gap-2 pt-1 border-t border-slate-200/60 mt-1">
+            {type === "image" ? (
+              <div className="w-9 h-9 rounded-lg overflow-hidden bg-slate-200 border border-slate-300 shrink-0 flex items-center justify-center">
+                <img
+                  src={value}
+                  alt="Preview"
+                  className="w-full h-full object-contain"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).style.display = "none";
+                  }}
+                />
+              </div>
+            ) : (
+              <div className="px-2 py-1 rounded bg-slate-200 text-slate-700 text-[10px] font-mono flex items-center gap-1 shrink-0">
+                <Play className="w-3 h-3 text-[#2171B5]" /> Video Set
+              </div>
+            )}
+            <span className="text-[10px] text-slate-500 font-mono truncate flex-1">
+              {value}
+            </span>
+            <button
+              type="button"
+              onClick={() => onChange("")}
+              className="text-[10px] text-red-500 hover:text-red-700 font-semibold p-1 hover:bg-red-50 rounded cursor-pointer"
+              title="Clear"
+            >
+              <X className="w-3 h-3" />
+            </button>
+          </div>
+        )}
+      </div>
+    );
+  };
+
   // Active section & component references
   const activeSection =
     selectedItem.sectionIndex !== undefined
@@ -1012,40 +1729,61 @@ export default function TemplateEditor() {
         </div>
 
         {/* Viewport switchers */}
-        <div className="hidden md:flex items-center bg-slate-100 p-1 rounded-lg border border-slate-200">
-          <button
-            onClick={() => setViewport("desktop")}
-            className={`px-3 py-1 rounded-md text-xs font-semibold flex items-center gap-1.5 transition ${
-              viewport === "desktop"
-                ? "bg-white text-[#2171B5] shadow-xs"
-                : "text-slate-600 hover:text-slate-900"
-            }`}
-          >
-            <Monitor className="w-3.5 h-3.5" />
-            <span>Desktop</span>
-          </button>
-          <button
-            onClick={() => setViewport("tablet")}
-            className={`px-3 py-1 rounded-md text-xs font-semibold flex items-center gap-1.5 transition ${
-              viewport === "tablet"
-                ? "bg-white text-[#2171B5] shadow-xs"
-                : "text-slate-600 hover:text-slate-900"
-            }`}
-          >
-            <Tablet className="w-3.5 h-3.5" />
-            <span>Tablet</span>
-          </button>
-          <button
-            onClick={() => setViewport("mobile")}
-            className={`px-3 py-1 rounded-md text-xs font-semibold flex items-center gap-1.5 transition ${
-              viewport === "mobile"
-                ? "bg-white text-[#2171B5] shadow-xs"
-                : "text-slate-600 hover:text-slate-900"
-            }`}
-          >
-            <Smartphone className="w-3.5 h-3.5" />
-            <span>Mobile (375px)</span>
-          </button>
+        <div className="hidden md:flex items-center gap-2">
+          <div className="flex items-center bg-slate-100 p-1 rounded-lg border border-slate-200">
+            <button
+              onClick={() => setViewport("desktop")}
+              className={`px-3 py-1 rounded-md text-xs font-semibold flex items-center gap-1.5 transition ${
+                viewport === "desktop"
+                  ? "bg-white text-[#2171B5] shadow-xs"
+                  : "text-slate-600 hover:text-slate-900"
+              }`}
+            >
+              <Monitor className="w-3.5 h-3.5" />
+              <span>Desktop</span>
+            </button>
+            <button
+              onClick={() => setViewport("tablet")}
+              className={`px-3 py-1 rounded-md text-xs font-semibold flex items-center gap-1.5 transition ${
+                viewport === "tablet"
+                  ? "bg-white text-[#2171B5] shadow-xs"
+                  : "text-slate-600 hover:text-slate-900"
+              }`}
+            >
+              <Tablet className="w-3.5 h-3.5" />
+              <span>Tablet</span>
+            </button>
+            <button
+              onClick={() => setViewport("mobile")}
+              className={`px-3 py-1 rounded-md text-xs font-semibold flex items-center gap-1.5 transition ${
+                viewport === "mobile"
+                  ? "bg-white text-[#2171B5] shadow-xs"
+                  : "text-slate-600 hover:text-slate-900"
+              }`}
+            >
+              <Smartphone className="w-3.5 h-3.5" />
+              <span>Mobile (375px)</span>
+            </button>
+          </div>
+
+          {viewport === "desktop" && (
+            <div className="flex items-center bg-slate-100 p-1 rounded-lg border border-slate-200 text-[11px] gap-0.5">
+              <span className="px-2 text-slate-400 font-bold uppercase text-[9px] tracking-wider">Canvas:</span>
+              {(["5xl", "6xl", "7xl", "full"] as const).map((w) => (
+                <button
+                  key={w}
+                  onClick={() => setDesktopCanvasWidth(w)}
+                  className={`px-2 py-0.5 rounded font-mono font-bold text-[11px] transition ${
+                    desktopCanvasWidth === w
+                      ? "bg-[#2171B5] text-white shadow-xs"
+                      : "text-slate-600 hover:text-slate-900"
+                  }`}
+                >
+                  {w.toUpperCase()}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Top actions */}
@@ -1076,6 +1814,15 @@ export default function TemplateEditor() {
             <option value="archived">Archived</option>
           </select>
 
+          <button
+            type="button"
+            onClick={handleApplyHappyLifeWebinarTemplate}
+            className="px-3.5 py-1.5 bg-gradient-to-r from-blue-600 via-[#2171B5] to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-lg text-xs font-bold flex items-center gap-1.5 shadow-sm transition active:scale-95 cursor-pointer"
+            title="Load the 5 Screenshot Webinar Sections into Canvas"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+            <span>✨ Apply Happy Life Template</span>
+          </button>
           <button
             onClick={() => handleSave(true)}
             disabled={saving}
@@ -1208,7 +1955,13 @@ export default function TemplateEditor() {
           <div
             className={`transition-all duration-300 bg-white text-slate-800 shadow-xl rounded-2xl border border-slate-200 overflow-hidden ${
               viewport === "desktop"
-                ? "w-full max-w-5xl"
+                ? desktopCanvasWidth === "full"
+                  ? "w-full max-w-[1600px]"
+                  : desktopCanvasWidth === "7xl"
+                  ? "w-full max-w-7xl"
+                  : desktopCanvasWidth === "6xl"
+                  ? "w-full max-w-6xl"
+                  : "w-full max-w-5xl"
                 : viewport === "tablet"
                 ? "w-[768px]"
                 : "w-[375px]"
@@ -1243,12 +1996,16 @@ export default function TemplateEditor() {
                 }`}
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-[#2171B5] to-blue-600 flex items-center justify-center text-white font-black text-xs shadow-md shadow-blue-500/20">
-                    HL
-                  </div>
-                  <span className="font-extrabold text-sm text-slate-900 tracking-tight">
-                    {template.headerConfig.siteTitle || "Happy Life"}
-                  </span>
+                  <img
+                    src={template.headerConfig.logoUrl || "/logos/osa_logo.png"}
+                    alt="Happy Life Logo"
+                    className="h-8 md:h-9 w-auto object-contain"
+                  />
+                  {template.headerConfig.siteTitle && (
+                    <span className="font-extrabold text-sm text-slate-900 tracking-tight">
+                      {template.headerConfig.siteTitle}
+                    </span>
+                  )}
                 </div>
                 <div className="flex items-center gap-6">
                   <div className="hidden sm:flex items-center gap-4 text-xs font-semibold text-slate-600">
@@ -1326,8 +2083,8 @@ export default function TemplateEditor() {
                     <div
                       className={
                         isTwoCol && !isMobileView
-                          ? "grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 items-center"
-                          : "w-full max-w-4xl mx-auto space-y-6"
+                          ? `grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 items-center w-full ${getMaxWidthClass(section.maxWidth)} mx-auto`
+                          : `w-full ${getMaxWidthClass(section.maxWidth)} mx-auto space-y-6`
                       }
                     >
                       {section.columns.map((col, cIdx) => (
@@ -1377,43 +2134,141 @@ export default function TemplateEditor() {
 
                                 {/* 1. HERO PREVIEW */}
                                 {comp.type === "hero" && (
-                                  <div className="space-y-4 text-left">
-                                    {comp.content.badge && (
-                                      <span className="inline-block px-3 py-1 text-xs font-bold uppercase tracking-wider text-red-600 bg-red-50 border border-red-200 rounded-full">
-                                        {comp.content.badge}
-                                      </span>
-                                    )}
-                                    <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 leading-tight">
-                                      {comp.content.title}
-                                    </h1>
-                                    <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                                      {comp.content.subtitle}
-                                    </p>
-                                    {comp.content.bulletPoints && (
-                                      <ul className="space-y-2 pt-1">
-                                        {comp.content.bulletPoints.map(
-                                          (bp: string, bpi: number) => (
-                                            <li
-                                              key={bpi}
-                                              className="flex items-center gap-2 text-xs text-slate-700"
-                                            >
-                                              <span className="w-4 h-4 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-[10px]">
-                                                ✓
+                                  comp.content.style === "webinar" || comp.content.eventDate ? (
+                                    <div
+                                      className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-gradient-to-r from-[#071322] via-[#0d2238] to-[#17436b] text-white p-5 sm:p-8 lg:p-10 shadow-xl border border-blue-900/50"
+                                      style={
+                                        comp.content.backgroundImage
+                                          ? {
+                                              backgroundImage: `linear-gradient(rgba(7, 19, 34, 0.85), rgba(7, 19, 34, 0.95)), url(${comp.content.backgroundImage})`,
+                                              backgroundSize: "cover",
+                                              backgroundPosition: "center",
+                                            }
+                                          : {}
+                                      }
+                                    >
+                                      {/* Subtle starfield twinkle glow */}
+                                      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_var(--tw-gradient-stops))] from-blue-400/10 via-transparent to-transparent pointer-events-none" />
+
+                                      <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center">
+                                        {/* Left Column: Heading, Subtitle, 4 Meta items, Price CTA */}
+                                        <div className="lg:col-span-7 space-y-4 text-left">
+                                          {comp.content.badge && (
+                                            <span className="inline-block px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-blue-300 bg-blue-900/50 border border-blue-700/50 rounded-full">
+                                              {comp.content.badge}
+                                            </span>
+                                          )}
+                                          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white font-serif tracking-tight leading-tight">
+                                            {comp.content.title || "Mega Astrology Webinar"}
+                                          </h1>
+                                          <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal">
+                                            {comp.content.subtitle ||
+                                              "Enhance your astrological understanding with our 2 Days webinar, seamlessly integrating traditional Vedic astrology with practical, modern applications. Learn to interpret birth charts and celestial influences under the guidance of Astro Arun Pandit."}
+                                          </p>
+
+                                          {/* 4 Metadata Items with icons */}
+                                          <div className="grid grid-cols-2 gap-3 pt-1">
+                                            <div className="flex items-center gap-2 text-xs text-slate-200">
+                                              <Calendar className="w-4 h-4 text-blue-400 shrink-0" />
+                                              <div>
+                                                <span className="text-[10px] text-slate-400 block uppercase font-semibold">Date</span>
+                                                <span className="font-bold text-white">{comp.content.eventDate || "24 Oct, 2026"}</span>
+                                              </div>
+                                            </div>
+                                            <div className="flex items-center gap-2 text-xs text-slate-200">
+                                              <Clock className="w-4 h-4 text-blue-400 shrink-0" />
+                                              <div>
+                                                <span className="text-[10px] text-slate-400 block uppercase font-semibold">Time</span>
+                                                <span className="font-bold text-white">{comp.content.eventTime || "01:00 PM"}</span>
+                                              </div>
+                                            </div>
+                                            <div className="flex items-center gap-2 text-xs text-slate-200">
+                                              <Hourglass className="w-4 h-4 text-blue-400 shrink-0" />
+                                              <div>
+                                                <span className="text-[10px] text-slate-400 block uppercase font-semibold">Duration</span>
+                                                <span className="font-bold text-white">{comp.content.duration || "4 Hours"}</span>
+                                              </div>
+                                            </div>
+                                            <div className="flex items-center gap-2 text-xs text-slate-200">
+                                              <UserIcon className="w-4 h-4 text-blue-400 shrink-0" />
+                                              <div>
+                                                <span className="text-[10px] text-slate-400 block uppercase font-semibold">Mentor</span>
+                                                <span className="font-bold text-white">{comp.content.mentorName || "Astro Arun Pandit"}</span>
+                                              </div>
+                                            </div>
+                                          </div>
+
+                                          {/* CTA Price Button */}
+                                          <div className="pt-2">
+                                            <div className="inline-flex items-center gap-2 px-5 py-3 bg-white text-purple-900 rounded-xl font-black text-xs sm:text-sm shadow-xl">
+                                              <span>Register Now</span>
+                                              {comp.content.originalPrice && (
+                                                <span className="line-through text-slate-400 text-xs font-semibold">
+                                                  {comp.content.originalPrice}
+                                                </span>
+                                              )}
+                                              <span className="text-purple-700 font-extrabold">
+                                                {comp.content.discountPrice || "₹99/-"}
                                               </span>
-                                              <span>{bp}</span>
-                                            </li>
-                                          )
-                                        )}
-                                      </ul>
-                                    )}
-                                    {comp.content.ctaText && (
-                                      <div className="flex gap-2 pt-2">
-                                        <span className="px-5 py-2.5 bg-[#2171B5] text-white rounded-xl text-xs font-bold shadow-md shadow-blue-500/20">
-                                          {comp.content.ctaText}
-                                        </span>
+                                            </div>
+                                          </div>
+                                        </div>
+
+                                        {/* Right Column: Mentor cutout layered over Celestial Zodiac Mandala */}
+                                        <div className="lg:col-span-5 relative flex items-center justify-center min-h-[220px] sm:min-h-[280px]">
+                                          <div className="absolute inset-0 flex items-center justify-center text-blue-400/40 pointer-events-none scale-105">
+                                            <CelestialZodiacWheel className="w-56 h-56 sm:w-72 sm:h-72" />
+                                          </div>
+                                          <img
+                                            src={comp.content.mentorImage || "/hero_image_2.png"}
+                                            alt={comp.content.mentorName || "Mentor"}
+                                            className="relative z-10 max-h-[240px] sm:max-h-[300px] object-contain drop-shadow-[0_15px_25px_rgba(0,0,0,0.6)]"
+                                            onError={(e) => {
+                                              (e.target as any).src = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80";
+                                            }}
+                                          />
+                                        </div>
                                       </div>
-                                    )}
-                                  </div>
+                                    </div>
+                                  ) : (
+                                    <div className="space-y-4 text-left">
+                                      {comp.content.badge && (
+                                        <span className="inline-block px-3 py-1 text-xs font-bold uppercase tracking-wider text-red-600 bg-red-50 border border-red-200 rounded-full">
+                                          {comp.content.badge}
+                                        </span>
+                                      )}
+                                      <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 leading-tight">
+                                        {comp.content.title}
+                                      </h1>
+                                      <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                                        {comp.content.subtitle}
+                                      </p>
+                                      {comp.content.bulletPoints && (
+                                        <ul className="space-y-2 pt-1">
+                                          {comp.content.bulletPoints.map(
+                                            (bp: string, bpi: number) => (
+                                              <li
+                                                key={bpi}
+                                                className="flex items-center gap-2 text-xs text-slate-700"
+                                              >
+                                                <span className="w-4 h-4 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-[10px]">
+                                                  ✓
+                                                </span>
+                                                <span>{bp}</span>
+                                              </li>
+                                            )
+                                          )}
+                                        </ul>
+                                      )}
+                                      {comp.content.ctaText && (
+                                        <div className="flex gap-2 pt-2">
+                                          <span className="px-5 py-2.5 bg-[#2171B5] text-white rounded-xl text-xs font-bold shadow-md shadow-blue-500/20">
+                                            {comp.content.ctaText}
+                                          </span>
+                                        </div>
+                                      )}
+                                    </div>
+                                  )
                                 )}
 
                                 {/* 2. LEAD FORM PREVIEW */}
@@ -1501,69 +2356,184 @@ export default function TemplateEditor() {
                                   </div>
                                 )}
 
-                                {/* 4. ABOUT PREVIEW */}
+                                {/* 4. ABOUT PREVIEW (Supports Why Join Style with Lotus bullets) */}
                                 {comp.type === "about" && (
-                                  <div className="space-y-3 text-left">
-                                    {comp.content.tag && (
-                                      <span className="text-[10px] font-bold text-[#2171B5] uppercase tracking-wider bg-blue-50 px-2.5 py-0.5 rounded-full border border-blue-200">
-                                        {comp.content.tag}
-                                      </span>
+                                  comp.content.style === "whyJoin" || comp.content.benefits ? (
+                                    <div className="space-y-5 text-left">
+                                      <div>
+                                        <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+                                          {comp.content.title || "Why join the webinar?"}
+                                        </h2>
+                                        <p className="text-xs sm:text-sm text-slate-500 mt-1 leading-relaxed">
+                                          {comp.content.subtitle || "This webinar will help you leverage the impact of stars in day-to-day life."}
+                                        </p>
+                                      </div>
+
+                                      <div className="space-y-3">
+                                        {(comp.content.benefits || [
+                                          "Make confident and informed life decisions.",
+                                          "Manage stress and anxiety more effectively.",
+                                          "Fulfil your dreams like buying your own house.",
+                                          "Enhance your health and well-being through spiritual insights.",
+                                          "Get logical and practical remedies to tackle life's challenges.",
+                                          "Maintain stronger relationships with family and friends."
+                                        ]).map((benefit: string, bIdx: number) => (
+                                          <div key={bIdx} className="flex items-start gap-3">
+                                            <div className="shrink-0 mt-0.5">
+                                              <LotusChakraIcon className="w-5 h-5" />
+                                            </div>
+                                            <p className="text-xs sm:text-sm font-semibold text-slate-800 leading-snug">
+                                              {benefit}
+                                            </p>
+                                          </div>
+                                        ))}
+                                      </div>
+
+                                      <div className="pt-2">
+                                        <span className="inline-block px-7 py-3 bg-[#2171B5] text-white font-bold text-xs sm:text-sm rounded-xl shadow-md">
+                                          {comp.content.buttonText || "Register now"}
+                                        </span>
+                                      </div>
+                                    </div>
+                                  ) : (
+                                    <div className="space-y-3 text-left">
+                                      {comp.content.tag && (
+                                        <span className="text-[10px] font-bold text-[#2171B5] uppercase tracking-wider bg-blue-50 px-2.5 py-0.5 rounded-full border border-blue-200">
+                                          {comp.content.tag}
+                                        </span>
+                                      )}
+                                      <h3 className="font-extrabold text-xl text-slate-900">
+                                        {comp.content.title}
+                                      </h3>
+                                      <p className="text-xs text-slate-600 leading-relaxed">
+                                        {comp.content.description}
+                                      </p>
+                                      {comp.content.items && (
+                                        <div className="space-y-2 pt-1">
+                                          {comp.content.items.map(
+                                            (it: any, iti: number) => (
+                                              <div
+                                                key={iti}
+                                                className="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-0.5"
+                                              >
+                                                <h5 className="font-bold text-xs text-[#2171B5]">
+                                                  {it.title}
+                                                </h5>
+                                                <p className="text-[11px] text-slate-500">
+                                                  {it.desc}
+                                                </p>
+                                              </div>
+                                            )
+                                          )}
+                                        </div>
+                                      )}
+                                    </div>
+                                  )
+                                )}
+
+                                {/* VIDEO / MEDIA CONTAINER PREVIEW (Supports Video or Image) */}
+                                {comp.type === "video" && (
+                                  <div className="rounded-2xl overflow-hidden border-2 border-amber-200/80 bg-slate-900 shadow-xl relative aspect-video flex items-center justify-center group">
+                                    {comp.content.mediaType === "image" ? (
+                                      <img
+                                        src={comp.content.imageUrl || "/hero_image_2.png"}
+                                        alt={comp.content.title || "Webinar Media"}
+                                        className="w-full h-full object-cover"
+                                      />
+                                    ) : (
+                                      <div className="relative w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-900 to-blue-950">
+                                        <img
+                                          src={comp.content.imageUrl || "/hero_image_2.png"}
+                                          alt="Video Thumbnail"
+                                          className="w-full h-full object-cover opacity-65"
+                                        />
+                                        <div className="absolute w-14 h-14 rounded-full bg-white/95 text-purple-900 flex items-center justify-center shadow-2xl pl-1 group-hover:scale-110 transition">
+                                          <Play className="w-6 h-6 fill-purple-900" />
+                                        </div>
+                                      </div>
                                     )}
-                                    <h3 className="font-extrabold text-xl text-slate-900">
-                                      {comp.content.title}
-                                    </h3>
-                                    <p className="text-xs text-slate-600 leading-relaxed">
-                                      {comp.content.description}
-                                    </p>
-                                    {comp.content.items && (
-                                      <div className="space-y-2 pt-1">
-                                        {comp.content.items.map(
-                                          (it: any, iti: number) => (
-                                            <div
-                                              key={iti}
-                                              className="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-0.5"
-                                            >
-                                              <h5 className="font-bold text-xs text-[#2171B5]">
-                                                {it.title}
-                                              </h5>
-                                              <p className="text-[11px] text-slate-500">
-                                                {it.desc}
+                                    <div className="absolute bottom-3 right-3 px-2 py-1 bg-black/75 backdrop-blur-xs text-white text-[10px] font-bold rounded-md flex items-center gap-1">
+                                      {comp.content.mediaType === "image" ? <ImageIcon className="w-3 h-3" /> : <VideoIcon className="w-3 h-3" />}
+                                      <span>{comp.content.mediaType === "image" ? "Image Slot" : "Video Slot"}</span>
+                                    </div>
+                                  </div>
+                                )}
+
+                                {/* 5. FEATURES PREVIEW (Supports Vedic 6 Modules with SVGs) */}
+                                {comp.type === "features" && (
+                                  comp.content.style === "vedicModules" || comp.content.modules ? (
+                                    <div className="space-y-6 text-center">
+                                      <div>
+                                        <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+                                          {comp.content.title || "What will you learn in this mega webinar?"}
+                                        </h2>
+                                        <p className="text-xs sm:text-sm text-slate-500 mt-1.5 max-w-2xl mx-auto">
+                                          {comp.content.subtitle || "Here's the module for you to learn astrology online through our webinar..."}
+                                        </p>
+                                      </div>
+
+                                      {/* 2-column grid of 6 cards with fixed authentic Vedic SVGs */}
+                                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-left">
+                                        {(comp.content.modules || [
+                                          { id: 1, iconType: "clover", title: "Improving Your Luck with Astrology", desc: "Use astrological methods to make your luck stronger." },
+                                          { id: 2, iconType: "kundali", title: "Understanding Your Birth Chart/Kundali", desc: "Learn about the secrets in your birth chart." },
+                                          { id: 3, iconType: "planets", title: "How Planets Affect Your Life", desc: "See how planets influence important parts of your life like your job, love life, and money." },
+                                          { id: 4, iconType: "yantra", title: "Basics of Vedic Astrology", desc: "Understand the simple rules that Vedic astrology is built on." },
+                                          { id: 5, iconType: "rashi", title: "Rashi/ Zodiac Signs Insights", desc: "Get special tips based on your Rashi." },
+                                          { id: 6, iconType: "lagna", title: "Deep Dive into Lagna Chart", desc: "Get a full understanding of Lagna chart." },
+                                        ]).map((mod: any, mIdx: number) => (
+                                          <div
+                                            key={mIdx}
+                                            className="p-4 sm:p-5 rounded-2xl bg-white border border-purple-100 hover:border-[#2171B5]/50 hover:shadow-md transition flex items-center gap-4"
+                                          >
+                                            <div className="shrink-0 w-12 h-12 flex items-center justify-center text-slate-800">
+                                              {getVedicIcon(mod.iconType)}
+                                            </div>
+                                            <div className="space-y-1">
+                                              <h3 className="font-extrabold text-sm sm:text-base text-slate-900 leading-snug">
+                                                {mod.title}
+                                              </h3>
+                                              <p className="text-xs text-slate-500 leading-relaxed">
+                                                {mod.desc}
                                               </p>
+                                            </div>
+                                          </div>
+                                        ))}
+                                      </div>
+
+                                      {comp.content.bottomText && (
+                                        <p className="text-xs sm:text-sm text-slate-600 font-medium tracking-wide pt-1">
+                                          {comp.content.bottomText}
+                                        </p>
+                                      )}
+                                    </div>
+                                  ) : (
+                                    <div className="space-y-3 text-left">
+                                      <h4 className="font-extrabold text-lg text-slate-900">
+                                        {comp.content.title}
+                                      </h4>
+                                      <p className="text-xs text-slate-500">
+                                        {comp.content.subtitle}
+                                      </p>
+                                      <div className={`grid gap-2.5 pt-1 ${isMobileView ? "grid-cols-1" : "grid-cols-1 sm:grid-cols-2"}`}>
+                                        {(comp.content.cards || []).map(
+                                          (c: any, ci: number) => (
+                                            <div
+                                              key={ci}
+                                              className="p-3.5 rounded-xl bg-slate-50 text-xs border border-slate-200 space-y-1 hover:border-[#2171B5]/40 transition"
+                                            >
+                                              <span className="font-bold text-[#2171B5] block">
+                                                ★ {c.title}
+                                              </span>
+                                              <span className="text-[11px] text-slate-600 block leading-relaxed">
+                                                {c.desc}
+                                              </span>
                                             </div>
                                           )
                                         )}
                                       </div>
-                                    )}
-                                  </div>
-                                )}
-
-                                {/* 5. FEATURES PREVIEW */}
-                                {comp.type === "features" && (
-                                  <div className="space-y-3 text-left">
-                                    <h4 className="font-extrabold text-lg text-slate-900">
-                                      {comp.content.title}
-                                    </h4>
-                                    <p className="text-xs text-slate-500">
-                                      {comp.content.subtitle}
-                                    </p>
-                                    <div className={`grid gap-2.5 pt-1 ${isMobileView ? "grid-cols-1" : "grid-cols-1 sm:grid-cols-2"}`}>
-                                      {(comp.content.cards || []).map(
-                                        (c: any, ci: number) => (
-                                          <div
-                                            key={ci}
-                                            className="p-3.5 rounded-xl bg-slate-50 text-xs border border-slate-200 space-y-1 hover:border-[#2171B5]/40 transition"
-                                          >
-                                            <span className="font-bold text-[#2171B5] block">
-                                              ★ {c.title}
-                                            </span>
-                                            <span className="text-[11px] text-slate-600 block leading-relaxed">
-                                              {c.desc}
-                                            </span>
-                                          </div>
-                                        )
-                                      )}
                                     </div>
-                                  </div>
+                                  )
                                 )}
 
                                 {/* 6. TESTIMONIALS PREVIEW */}
@@ -1608,55 +2578,115 @@ export default function TemplateEditor() {
                                   </div>
                                 )}
 
-                                {/* 7. FAQ PREVIEW */}
+                                {/* 7. FAQ ACCORDION PREVIEW (Screenshot 4) */}
                                 {comp.type === "faq" && (
-                                  <div className="space-y-3 text-left">
-                                    <h4 className="font-bold text-base text-slate-900">
-                                      {comp.content.title}
-                                    </h4>
-                                    <p className="text-xs text-slate-500">
-                                      {comp.content.subtitle}
-                                    </p>
-                                    <div className="space-y-1.5">
+                                  <div className="space-y-5 text-center max-w-3xl mx-auto">
+                                    <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+                                      {comp.content.title || "Frequently Asked Questions"}
+                                    </h2>
+                                    {comp.content.subtitle && (
+                                      <p className="text-xs sm:text-sm text-slate-500 -mt-2">
+                                        {comp.content.subtitle}
+                                      </p>
+                                    )}
+
+                                    <div className="space-y-2.5 text-left pt-1">
                                       {(comp.content.faqs || []).map(
-                                        (faq: any, fi: number) => (
-                                          <div
-                                            key={fi}
-                                            className="p-3 border border-slate-200 bg-slate-50 rounded-xl text-xs space-y-1"
-                                          >
-                                            <span className="font-bold text-slate-800 block">
-                                              Q: {faq.question}
-                                            </span>
-                                            <p className="text-[11px] text-slate-600">
-                                              {faq.answer}
-                                            </p>
-                                          </div>
-                                        )
+                                        (faq: any, fi: number) => {
+                                          const isOpen = !!openFaqs[fi];
+                                          return (
+                                            <div
+                                              key={fi}
+                                              className="border border-slate-200 bg-white rounded-xl shadow-xs overflow-hidden transition"
+                                            >
+                                              <div
+                                                onClick={(e) => {
+                                                  e.stopPropagation();
+                                                  setOpenFaqs((prev) => ({ ...prev, [fi]: !prev[fi] }));
+                                                }}
+                                                className="w-full px-5 py-3.5 flex items-center justify-between text-left hover:bg-slate-50 transition cursor-pointer"
+                                              >
+                                                <span className="font-bold text-xs sm:text-sm text-slate-800">
+                                                  {faq.question}
+                                                </span>
+                                                <span className="text-slate-500 font-bold text-base leading-none ml-3">
+                                                  {isOpen ? "−" : "+"}
+                                                </span>
+                                              </div>
+                                              {isOpen && (
+                                                <div className="px-5 pb-3.5 text-xs text-slate-600 leading-relaxed border-t border-slate-100 pt-2.5">
+                                                  {faq.answer}
+                                                </div>
+                                              )}
+                                            </div>
+                                          );
+                                        }
                                       )}
                                     </div>
                                   </div>
                                 )}
 
-                                {/* 8. CTA BANNER PREVIEW */}
+                                {/* 8. CTA BANNER PREVIEW (Still Thinking - Happy Life Blue - Screenshot 5) */}
                                 {comp.type === "ctaBanner" && (
-                                  <div className="p-6 bg-gradient-to-r from-[#2171B5] to-blue-700 text-white rounded-2xl text-center space-y-2.5 shadow-md">
-                                    {comp.content.badge && (
-                                      <span className="inline-block text-[10px] font-bold uppercase tracking-wider bg-black/20 px-2.5 py-0.5 rounded-full">
-                                        {comp.content.badge}
-                                      </span>
-                                    )}
-                                    <h4 className="font-black text-xl leading-tight">
-                                      {comp.content.title}
-                                    </h4>
-                                    <p className="text-xs text-blue-100 max-w-md mx-auto">
-                                      {comp.content.subtitle}
-                                    </p>
-                                    <div className="pt-1">
-                                      <span className="inline-block px-5 py-2.5 bg-white text-[#2171B5] font-extrabold rounded-xl text-xs shadow-md">
-                                        {comp.content.buttonText || "Get Started"}
-                                      </span>
+                                  comp.content.style === "expertCallout" || comp.content.expertImage ? (
+                                    <div
+                                      className="rounded-2xl sm:rounded-3xl p-6 sm:p-8 lg:p-10 text-white shadow-xl relative overflow-hidden"
+                                      style={{
+                                        background:
+                                          comp.content.backgroundColor === "#2171B5" || !comp.content.backgroundColor
+                                            ? "linear-gradient(135deg, #175389 0%, #2171B5 50%, #2b88d8 100%)"
+                                            : comp.content.backgroundColor,
+                                      }}
+                                    >
+                                      <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+                                        <div className="md:col-span-8 space-y-4 text-left">
+                                          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white leading-tight">
+                                            {comp.content.title || "Still thinking? Let us help you take the first step."}
+                                          </h2>
+                                          {comp.content.subtitle && (
+                                            <p className="text-xs sm:text-sm text-blue-100 leading-relaxed">
+                                              {comp.content.subtitle}
+                                            </p>
+                                          )}
+                                          <div>
+                                            <span className="inline-block px-6 py-2.5 bg-white text-[#2171B5] font-bold text-xs sm:text-sm rounded-xl shadow-lg">
+                                              {comp.content.buttonText || "Talk to an expert"}
+                                            </span>
+                                          </div>
+                                        </div>
+
+                                        <div className="md:col-span-4 flex justify-center md:justify-end">
+                                          <img
+                                            src={comp.content.expertImage || "/hero_image_2.png"}
+                                            alt="Expert Mentor"
+                                            className="w-40 h-40 sm:w-48 sm:h-48 object-cover rounded-2xl shadow-xl border-4 border-white/20"
+                                            onError={(e) => {
+                                              (e.target as any).src = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80";
+                                            }}
+                                          />
+                                        </div>
+                                      </div>
                                     </div>
-                                  </div>
+                                  ) : (
+                                    <div className="p-6 bg-gradient-to-r from-[#2171B5] to-blue-700 text-white rounded-2xl text-center space-y-2.5 shadow-md">
+                                      {comp.content.badge && (
+                                        <span className="inline-block text-[10px] font-bold uppercase tracking-wider bg-black/20 px-2.5 py-0.5 rounded-full">
+                                          {comp.content.badge}
+                                        </span>
+                                      )}
+                                      <h4 className="font-black text-xl leading-tight">
+                                        {comp.content.title}
+                                      </h4>
+                                      <p className="text-xs text-blue-100 max-w-md mx-auto">
+                                        {comp.content.subtitle}
+                                      </p>
+                                      <div className="pt-1">
+                                        <span className="inline-block px-5 py-2.5 bg-white text-[#2171B5] font-extrabold rounded-xl text-xs shadow-md">
+                                          {comp.content.buttonText || "Get Started"}
+                                        </span>
+                                      </div>
+                                    </div>
+                                  )
                                 )}
                               </div>
                             );
@@ -2119,6 +3149,45 @@ export default function TemplateEditor() {
                     className="w-full accent-[#2171B5] cursor-pointer"
                   />
                 </div>
+
+                {/* Section Container Max Width (4XL, 5XL, 6XL, 7XL, Full) */}
+                {activeSection && (
+                  <div className="space-y-1.5 pt-2 border-t border-slate-100">
+                    <div className="flex items-center justify-between">
+                      <label className="text-[11px] font-semibold text-slate-600 block">
+                        Container Max Width
+                      </label>
+                      <span className="text-[10px] font-mono font-bold text-[#2171B5] uppercase">
+                        {activeSection.maxWidth || "7xl"}
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-5 gap-1">
+                      {[
+                        { label: "4XL", value: "4xl" },
+                        { label: "5XL", value: "5xl" },
+                        { label: "6XL", value: "6xl" },
+                        { label: "7XL", value: "7xl" },
+                        { label: "Full", value: "full" },
+                      ].map((opt) => {
+                        const isSelected = (activeSection.maxWidth || "7xl") === opt.value;
+                        return (
+                          <button
+                            key={opt.value}
+                            type="button"
+                            onClick={() => updateActiveSectionStyle({ maxWidth: opt.value })}
+                            className={`py-1.5 px-1 rounded-lg border text-[11px] font-bold text-center transition cursor-pointer ${
+                              isSelected
+                                ? "bg-[#2171B5] text-white border-[#2171B5] shadow-xs"
+                                : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
+                            }`}
+                          >
+                            {opt.label}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* 2. CONTENT EDITOR */}
@@ -2474,29 +3543,19 @@ export default function TemplateEditor() {
                 {selectedItem.type === "component" && activeComponent?.type === "hero" && (
                   <div className="space-y-3">
                     <div>
-                      <label className="block font-semibold mb-1">Badge Tag</label>
+                      <label className="block font-semibold mb-1 text-slate-700">Headline</label>
                       <input
                         type="text"
-                        value={activeComponent.content.badge || ""}
-                        onChange={(e) =>
-                          updateActiveComponentContent({ badge: e.target.value })
-                        }
-                        className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs"
-                      />
-                    </div>
-                    <div>
-                      <label className="block font-semibold mb-1">Headline</label>
-                      <textarea
-                        rows={2}
                         value={activeComponent.content.title || ""}
                         onChange={(e) =>
                           updateActiveComponentContent({ title: e.target.value })
                         }
+                        placeholder="Mega Astrology Webinar"
                         className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold"
                       />
                     </div>
                     <div>
-                      <label className="block font-semibold mb-1">Subtitle</label>
+                      <label className="block font-semibold mb-1 text-slate-700">Subtitle</label>
                       <textarea
                         rows={3}
                         value={activeComponent.content.subtitle || ""}
@@ -2506,16 +3565,507 @@ export default function TemplateEditor() {
                         className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs"
                       />
                     </div>
+
+                    {/* Event Meta Settings */}
+                    <div className="p-3 bg-blue-50/50 border border-blue-100 rounded-xl space-y-2.5">
+                      <span className="text-[10px] font-bold text-[#2171B5] uppercase tracking-wider block">
+                        Webinar Details & Schedule
+                      </span>
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <label className="text-[10px] font-semibold text-slate-500 block mb-0.5">Date</label>
+                          <input
+                            type="text"
+                            value={activeComponent.content.eventDate || ""}
+                            onChange={(e) =>
+                              updateActiveComponentContent({ eventDate: e.target.value })
+                            }
+                            placeholder="24 Oct, 2026"
+                            className="w-full px-2 py-1 bg-white border border-slate-200 rounded text-xs"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-[10px] font-semibold text-slate-500 block mb-0.5">Time</label>
+                          <input
+                            type="text"
+                            value={activeComponent.content.eventTime || ""}
+                            onChange={(e) =>
+                              updateActiveComponentContent({ eventTime: e.target.value })
+                            }
+                            placeholder="01:00 PM"
+                            className="w-full px-2 py-1 bg-white border border-slate-200 rounded text-xs"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-[10px] font-semibold text-slate-500 block mb-0.5">Duration</label>
+                          <input
+                            type="text"
+                            value={activeComponent.content.duration || ""}
+                            onChange={(e) =>
+                              updateActiveComponentContent({ duration: e.target.value })
+                            }
+                            placeholder="4 Hours"
+                            className="w-full px-2 py-1 bg-white border border-slate-200 rounded text-xs"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-[10px] font-semibold text-slate-500 block mb-0.5">Mentor Name</label>
+                          <input
+                            type="text"
+                            value={activeComponent.content.mentorName || ""}
+                            onChange={(e) =>
+                              updateActiveComponentContent({ mentorName: e.target.value })
+                            }
+                            placeholder="Astro Arun Pandit"
+                            className="w-full px-2 py-1 bg-white border border-slate-200 rounded text-xs"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Price and CTA */}
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <label className="text-[10px] font-semibold text-slate-500 block mb-0.5">Original Price</label>
+                        <input
+                          type="text"
+                          value={activeComponent.content.originalPrice || ""}
+                          onChange={(e) =>
+                            updateActiveComponentContent({ originalPrice: e.target.value })
+                          }
+                          placeholder="₹999"
+                          className="w-full px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-[10px] font-semibold text-slate-500 block mb-0.5">Discount Price</label>
+                        <input
+                          type="text"
+                          value={activeComponent.content.discountPrice || ""}
+                          onChange={(e) =>
+                            updateActiveComponentContent({ discountPrice: e.target.value })
+                          }
+                          placeholder="₹99/-"
+                          className="w-full px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold text-purple-700"
+                        />
+                      </div>
+                    </div>
+
                     <div>
-                      <label className="block font-semibold mb-1">Button CTA</label>
+                      <label className="block font-semibold mb-1 text-slate-700">Button Link</label>
                       <input
                         type="text"
-                        value={activeComponent.content.ctaText || ""}
+                        value={activeComponent.content.buttonLink || activeComponent.content.ctaLink || ""}
                         onChange={(e) =>
-                          updateActiveComponentContent({ ctaText: e.target.value })
+                          updateActiveComponentContent({ buttonLink: e.target.value, ctaLink: e.target.value })
+                        }
+                        placeholder="#lead-form"
+                        className="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-mono"
+                      />
+                    </div>
+
+                    {/* Background and Mentor Images with Direct Upload */}
+                    <div className="space-y-3 pt-2 border-t border-slate-200">
+                      <MediaUploadField
+                        label="Custom Background Image / Video Poster"
+                        value={activeComponent.content.backgroundImage || ""}
+                        onChange={(val) => updateActiveComponentContent({ backgroundImage: val })}
+                        placeholder="Leave blank for Default Cosmic Blue"
+                        type="image"
+                        accept="image/*"
+                        fieldKey="hero_bg"
+                      />
+                      <MediaUploadField
+                        label="Mentor Photo (Cutout)"
+                        value={activeComponent.content.mentorImage || "/hero_image_2.png"}
+                        onChange={(val) => updateActiveComponentContent({ mentorImage: val })}
+                        placeholder="/hero_image_2.png"
+                        type="image"
+                        accept="image/*"
+                        fieldKey="hero_mentor"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* If ABOUT / WHY JOIN selected */}
+                {selectedItem.type === "component" && activeComponent?.type === "about" && (
+                  <div className="space-y-3">
+                    <div>
+                      <label className="block font-semibold mb-1 text-slate-700">Section Title</label>
+                      <input
+                        type="text"
+                        value={activeComponent.content.title || ""}
+                        onChange={(e) =>
+                          updateActiveComponentContent({ title: e.target.value })
+                        }
+                        placeholder="Why join the webinar?"
+                        className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold"
+                      />
+                    </div>
+                    <div>
+                      <label className="block font-semibold mb-1 text-slate-700">Subtitle</label>
+                      <textarea
+                        rows={2}
+                        value={activeComponent.content.subtitle || activeComponent.content.description || ""}
+                        onChange={(e) =>
+                          updateActiveComponentContent({ subtitle: e.target.value, description: e.target.value })
                         }
                         className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs"
                       />
+                    </div>
+
+                    {/* Benefits List */}
+                    <div className="space-y-2 pt-2 border-t border-slate-200">
+                      <div className="flex items-center justify-between">
+                        <span className="font-bold text-slate-800 uppercase tracking-wider text-[11px]">
+                          Key Benefits ({(activeComponent.content.benefits || []).length})
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const current = [...(activeComponent.content.benefits || [])];
+                            current.push("New impactful webinar benefit");
+                            updateActiveComponentContent({ benefits: current });
+                          }}
+                          className="text-[11px] font-bold text-[#2171B5] hover:underline cursor-pointer"
+                        >
+                          + Add Benefit
+                        </button>
+                      </div>
+
+                      <div className="space-y-1.5">
+                        {(activeComponent.content.benefits || []).map((b: string, bi: number) => (
+                          <div key={bi} className="flex items-center gap-1.5">
+                            <LotusChakraIcon className="w-4 h-4 shrink-0" />
+                            <input
+                              type="text"
+                              value={b}
+                              onChange={(e) => {
+                                const current = [...(activeComponent.content.benefits || [])];
+                                current[bi] = e.target.value;
+                                updateActiveComponentContent({ benefits: current });
+                              }}
+                              className="flex-1 px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const current = [...(activeComponent.content.benefits || [])];
+                                current.splice(bi, 1);
+                                updateActiveComponentContent({ benefits: current });
+                              }}
+                              className="text-slate-400 hover:text-red-500 p-1 cursor-pointer"
+                            >
+                              <X className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block font-semibold mb-1 text-slate-700">Button Text</label>
+                      <input
+                        type="text"
+                        value={activeComponent.content.buttonText || ""}
+                        onChange={(e) =>
+                          updateActiveComponentContent({ buttonText: e.target.value })
+                        }
+                        placeholder="Register now"
+                        className="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* If VIDEO / MEDIA selected */}
+                {selectedItem.type === "component" && activeComponent?.type === "video" && (
+                  <div className="space-y-3">
+                    <div>
+                      <label className="block font-semibold mb-1.5 text-slate-700">Media Container Type</label>
+                      <div className="grid grid-cols-2 gap-2">
+                        <button
+                          type="button"
+                          onClick={() => updateActiveComponentContent({ mediaType: "video" })}
+                          className={`px-3 py-2 rounded-xl text-xs font-bold border transition flex items-center justify-center gap-1.5 ${
+                            activeComponent.content.mediaType !== "image"
+                              ? "bg-blue-50 border-blue-400 text-[#2171B5]"
+                              : "bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100"
+                          }`}
+                        >
+                          <VideoIcon className="w-3.5 h-3.5" />
+                          <span>Video</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => updateActiveComponentContent({ mediaType: "image" })}
+                          className={`px-3 py-2 rounded-xl text-xs font-bold border transition flex items-center justify-center gap-1.5 ${
+                            activeComponent.content.mediaType === "image"
+                              ? "bg-blue-50 border-blue-400 text-[#2171B5]"
+                              : "bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100"
+                          }`}
+                        >
+                          <ImageIcon className="w-3.5 h-3.5" />
+                          <span>Image</span>
+                        </button>
+                      </div>
+                    </div>
+
+                    {activeComponent.content.mediaType !== "image" ? (
+                      <MediaUploadField
+                        label="Video File or URL (MP4 / WebM / YouTube)"
+                        value={activeComponent.content.videoUrl || ""}
+                        onChange={(val) => updateActiveComponentContent({ videoUrl: val })}
+                        placeholder="Upload video file or paste URL"
+                        type="video"
+                        accept="video/*"
+                        fieldKey="comp_video"
+                      />
+                    ) : null}
+
+                    <MediaUploadField
+                      label={activeComponent.content.mediaType === "image" ? "Component Image" : "Video Poster / Thumbnail Image"}
+                      value={activeComponent.content.imageUrl || ""}
+                      onChange={(val) => updateActiveComponentContent({ imageUrl: val })}
+                      placeholder="/hero_image_2.png"
+                      type="image"
+                      accept="image/*"
+                      fieldKey="comp_poster"
+                    />
+                  </div>
+                )}
+
+                {/* If FEATURES / VEDIC MODULES selected */}
+                {selectedItem.type === "component" && activeComponent?.type === "features" && (
+                  <div className="space-y-3">
+                    <div>
+                      <label className="block font-semibold mb-1 text-slate-700">Section Title</label>
+                      <input
+                        type="text"
+                        value={activeComponent.content.title || ""}
+                        onChange={(e) =>
+                          updateActiveComponentContent({ title: e.target.value })
+                        }
+                        placeholder="What will you learn in this mega webinar?"
+                        className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold"
+                      />
+                    </div>
+                    <div>
+                      <label className="block font-semibold mb-1 text-slate-700">Subtitle</label>
+                      <textarea
+                        rows={2}
+                        value={activeComponent.content.subtitle || ""}
+                        onChange={(e) =>
+                          updateActiveComponentContent({ subtitle: e.target.value })
+                        }
+                        className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs"
+                      />
+                    </div>
+
+                    {/* Modules editor */}
+                    {(activeComponent.content.modules || []).length > 0 && (
+                      <div className="space-y-2 pt-2 border-t border-slate-200">
+                        <span className="font-bold text-slate-800 uppercase tracking-wider text-[11px] block">
+                          Vedic Curriculum Cards ({(activeComponent.content.modules || []).length})
+                        </span>
+                        <div className="space-y-2.5">
+                          {activeComponent.content.modules.map((mod: any, mi: number) => (
+                            <div key={mi} className="p-2.5 bg-slate-50 border border-slate-200 rounded-xl space-y-1.5">
+                              <div className="flex items-center justify-between">
+                                <span className="font-bold text-xs text-slate-800">Card #{mi + 1}</span>
+                                <span className="text-[10px] text-purple-700 font-mono font-bold uppercase">{mod.iconType} icon</span>
+                              </div>
+                              <input
+                                type="text"
+                                value={mod.title}
+                                onChange={(e) => {
+                                  const modules = [...activeComponent.content.modules];
+                                  modules[mi].title = e.target.value;
+                                  updateActiveComponentContent({ modules });
+                                }}
+                                className="w-full px-2 py-1 bg-white border border-slate-200 rounded text-xs font-semibold"
+                              />
+                              <textarea
+                                rows={2}
+                                value={mod.desc}
+                                onChange={(e) => {
+                                  const modules = [...activeComponent.content.modules];
+                                  modules[mi].desc = e.target.value;
+                                  updateActiveComponentContent({ modules });
+                                }}
+                                className="w-full px-2 py-1 bg-white border border-slate-200 rounded text-xs text-slate-600"
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    <div>
+                      <label className="block font-semibold mb-1 text-slate-700">Bottom Tagline</label>
+                      <input
+                        type="text"
+                        value={activeComponent.content.bottomText || ""}
+                        onChange={(e) =>
+                          updateActiveComponentContent({ bottomText: e.target.value })
+                        }
+                        placeholder="This webinar will equip you with actionable insights..."
+                        className="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* If FAQ selected */}
+                {selectedItem.type === "component" && activeComponent?.type === "faq" && (
+                  <div className="space-y-3">
+                    <div>
+                      <label className="block font-semibold mb-1 text-slate-700">Section Title</label>
+                      <input
+                        type="text"
+                        value={activeComponent.content.title || ""}
+                        onChange={(e) =>
+                          updateActiveComponentContent({ title: e.target.value })
+                        }
+                        placeholder="Frequently Asked Questions"
+                        className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold"
+                      />
+                    </div>
+
+                    <div className="space-y-2 pt-2 border-t border-slate-200">
+                      <div className="flex items-center justify-between">
+                        <span className="font-bold text-slate-800 uppercase tracking-wider text-[11px]">
+                          Questions ({(activeComponent.content.faqs || []).length})
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const faqs = [...(activeComponent.content.faqs || [])];
+                            faqs.push({
+                              question: "New Frequently Asked Question?",
+                              answer: "Detailed clear answer for attendees.",
+                            });
+                            updateActiveComponentContent({ faqs });
+                          }}
+                          className="text-[11px] font-bold text-[#2171B5] hover:underline cursor-pointer"
+                        >
+                          + Add Question
+                        </button>
+                      </div>
+
+                      <div className="space-y-2.5">
+                        {(activeComponent.content.faqs || []).map((faq: any, fi: number) => (
+                          <div key={fi} className="p-2.5 bg-slate-50 border border-slate-200 rounded-xl space-y-1.5">
+                            <div className="flex items-center justify-between">
+                              <span className="font-semibold text-xs text-slate-800">Q#{fi + 1}</span>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const faqs = [...activeComponent.content.faqs];
+                                  faqs.splice(fi, 1);
+                                  updateActiveComponentContent({ faqs });
+                                }}
+                                className="text-slate-400 hover:text-red-500 p-0.5 cursor-pointer"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                            <input
+                              type="text"
+                              value={faq.question}
+                              onChange={(e) => {
+                                const faqs = [...activeComponent.content.faqs];
+                                faqs[fi].question = e.target.value;
+                                updateActiveComponentContent({ faqs });
+                              }}
+                              className="w-full px-2 py-1 bg-white border border-slate-200 rounded text-xs font-semibold"
+                            />
+                            <textarea
+                              rows={2}
+                              value={faq.answer}
+                              onChange={(e) => {
+                                const faqs = [...activeComponent.content.faqs];
+                                faqs[fi].answer = e.target.value;
+                                updateActiveComponentContent({ faqs });
+                              }}
+                              className="w-full px-2 py-1 bg-white border border-slate-200 rounded text-xs text-slate-600"
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* If CTA BANNER selected */}
+                {selectedItem.type === "component" && activeComponent?.type === "ctaBanner" && (
+                  <div className="space-y-3">
+                    <div>
+                      <label className="block font-semibold mb-1 text-slate-700">Headline</label>
+                      <textarea
+                        rows={2}
+                        value={activeComponent.content.title || ""}
+                        onChange={(e) =>
+                          updateActiveComponentContent({ title: e.target.value })
+                        }
+                        placeholder="Still thinking? Let us help you take the first step."
+                        className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold"
+                      />
+                    </div>
+                    <div>
+                      <label className="block font-semibold mb-1 text-slate-700">Button Text</label>
+                      <input
+                        type="text"
+                        value={activeComponent.content.buttonText || ""}
+                        onChange={(e) =>
+                          updateActiveComponentContent({ buttonText: e.target.value })
+                        }
+                        placeholder="Talk to an expert"
+                        className="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs"
+                      />
+                    </div>
+                    <div>
+                      <label className="block font-semibold mb-1 text-slate-700">Button Link</label>
+                      <input
+                        type="text"
+                        value={activeComponent.content.buttonLink || ""}
+                        onChange={(e) =>
+                          updateActiveComponentContent({ buttonLink: e.target.value })
+                        }
+                        placeholder="#lead-form"
+                        className="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-mono"
+                      />
+                    </div>
+                    <MediaUploadField
+                      label="Expert Photo (Cutout)"
+                      value={activeComponent.content.expertImage || "/hero_image_2.png"}
+                      onChange={(val) => updateActiveComponentContent({ expertImage: val })}
+                      placeholder="/hero_image_2.png"
+                      type="image"
+                      accept="image/*"
+                      fieldKey="cta_expert"
+                    />
+                    <div>
+                      <label className="block font-semibold mb-1 text-slate-700">Background Color (Happy Life Blue)</label>
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="color"
+                          value={activeComponent.content.backgroundColor || "#2171B5"}
+                          onChange={(e) =>
+                            updateActiveComponentContent({ backgroundColor: e.target.value })
+                          }
+                          className="w-8 h-8 rounded border border-slate-300 cursor-pointer"
+                        />
+                        <input
+                          type="text"
+                          value={activeComponent.content.backgroundColor || "#2171B5"}
+                          onChange={(e) =>
+                            updateActiveComponentContent({ backgroundColor: e.target.value })
+                          }
+                          className="flex-1 px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-mono"
+                        />
+                      </div>
                     </div>
                   </div>
                 )}
@@ -2877,10 +4427,28 @@ export default function TemplateEditor() {
 
                 {/* If HEADER selected */}
                 {selectedItem.type === "header" && template.headerConfig && (
-                  <div className="space-y-3">
+                  <div className="space-y-4">
+                    <MediaUploadField
+                      label="Navbar Brand Logo"
+                      value={template.headerConfig.logoUrl || "/logos/osa_logo.png"}
+                      onChange={(val) =>
+                        setTemplate({
+                          ...template,
+                          headerConfig: {
+                            ...template.headerConfig!,
+                            logoUrl: val,
+                          },
+                        })
+                      }
+                      placeholder="/logos/osa_logo.png"
+                      type="image"
+                      accept="image/*"
+                      fieldKey="header_logo"
+                    />
+
                     <div>
                       <label className="block font-semibold mb-1 text-slate-700">
-                        Site Title
+                        Site Title (Optional if Logo has text)
                       </label>
                       <input
                         type="text"
@@ -2894,6 +4462,7 @@ export default function TemplateEditor() {
                             },
                           })
                         }
+                        placeholder="Leave blank to only display logo"
                         className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs"
                       />
                     </div>
