@@ -4,7 +4,7 @@ import axios, { AxiosInstance, AxiosResponse, AxiosError } from 'axios';
 export const getApiBaseUrl = (): string => {
   const envUrl = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_BASE_URL;
 
-  // If in browser on localhost/127.0.0.1, always prioritize local backend
+  // If in browser on localhost/127.0.0.1, prioritize local backend
   if (
     typeof window !== 'undefined' &&
     (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
@@ -15,7 +15,11 @@ export const getApiBaseUrl = (): string => {
     return 'http://localhost:5000';
   }
 
-  return (envUrl || 'https://happy-life-sx03.onrender.com').replace(/\/+$/, '');
+  if (envUrl && !envUrl.includes('localhost') && !envUrl.includes('127.0.0.1')) {
+    return envUrl.replace(/\/+$/, '');
+  }
+
+  return 'https://api.happylifeastro.school';
 };
 
 const axiosInstance: AxiosInstance = axios.create({

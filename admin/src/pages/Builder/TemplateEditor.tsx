@@ -61,7 +61,50 @@ import {
   getVedicIcon,
 } from "../../components/VedicIcons";
 
-type ViewportMode = "desktop" | "tablet" | "mobile";
+// Dynamic Media URL Resolver for all images and videos in Admin Editor
+export const resolveMediaUrl = (url?: string): string => {
+  if (!url || typeof url !== "string") return "";
+  if (url.startsWith("data:") || url.startsWith("blob:")) return url;
+
+  const isLocalhost =
+    typeof window !== "undefined" &&
+    (window.location.hostname === "localhost" ||
+      window.location.hostname === "127.0.0.1");
+
+  const defaultBase = isLocalhost
+    ? "http://localhost:5000"
+    : "https://api.happylifeastro.school";
+
+  const envUrl =
+    import.meta.env.VITE_IMAGE_URL ||
+    import.meta.env.VITE_BASE_URL ||
+    import.meta.env.VITE_API_BASE_URL;
+
+  const baseUrl = (
+    envUrl && (!envUrl.includes("localhost") || isLocalhost)
+      ? envUrl
+      : defaultBase
+  ).replace(/\/+$/, "");
+
+  // 1. If it's a relative uploads path: "/uploads/..."
+  if (url.startsWith("/uploads/")) {
+    return `${baseUrl}${url}`;
+  }
+
+  // 2. If it points to localhost / 127.0.0.1 and we are not on localhost (live site)
+  if (/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?/i.test(url)) {
+    if (!isLocalhost) {
+      return url.replace(/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?/i, baseUrl);
+    }
+  }
+
+  // 3. If it points to old onrender backend
+  if (url.includes("happy-life-sx03.onrender.com")) {
+    return url.replace("https://happy-life-sx03.onrender.com", baseUrl);
+  }
+
+  return url;
+};
 
 export const getMaxWidthClass = (width?: string) => {
   switch (width) {
@@ -164,9 +207,11 @@ export default function TemplateEditor() {
     setUploadingMediaField(fieldKey);
     try {
       const res = await builderService.uploadMedia(file);
-      if (res?.success && res.url) {
+      if (res?.success && (res.relativeUrl || res.url)) {
         toast.success(`${isVideo ? "Video" : "Image"} uploaded successfully!`, { id: toastId });
-        onSuccess(res.url);
+        // Prefer relative URL so no domain is hardcoded in saved templates
+        const mediaUrl = res.relativeUrl || res.url;
+        onSuccess(mediaUrl);
       } else {
         toast.error(res?.message || "Upload failed", { id: toastId });
       }
@@ -1627,7 +1672,7 @@ export default function TemplateEditor() {
             {type === "image" ? (
               <div className="w-9 h-9 rounded-lg overflow-hidden bg-slate-200 border border-slate-300 shrink-0 flex items-center justify-center">
                 <img
-                  src={value}
+                  src={resolveMediaUrl(value)}
                   alt="Preview"
                   className="w-full h-full object-contain"
                   onError={(e) => {
@@ -2140,7 +2185,7 @@ export default function TemplateEditor() {
                                       style={
                                         comp.content.backgroundImage
                                           ? {
-                                              backgroundImage: `linear-gradient(rgba(7, 19, 34, 0.85), rgba(7, 19, 34, 0.95)), url(${comp.content.backgroundImage})`,
+                                              backgroundImage: `linear-gradient(rgba(7, 19, 34, 0.85), rgba(7, 19, 34, 0.95)), url(${resolveMediaUrl(comp.content.backgroundImage)})`,
                                               backgroundSize: "cover",
                                               backgroundPosition: "center",
                                             }
@@ -2220,7 +2265,7 @@ export default function TemplateEditor() {
                                             <CelestialZodiacWheel className="w-56 h-56 sm:w-72 sm:h-72" />
                                           </div>
                                           <img
-                                            src={comp.content.mentorImage || "/hero_image_2.png"}
+                                            src={resolveMediaUrl(comp.content.mentorImage || "/hero_image_2.png")}
                                             alt={comp.content.mentorName || "Mentor"}
                                             className="relative z-10 max-h-[240px] sm:max-h-[300px] object-contain drop-shadow-[0_15px_25px_rgba(0,0,0,0.6)]"
                                             onError={(e) => {
@@ -2436,14 +2481,14 @@ export default function TemplateEditor() {
                                   <div className="rounded-2xl overflow-hidden border-2 border-amber-200/80 bg-slate-900 shadow-xl relative aspect-video flex items-center justify-center group">
                                     {comp.content.mediaType === "image" ? (
                                       <img
-                                        src={comp.content.imageUrl || "/hero_image_2.png"}
+                                        src={resolveMediaUrl(comp.content.imageUrl || "/hero_image_2.png")}
                                         alt={comp.content.title || "Webinar Media"}
                                         className="w-full h-full object-cover"
                                       />
                                     ) : (
                                       <div className="relative w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-900 to-blue-950">
                                         <img
-                                          src={comp.content.imageUrl || "/hero_image_2.png"}
+                                          src={resolveMediaUrl(comp.content.imageUrl || "/hero_image_2.png")}
                                           alt="Video Thumbnail"
                                           className="w-full h-full object-cover opacity-65"
                                         />
@@ -2657,7 +2702,7 @@ export default function TemplateEditor() {
 
                                         <div className="md:col-span-4 flex justify-center md:justify-end">
                                           <img
-                                            src={comp.content.expertImage || "/hero_image_2.png"}
+                                            src={resolveMediaUrl(comp.content.expertImage || "/hero_image_2.png")}
                                             alt="Expert Mentor"
                                             className="w-40 h-40 sm:w-48 sm:h-48 object-cover rounded-2xl shadow-xl border-4 border-white/20"
                                             onError={(e) => {

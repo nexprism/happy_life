@@ -16,6 +16,64 @@ import {
   getVedicIcon,
 } from "../components/VedicIcons";
 
+// Dynamic Base URL Helper for Web Client
+export const getApiBaseUrl = () => {
+  const isLocalhost =
+    typeof window !== "undefined" &&
+    (window.location.hostname === "localhost" ||
+      window.location.hostname === "127.0.0.1");
+
+  const defaultBase = isLocalhost
+    ? "http://localhost:5000"
+    : "https://api.happylifeastro.school";
+
+  const envUrl =
+    import.meta.env.VITE_API_BASE ||
+    import.meta.env.VITE_BASE_URL ||
+    import.meta.env.VITE_IMAGE_URL;
+
+  if (envUrl) {
+    if (!isLocalhost && (envUrl.includes("localhost") || envUrl.includes("127.0.0.1"))) {
+      return defaultBase;
+    }
+    return envUrl.replace(/\/+$/, "");
+  }
+
+  return defaultBase;
+};
+
+// Dynamic Media URL Resolver for all images and videos
+export const resolveMediaUrl = (url) => {
+  if (!url || typeof url !== "string") return url;
+  if (url.startsWith("data:") || url.startsWith("blob:")) return url;
+
+  const baseUrl = getApiBaseUrl();
+
+  // 1. If it's a relative uploads path: "/uploads/..."
+  if (url.startsWith("/uploads/")) {
+    return `${baseUrl}${url}`;
+  }
+
+  // 2. If it points to localhost / 127.0.0.1 and we are not on localhost (live site)
+  const isLocalhost =
+    typeof window !== "undefined" &&
+    (window.location.hostname === "localhost" ||
+      window.location.hostname === "127.0.0.1");
+
+  if (/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?/i.test(url)) {
+    if (!isLocalhost) {
+      return url.replace(/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?/i, baseUrl);
+    }
+  }
+
+  // 3. If it points to old onrender backend
+  if (url.includes("happy-life-sx03.onrender.com")) {
+    return url.replace("https://happy-life-sx03.onrender.com", baseUrl);
+  }
+
+  return url;
+};
+
 // Container width mapping helper
 const getSectionWidthClass = (maxWidth) => {
   switch (maxWidth) {
@@ -103,8 +161,7 @@ export default function BuilderTemplateView() {
 
       try {
         setLoading(true);
-        const baseUrl =
-          import.meta.env.VITE_BASE_URL || "http://localhost:5000";
+        const baseUrl = getApiBaseUrl();
         const res = await fetch(`${baseUrl}/builder/public/${slug}`);
         const data = await res.json();
 
@@ -152,8 +209,7 @@ export default function BuilderTemplateView() {
 
     try {
       setSubmittingLead(true);
-      const baseUrl =
-        import.meta.env.VITE_BASE_URL || "http://localhost:5000";
+      const baseUrl = getApiBaseUrl();
       const res = await fetch(`${baseUrl}/builder/public/${slug}/lead`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -231,7 +287,7 @@ export default function BuilderTemplateView() {
             <div className="flex items-center gap-3">
               <Link to="/" className="flex items-center hover:opacity-85 transition">
                 <img
-                  src={template.headerConfig.logoUrl || "/logos/osa_logo.png"}
+                  src={resolveMediaUrl(template.headerConfig.logoUrl || "/logos/osa_logo.png")}
                   alt={template.headerConfig.siteTitle || "Happy Life"}
                   className="h-9 md:h-11 w-auto object-contain"
                   onError={(e) => {
@@ -318,7 +374,7 @@ export default function BuilderTemplateView() {
                                 style={
                                   comp.content.backgroundImage
                                     ? {
-                                        backgroundImage: `linear-gradient(rgba(7, 19, 34, 0.85), rgba(7, 19, 34, 0.95)), url(${comp.content.backgroundImage})`,
+                                        backgroundImage: `linear-gradient(rgba(7, 19, 34, 0.85), rgba(7, 19, 34, 0.95)), url(${resolveMediaUrl(comp.content.backgroundImage)})`,
                                         backgroundSize: "cover",
                                         backgroundPosition: "center",
                                       }
@@ -401,7 +457,7 @@ export default function BuilderTemplateView() {
                                       <CelestialZodiacWheel className="w-64 h-64 sm:w-80 sm:h-80" />
                                     </div>
                                     <img
-                                      src={comp.content.mentorImage || "/hero_image_2.png"}
+                                      src={resolveMediaUrl(comp.content.mentorImage || "/hero_image_2.png")}
                                       alt={comp.content.mentorName || "Mentor"}
                                       className="relative z-10 max-h-[280px] sm:max-h-[340px] object-contain drop-shadow-[0_15px_25px_rgba(0,0,0,0.6)]"
                                       onError={(e) => {
@@ -716,7 +772,7 @@ export default function BuilderTemplateView() {
                             <div className="rounded-2xl sm:rounded-3xl overflow-hidden border-2 border-amber-200/80 bg-slate-900 shadow-2xl relative aspect-video flex items-center justify-center group">
                               {comp.content.mediaType === "image" ? (
                                 <img
-                                  src={comp.content.imageUrl || "/hero_image_2.png"}
+                                  src={resolveMediaUrl(comp.content.imageUrl || "/hero_image_2.png")}
                                   alt={comp.content.title || "Webinar Media"}
                                   className="w-full h-full object-cover"
                                 />
@@ -731,7 +787,7 @@ export default function BuilderTemplateView() {
                               ) : (
                                 <div className="relative w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-900 to-blue-950">
                                   <img
-                                    src={comp.content.imageUrl || "/hero_image_2.png"}
+                                    src={resolveMediaUrl(comp.content.imageUrl || "/hero_image_2.png")}
                                     alt="Video Poster"
                                     className="w-full h-full object-cover opacity-65"
                                   />
@@ -894,7 +950,7 @@ export default function BuilderTemplateView() {
 
                                   <div className="md:col-span-4 flex justify-center md:justify-end">
                                     <img
-                                      src={comp.content.expertImage || "/hero_image_2.png"}
+                                      src={resolveMediaUrl(comp.content.expertImage || "/hero_image_2.png")}
                                       alt="Expert Mentor"
                                       className="w-48 h-48 sm:w-60 sm:h-60 object-cover rounded-2xl shadow-2xl border-4 border-white/20"
                                       onError={(e) => {

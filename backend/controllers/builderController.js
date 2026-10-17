@@ -1,5 +1,35 @@
 import builderService from "../service/builderService.js";
 
+// Helper to normalize any local URLs to the active server origin
+export const normalizeTemplateUrls = (templateDoc, req) => {
+  if (!templateDoc) return templateDoc;
+
+  const rawObj =
+    typeof templateDoc.toObject === "function"
+      ? templateDoc.toObject()
+      : JSON.parse(JSON.stringify(templateDoc));
+
+  const host = req?.get ? req.get("host") : null;
+  const protocol =
+    req?.headers?.["x-forwarded-proto"] ||
+    req?.protocol ||
+    (host && host.includes("localhost") ? "http" : "https");
+  const currentBaseUrl = (
+    process.env.BASE_URL || (host ? `${protocol}://${host}` : "")
+  ).replace(/\/+$/, "");
+
+  let jsonStr = JSON.stringify(rawObj);
+
+  if (currentBaseUrl) {
+    jsonStr = jsonStr.replace(
+      /https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?/gi,
+      currentBaseUrl
+    );
+  }
+
+  return JSON.parse(jsonStr);
+};
+
 // Public: Get published template by slug
 export const getPublicTemplate = async (req, res) => {
   try {
@@ -18,7 +48,7 @@ export const getPublicTemplate = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      data: template,
+      data: normalizeTemplateUrls(template, req),
     });
   } catch (error) {
     console.error("❌ Error fetching public template:", error);
@@ -86,9 +116,13 @@ export const getAllTemplates = async (req, res) => {
       Number(limit)
     );
 
+    const normalizedData = (result.data || []).map((t) =>
+      normalizeTemplateUrls(t, req)
+    );
+
     return res.status(200).json({
       success: true,
-      data: result.data,
+      data: normalizedData,
       total: result.total,
       page: Number(page),
       totalPages: Math.ceil(result.total / Number(limit)),
@@ -106,7 +140,10 @@ export const getTemplateById = async (req, res) => {
     if (!template) {
       return res.status(404).json({ success: false, message: "Template not found" });
     }
-    return res.status(200).json({ success: true, data: template });
+    return res.status(200).json({
+      success: true,
+      data: normalizeTemplateUrls(template, req),
+    });
   } catch (error) {
     console.error("❌ Error fetching template:", error);
     return res.status(500).json({ success: false, message: error.message });
@@ -267,12 +304,20 @@ export const uploadFile = async (req, res) => {
     if (!req.file) {
       return res.status(400).json({ success: false, message: "No file uploaded" });
     }
-    const baseUrl = process.env.BASE_URL || `http://localhost:${process.env.PORT || 5000}`;
-    const fileUrl = `${baseUrl}/uploads/${req.file.filename}`;
+    const host = req.get ? req.get("host") : null;
+    const protocol =
+      req.headers?.["x-forwarded-proto"] ||
+      req.protocol ||
+      (host && host.includes("localhost") ? "http" : "https");
+    const baseUrl = (process.env.BASE_URL || (host ? `${protocol}://${host}` : `http://localhost:${process.env.PORT || 5000}`)).replace(/\/+$/, "");
+    const relativeUrl = `/uploads/${req.file.filename}`;
+    const fileUrl = `${baseUrl}${relativeUrl}`;
+
     return res.status(200).json({
       success: true,
       message: "File uploaded successfully",
       url: fileUrl,
+      relativeUrl,
       fileName: req.file.filename,
       originalName: req.file.originalname,
       mimetype: req.file.mimetype,
