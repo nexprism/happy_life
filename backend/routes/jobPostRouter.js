@@ -15,6 +15,8 @@ import { isAdmin } from '../middlewares/isAdmin.js';
 import passport from 'passport';
 import { upload } from '../middlewares/upload-middleware.js';
 
+import JobPost from '../models/JobPosting.js';
+
 const router = express.Router();
 
 // Public routes
@@ -25,13 +27,16 @@ router.get('/category/:category', async (req, res) => {
     const { page = 1, limit = 10, status = 'active' } = req.query;
     
     // This would need to be implemented in your controller
-    const jobs = await JobPost.find({ 
-      category: new RegExp(category, 'i'),
-      status: status 
-    })
-    .limit(limit * 1)
-    .skip((page - 1) * limit)
-    .sort({ createdAt: -1 });
+    let jobs = [];
+    if (typeof JobPost !== 'undefined' && JobPost?.find) {
+      jobs = await JobPost.find({ 
+        category: new RegExp(category, 'i'),
+        status: status 
+      })
+      .limit(limit * 1)
+      .skip((page - 1) * limit)
+      .sort({ createdAt: -1 });
+    }
     
     res.json({
       success: true,
@@ -39,7 +44,7 @@ router.get('/category/:category', async (req, res) => {
       pagination: {
         page: parseInt(page),
         limit: parseInt(limit),
-        total: jobs.length
+        total: jobs?.length || 0
       }
     });
   } catch (error) {

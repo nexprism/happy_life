@@ -150,7 +150,7 @@ const courseSlice = createSlice({
           const priceNum = extractNum(course.price);
           const saleNum = extractNum(course.salePrice);
 
-          const price = priceNum ? String(priceNum) : null;
+          const price = priceNum != null ? String(priceNum) : (course.price != null ? String(course.price) : null);
           const salePrice = (saleNum && (!priceNum || saleNum < priceNum)) ? String(saleNum) : null;
           
           // Strip HTML from descriptions if they are strings
@@ -176,6 +176,7 @@ const courseSlice = createSlice({
 
           state.currentCourse = {
             ...course,
+            plans: Array.isArray(course.plans) ? course.plans : [],
             salePrice,
             price,
             description,

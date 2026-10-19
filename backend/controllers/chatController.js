@@ -1177,7 +1177,7 @@ export const sendGroupMessage = async (req, res) => {
     }
 
     const payload = {
-      groupChatRoomId,
+      groupChatRoomId: groupRoomId,
       sender: senderId,
       message: message || null,
       fileUrl: fileUrl || null,

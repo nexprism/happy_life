@@ -58,6 +58,13 @@ router.post("/fetch-wordpress", accessTokenAutoRefresh, passport.authenticate("j
 // Authenticated endpoint to trigger WordPress news fetch cron (for external cron, Cloudflare-protected)
 router.post('/cron/fetch-wordpress-news', async (req, res) => {
   try {
+    const cronSecret = process.env.CRON_SECRET;
+    const providedSecret = req.headers['x-cron-secret'] || req.query?.secret;
+    const isAuthorized = (cronSecret && providedSecret === cronSecret) || (req.user && ['admin', 'super_admin'].includes(req.user.role));
+
+    if (!isAuthorized) {
+      return res.status(401).json({ success: false, message: 'Unauthorized cron invocation' });
+    }
 
     const wordpressUrl = process.env.WORDPRESS_NEWS_URL;
     if (!wordpressUrl) {

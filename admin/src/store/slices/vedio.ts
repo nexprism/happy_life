@@ -28,6 +28,8 @@ export const uploadVideo = createAsyncThunk(
       videoId,
       youtubeUrl,
       vimeoUrl,
+      vimeoEmbedCode,
+      vimeoInputType,
       accessToken,
       refreshToken,
     }: {
@@ -41,6 +43,8 @@ export const uploadVideo = createAsyncThunk(
       videoId?: string;
       youtubeUrl?: string;
       vimeoUrl?: string;
+      vimeoEmbedCode?: string;
+      vimeoInputType?: string;
       accessToken?: string;
       refreshToken?: string;
     },
@@ -57,7 +61,9 @@ export const uploadVideo = createAsyncThunk(
         ...(uploadMethod && { uploadMethod }),
         ...(videoId && { videoId }),
         ...(youtubeUrl && { youtubeUrl }),
-        ...(vimeoUrl && { vimeoUrl }),
+        ...(vimeoUrl !== undefined && { vimeoUrl }),
+        ...(vimeoEmbedCode !== undefined && { vimeoEmbedCode }),
+        ...(vimeoInputType && { vimeoInputType }),
       };
 
       const response = await axiosInstance.post("/video/", payload, {
@@ -121,6 +127,8 @@ export const updateVideo = createAsyncThunk(
       filePath,
       youtubeUrl,
       vimeoUrl,
+      vimeoEmbedCode,
+      vimeoInputType,
       quality,
       thumbnail,
       replaceVideo,
@@ -138,6 +146,8 @@ export const updateVideo = createAsyncThunk(
       filePath?: string;
       youtubeUrl?: string;
       vimeoUrl?: string;
+      vimeoEmbedCode?: string;
+      vimeoInputType?: string;
       quality?: string;
       thumbnail?: string;
       replaceVideo?: boolean;
@@ -164,7 +174,9 @@ export const updateVideo = createAsyncThunk(
       if (uploadMethod) formData.append("uploadMethod", uploadMethod);
       if (filePath) formData.append("filePath", filePath);
       if (youtubeUrl) formData.append("youtubeUrl", youtubeUrl);
-      if (vimeoUrl) formData.append("vimeoUrl", vimeoUrl);
+      if (vimeoUrl !== undefined) formData.append("vimeoUrl", vimeoUrl);
+      if (vimeoEmbedCode !== undefined) formData.append("vimeoEmbedCode", vimeoEmbedCode);
+      if (vimeoInputType) formData.append("vimeoInputType", vimeoInputType);
       if (quality) formData.append("quality", quality);
       if (thumbnail) formData.append("thumbnail", thumbnail);
       if (replaceVideo !== undefined) formData.append("replaceVideo", String(replaceVideo));

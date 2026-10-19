@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useRef, useState, useMemo } from 'react'
+import React, { useEffect, useRef, useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchCourses } from '../redux/slices/courseSlice'
@@ -252,6 +252,10 @@ const CourseSlider = () => {
                   className="w-full h-full object-cover opacity-95 transition-transform duration-700 group-hover:scale-105"
                   src={getImageUrl(course)}
                   loading="lazy"
+                  onError={(e) => {
+                    e.currentTarget.onerror = null;
+                    e.currentTarget.src = '/courses/curator.png';
+                  }}
                 />
               </div>
 

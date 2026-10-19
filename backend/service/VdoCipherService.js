@@ -158,14 +158,6 @@ async  generatePlaybackData(videoId, userId) {
       userId,
     };
 
-    // 🧩 Log request + curl for debugging / support
-    const curlCommand = `
-curl -X POST '${process.env.VDOCIPHER_API_URL || "https://dev.vdocipher.com/api"}/videos/${videoId}/otp' \\
-  -H 'Authorization: Apisecret ${this.apiKey}' \\
-  -H 'Content-Type: application/json' \\
-  -d '${JSON.stringify(requestBody, null, 2)}'
-    `;
-    console.log("🐛 Debug CURL (send this to VdoCipher support if needed):\n", curlCommand);
 
     // 🔹 Make the actual request
     const otpResponse = await axios.post(

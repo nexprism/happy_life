@@ -41,12 +41,12 @@ class VimeoService {
       };
     }
 
-    // Check player URL: player.vimeo.com/video/123456789?h=abcdef or player.vimeo.com/video/123456789
-    const playerMatch = cleanUrl.match(/player\.vimeo\.com\/video\/(\d+)(?:\?[^#]*\bh=([a-zA-Z0-9]+))?/i);
+    // Check player URL: player.vimeo.com/video/123456789/abcdef or player.vimeo.com/video/123456789?h=abcdef
+    const playerMatch = cleanUrl.match(/player\.vimeo\.com\/video\/(\d+)(?:\/([a-zA-Z0-9_-]+))?(?:[?#&][^#]*\bh=([a-zA-Z0-9_-]+))?/i);
     if (playerMatch) {
       return {
         videoId: playerMatch[1],
-        hash: playerMatch[2] || null
+        hash: playerMatch[3] || playerMatch[2] || null
       };
     }
 

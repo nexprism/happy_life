@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import DashboardHeader from '../components/dashboard/DashboardHeader'
 import DashboardLoading from '../components/dashboard/DashboardLoading'
 import { gsap } from 'gsap'
@@ -94,7 +94,7 @@ const Purchases = () => {
                   )}
 
                   {/* Error State */}
-                  {error && (
+                  {error && !error.toLowerCase().includes('no enrollment') && (
                      <div className="absolute inset-0 flex items-center justify-center bg-white/80 z-10">
                         <div className="font-montserrat text-xs text-red-600 uppercase tracking-[0.4em] font-bold">Sync Error: {error}</div>
                      </div>

@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import axios, { AxiosError } from "axios";
-import axiosInstance from "../../services/axiosConfig";
+import axiosInstance, { getApiBaseUrl } from "../../services/axiosConfig";
 import type {
   User,
   LoginCredentials,
@@ -12,12 +12,8 @@ import type {
   PasswordResetData,
 } from "../../types/auth";
 
-// API base URL
-const API_BASE_URL = (
-  import.meta.env.VITE_API_BASE_URL ||
-  import.meta.env.VITE_BASE_URL ||
-  "https://happy-life-sx03.onrender.com"
-).replace(/\/+$/, "");
+// API base URL dynamically resolved for localhost and production
+const getApiUrl = (): string => getApiBaseUrl();
 
 // Helper function to handle API errors
 const handleApiError = (error: unknown): string => {
@@ -35,7 +31,7 @@ export const login = createAsyncThunk<
 >("auth/login", async (credentials, { rejectWithValue }) => {
   try {
     const response = await axiosInstance.post<ApiResponse<AuthResponse>>(
-      `${API_BASE_URL}/login`,
+      `${getApiUrl()}/login`,
       {
         email: credentials.email,
         password: credentials.password,
@@ -94,7 +90,7 @@ export const signup = createAsyncThunk<
 >("auth/signup", async (userData, { rejectWithValue }) => {
   try {
     const response = await axiosInstance.post<ApiResponse<AuthResponse>>(
-      `${API_BASE_URL}/signup`,
+      `${getApiUrl()}/signup`,
       {
         email: userData.email,
         password: userData.password,
@@ -136,7 +132,7 @@ export const logout = createAsyncThunk<void, void, { rejectValue: string }>(
         localStorage.getItem("accessToken") || localStorage.getItem("token");
 
       if (token) {
-        await fetch(`${API_BASE_URL}/logout`, {
+        await fetch(`${getApiUrl()}/logout`, {
           method: "POST",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -191,7 +187,7 @@ export const checkAuthStatus = createAsyncThunk<
         }
 
         const response = await axiosInstance.get<ApiResponse<{ user: User }>>(
-          `${API_BASE_URL}/me`,
+          `${getApiUrl()}/me`,
           { headers, withCredentials: true }
         );
 
@@ -239,7 +235,7 @@ export const checkAuthStatus = createAsyncThunk<
         fallbackHeaders["Authorization"] = `Bearer ${token}`;
       }
       const response = await axios.get<ApiResponse<{ user: User }>>(
-        `${API_BASE_URL}/me`,
+        `${getApiUrl()}/me`,
         {
           headers: fallbackHeaders,
           withCredentials: true,
@@ -276,7 +272,7 @@ export const updateProfile = createAsyncThunk<
     const token =
       localStorage.getItem("accessToken") || localStorage.getItem("token");
 
-    const response = await fetch(`${API_BASE_URL}/auth/profile`, {
+    const response = await fetch(`${getApiUrl()}/auth/profile`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -304,7 +300,7 @@ export const forgotPassword = createAsyncThunk<
   { rejectValue: string }
 >("auth/forgotPassword", async (email, { rejectWithValue }) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/forgot-password`, {
+    const response = await fetch(`${getApiUrl()}/forgot-password`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -330,7 +326,7 @@ export const resetPassword = createAsyncThunk<
   { rejectValue: string }
 >("auth/resetPassword", async ({ token, password }, { rejectWithValue }) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/reset-password`, {
+    const response = await fetch(`${getApiUrl()}/reset-password`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

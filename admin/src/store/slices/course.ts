@@ -103,10 +103,6 @@ export const updateCourse = createAsyncThunk(
   "course/updateCourse",
   async ({ id, data }: { id: string; data: FormData }, { rejectWithValue }) => {
     try {
-      // Remove any existing 'instructorId' entries before appending the correct one
-      data.delete("instructorId");
-      data.append("instructorId", "68b69334dffbe2b24ed4f059");
-
       const response = await axiosInstance.put(`/courses/${id}`, data, {
         headers: {
           "Content-Type": "multipart/form-data",
@@ -114,7 +110,13 @@ export const updateCourse = createAsyncThunk(
       });
       return response.data;
     } catch (error: any) {
-      return rejectWithValue(error.response?.data || error.message);
+      const errMsg =
+        error.response?.data?.message ||
+        error.response?.data?.err?.message ||
+        (typeof error.response?.data === "string" ? error.response.data : "") ||
+        error.message ||
+        "Failed to update course";
+      return rejectWithValue(errMsg);
     }
   }
 );
@@ -232,11 +234,15 @@ const courseSlice = createSlice({
       })
       .addCase(updateCourse.fulfilled, (state, action) => {
         state.loading = false;
-        state.data = action.payload;
+        state.error = null;
+        state.data = action.payload?.data?.course || action.payload?.course || action.payload;
       })
       .addCase(updateCourse.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload as string;
+        state.error =
+          (typeof action.payload === "string"
+            ? action.payload
+            : (action.payload as any)?.message) || "Failed to update course";
       })
       .addCase(fetchCourseAttachments.pending, (state) => {
         state.loading = true;

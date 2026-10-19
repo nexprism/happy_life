@@ -855,9 +855,10 @@ const Courses = () => {
               <div className="col-span-full text-center py-20 text-red-500 font-montserrat">{t('failedToLoad')}</div>
             ) : filteredCourses.length > 0 ? (
               filteredCourses.map((item) => {
-                const hasSale = Boolean(item.salePrice && item.price && Number(item.salePrice) < Number(item.price));
-                const activePrice = item.salePrice ? `₹${item.salePrice}` : (item.price ? `₹${item.price}` : 'FREE');
-                const originalPrice = hasSale ? `₹${item.price}` : null;
+                const hasSale = Boolean(item.salePrice && item.price && Number(item.salePrice) > 0 && Number(item.salePrice) < Number(item.price));
+                const activeNum = (hasSale && Number(item.salePrice) > 0) ? Number(item.salePrice) : (item.price ? Number(item.price) : null);
+                const activePrice = activeNum ? `₹${activeNum.toLocaleString('en-IN')}` : 'FREE';
+                const originalPrice = hasSale && item.price ? `₹${Number(item.price).toLocaleString('en-IN')}` : null;
 
                 return (
                   <CourseCard

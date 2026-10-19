@@ -538,6 +538,7 @@ const AddCourse = () => {
     isPrivate: false,
     enableWaitlist: false,
     coursePosition: "",
+    showLifetimePlan: true,
     // Mentor fields
     mentorName: "",
     mentorTitle: "",
@@ -1078,8 +1079,14 @@ const AddCourse = () => {
         </div>
         {error && (
           <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-700 rounded-lg p-4 mb-6 flex items-center gap-3">
-            <AlertCircle className="w-5 h-5 text-red-500" />
-            <span className="text-red-700 dark:text-red-300 text-sm">{error}</span>
+            <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0" />
+            <span className="text-red-700 dark:text-red-300 text-sm">
+              {typeof error === "string"
+                ? error
+                : (error as any)?.message ||
+                  (error as any)?.err?.message ||
+                  JSON.stringify(error)}
+            </span>
           </div>
         )}
         <form onSubmit={(e) => handleSubmit(e, false)}>
@@ -1449,6 +1456,27 @@ const AddCourse = () => {
                         GBP (£)
                       </option>
                     </select>
+                  </div>
+
+                  {/* Show / Hide Lifetime Plan Toggle */}
+                  <div className="col-span-full p-4 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg flex items-center justify-between">
+                    <div>
+                      <label className="text-sm font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                        Show Lifetime Full Access Plan on Frontend
+                      </label>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                        Enable to offer the permanent Lifetime Access plan. Disable if you only want to offer duration plans (e.g. 1 Year, 6 Months) and hide the Lifetime Access plan.
+                      </p>
+                    </div>
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={formData.showLifetimePlan !== false}
+                        onChange={(e) => setFormData((prev: any) => ({ ...prev, showLifetimePlan: e.target.checked }))}
+                        className="sr-only peer"
+                      />
+                      <div className="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                    </label>
                   </div>
                 </div>
                 {/* --- Plans Section --- */}

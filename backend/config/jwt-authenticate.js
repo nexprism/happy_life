@@ -55,6 +55,7 @@ passport.use(
       if (!user) {
         return done(null, false);
       }
+      if ((jwt_payload.sessionVersion || 0) !== (user.sessionVersion || 0)) return done(null, false);
 
       // Reject banned / inactive users at the authentication layer so every
       // JWT-protected route is covered without per-route middleware.

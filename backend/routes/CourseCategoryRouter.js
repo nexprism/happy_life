@@ -2,7 +2,7 @@ import express from 'express';
 import { createCategory, getCategoryById, getAllCategories, updateCategory, deleteCategory } from '../controllers/CourseCategoryController.js';
 import accessTokenAutoRefresh from '../middlewares/accessTokenAutoRefresh.js';
 import passport from 'passport';
-import { isAdmin } from '../middlewares/isAdmin.js';
+import { isContentManager as isAdmin } from '../middlewares/isAdmin.js';
 import { upload } from '../middlewares/upload-middleware.js'; // Import upload middleware
 
 const categoryRouter = express.Router();

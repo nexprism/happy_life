@@ -63,11 +63,16 @@ class VideoLessonService {
             throw new Error('Unsupported platform');
         }
 
+        const isVimeo = videoLesson.sourcePlatform === 'vimeo' || data.sourcePlatform === 'vimeo';
+        const isEmbed = isVimeo && (data.vimeoInputType === 'embed' || Boolean(data.vimeoEmbedCode));
+
         const updatedVideoLesson = await videoLessonRepository.updateById(videoLesson._id, {
           secureUrl: uploadResult.secureUrl,
           embedUrl: uploadResult.embedUrl || '',
           originalUrl: uploadResult.originalUrl || data.vimeoUrl || data.youtubeUrl || '',
-          vimeoUrl: data.vimeoUrl || '',
+          vimeoUrl: isVimeo ? (isEmbed ? '' : (data.vimeoUrl || uploadResult.originalUrl || '')) : (data.vimeoUrl || ''),
+          vimeoEmbedCode: isEmbed ? (data.vimeoEmbedCode || uploadResult.originalUrl || '') : '',
+          vimeoInputType: isEmbed ? 'embed' : 'direct',
           youtubeUrl: data.youtubeUrl || '',
           videoId: uploadResult.videoId,
           thumbnail: uploadResult.thumbnail || '',
@@ -236,10 +241,13 @@ async handleVideoCypherUpload(videoFilePath, data, videoLessonId) {
 
   async handleVimeoUpload(data, videoLessonId) {
     try {
-      const rawVimeoUrl = data.vimeoUrl || data.secureUrl || data.url;
+      const isEmbed = data.vimeoInputType === 'embed' || Boolean(data.vimeoEmbedCode && !data.vimeoUrl);
+      const rawVimeoUrl = isEmbed
+        ? (data.vimeoEmbedCode || data.vimeoUrl || data.secureUrl || data.url)
+        : (data.vimeoUrl || data.secureUrl || data.url);
       const vimeoUrl = vimeoService.cleanVimeoUrl(rawVimeoUrl);
       if (!vimeoUrl) {
-        throw new Error('Vimeo URL is required');
+        throw new Error('Vimeo URL or embed code is required');
       }
 
       if (!vimeoService.validateVimeoUrl(vimeoUrl)) {
@@ -379,8 +387,12 @@ async handleVideoCypherUpload(videoFilePath, data, videoLessonId) {
     const targetPlatform = updateData.sourcePlatform || videoLesson.sourcePlatform;
 
     // Handle Vimeo video updates
-    if (targetPlatform === "vimeo" && (updateData.vimeoUrl || updateData.sourcePlatform === "vimeo" || updateData.secureUrl)) {
-      const rawVimeoUrl = updateData.vimeoUrl || updateData.secureUrl || updateData.originalUrl;
+    if (targetPlatform === "vimeo" && (updateData.vimeoUrl || updateData.vimeoEmbedCode || updateData.sourcePlatform === "vimeo" || updateData.secureUrl)) {
+      const isEmbed = updateData.vimeoInputType === 'embed' || Boolean(updateData.vimeoEmbedCode && !updateData.vimeoUrl);
+      const rawVimeoUrl = isEmbed
+        ? (updateData.vimeoEmbedCode || updateData.vimeoUrl || updateData.secureUrl || updateData.originalUrl)
+        : (updateData.vimeoUrl || updateData.secureUrl || updateData.originalUrl);
+
       const vimeoUrl = vimeoService.cleanVimeoUrl(rawVimeoUrl);
       if (vimeoUrl) {
         if (!vimeoService.validateVimeoUrl(vimeoUrl)) {
@@ -396,7 +408,15 @@ async handleVideoCypherUpload(videoFilePath, data, videoLessonId) {
         updateData.secureUrl = urlResult.watchUrl;
         updateData.embedUrl = urlResult.embedUrl;
         updateData.originalUrl = vimeoUrl;
-        updateData.vimeoUrl = vimeoUrl;
+        if (isEmbed) {
+          updateData.vimeoEmbedCode = updateData.vimeoEmbedCode || vimeoUrl;
+          updateData.vimeoUrl = '';
+          updateData.vimeoInputType = 'embed';
+        } else {
+          updateData.vimeoUrl = vimeoUrl;
+          updateData.vimeoEmbedCode = '';
+          updateData.vimeoInputType = 'direct';
+        }
         updateData.videoId = urlResult.videoId;
         if (urlResult.thumbnail) updateData.thumbnail = urlResult.thumbnail;
         if (urlResult.duration) updateData.duration = urlResult.duration;

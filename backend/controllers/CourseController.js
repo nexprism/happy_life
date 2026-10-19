@@ -243,6 +243,7 @@ export const createCourse = async (req, res) => {
       accessType,
       accessExpiry,
       salePrice: req.body.salePrice, // <-- Add salePrice to courseData
+      showLifetimePlan: req.body.showLifetimePlan !== undefined ? parseBoolean(req.body.showLifetimePlan) : true,
 
       // Dynamic content fields
       contentSections,
@@ -469,7 +470,8 @@ export const getCourseById = async (req, res) => {
       });
     }
 
-    const userId = req.user?.id;
+    const userId = req.user?._id?.toString() || req.user?.id?.toString() || null;
+    const userRole = req.user?.role || req.user?.roles?.[0] || null;
     const userAgent = req.headers['user-agent'];
     const clientIP = req.ip || req.connection.remoteAddress;
 
@@ -478,6 +480,36 @@ export const getCourseById = async (req, res) => {
     // //console.log("Course details fetched:", course);
     // //console.log("User ID:", userId);
     // //console.log("user new:",req.user)
+
+    const isPrivileged = ['admin', 'super_admin'].includes(userRole) || 
+      (course?.instructorId && course.instructorId.toString() === userId);
+
+    let isEnrolled = false;
+    if (course && course._id) {
+      const CourseEnrollment = (await import("../models/CourseEnrollment.js")).default;
+      const Enrollment = (await import("../models/Enrollment.js")).default;
+
+      const [activeEnrollments, legacyEnrollments] = await Promise.all([
+        CourseEnrollment.find({
+          courseId: course._id,
+          status: 'active'
+        }).select('userId').lean(),
+        Enrollment.find({
+          courseId: course._id,
+          isActive: true
+        }).select('userId').lean()
+      ]);
+
+      const enrolledIds = new Set([
+        ...activeEnrollments.map(e => e.userId?.toString()),
+        ...legacyEnrollments.map(e => e.userId?.toString())
+      ].filter(Boolean));
+
+      course.enrolledStudents = Array.from(enrolledIds);
+      isEnrolled = userId ? enrolledIds.has(userId) : false;
+    }
+
+    const hasCourseAccess = isPrivileged || isEnrolled;
 
     // Skip VdoCipher OTP processing for detail page (data not sent)
     if (course && course.modules && !isDetailPage) {
@@ -501,11 +533,14 @@ export const getCourseById = async (req, res) => {
 
       // First pass: collect VdoCipher video lessons for parallel OTP fetching
       for (const module of course.modules) {
-        // //console.log('Processing module:', module._id, 'Published:', module.isPublished);
         if (module.lessons && module.isPublished) {
-          // //console.log('Processing module:', module._id, 'after check Published:', module.isPublished);
-
           for (const lesson of module.lessons) {
+            const isFreeLesson = String(lesson.accessibility || '').toLowerCase() === 'free' || lesson.isFree === true;
+            // Only generate OTP if user has access to the course or lesson is free preview
+            if (!hasCourseAccess && !isFreeLesson) {
+              continue;
+            }
+
             if (lesson.videoLessons) {
               for (const videoLesson of lesson.videoLessons) {
                 totalVideoLessons++;
@@ -563,28 +598,7 @@ export const getCourseById = async (req, res) => {
         vdoCipherVideoIds,
         processedAt: new Date().toISOString()
       };
-
-      // Log any issues
-      if (failedOTPs > 0) {
-        //console.log(`⚠️  ${failedOTPs} VdoCipher videos failed to get OTPs`);
-      }
-      if (successfulOTPs > 0) {
-        //console.log(`🎉 Successfully fetched OTPs for ${successfulOTPs} VdoCipher videos`);
-      }
     }
-
-    // --- filter enrolledStudents ---
-    if (course && course._id) {
-      const CourseEnrollment = (await import("../models/CourseEnrollment.js")).default;
-      const activeEnrollments = await CourseEnrollment.find({
-        courseId: course._id,
-        status: 'active'
-      }).select('userId').lean();
-      course.enrolledStudents = activeEnrollments.map(e => e.userId?.toString());
-    }
-
-    // Check if current user is enrolled
-    const isEnrolled = userId ? course.enrolledStudents?.some(id => id?.toString() === userId) : false;
 
     // Filter out null reviews from the course data
     if (course && course.reviews) {
@@ -594,6 +608,7 @@ export const getCourseById = async (req, res) => {
     // Include all course fields (deep trim)
     const clean = course.toObject ? course.toObject() : { ...course };
     clean.isEnrolled = isEnrolled;
+    clean.showLifetimePlan = course.showLifetimePlan !== false;
     if (course.category) {
       const { _id, name, slug } = course.category;
       clean.category = { _id, name, slug };
@@ -604,9 +619,25 @@ export const getCourseById = async (req, res) => {
         if (m.lessons) {
           mod.lessons = m.lessons.map(l => {
             const les = l.toObject ? l.toObject() : { ...l };
+            const isFreeLesson = String(les.accessibility || '').toLowerCase() === 'free' || les.isFree === true;
+            const canAccessLesson = hasCourseAccess || isFreeLesson;
+
             if (les.videoLessons) {
               les.videoLessons = les.videoLessons.map(vl => {
                 const v = vl.toObject ? vl.toObject() : { ...vl };
+                if (!canAccessLesson) {
+                  // Protect paid lesson videos from unauthorized users/scrapers
+                  v.videoId = null;
+                  v.secureUrl = null;
+                  v.videoUrl = null;
+                  v.embedUrl = null;
+                  v.originalUrl = null;
+                  v.vimeoEmbedCode = null;
+                  v.vdoCipherPlayback = null;
+                  v.isLocked = true;
+                  return v;
+                }
+
                 if (v.sourcePlatform === 'youtube') {
                   const enc = (s) => s ? 'ENC_' + Buffer.from(s.split('').reverse().join('')).toString('base64') : s;
                   if (v.videoId) v.videoId = enc(v.videoId);
@@ -650,11 +681,37 @@ export const getCourseById = async (req, res) => {
         category: f.category, question: f.question, answer: f.answer,
       }));
     }
+    const cleanNumber = (val) => {
+      if (val === null || val === undefined) return 0;
+      if (typeof val === 'number') return isNaN(val) ? 0 : val;
+      if (typeof val === 'object' && val.$numberDecimal !== undefined) {
+        const n = Number(val.$numberDecimal);
+        return isNaN(n) ? 0 : n;
+      }
+      if (typeof val?.toString === 'function') {
+        const s = val.toString();
+        if (s && s !== '[object Object]') {
+          const n = Number(s);
+          return isNaN(n) ? 0 : n;
+        }
+      }
+      const n = Number(val);
+      return isNaN(n) ? 0 : n;
+    };
+
+    clean.price = cleanNumber(clean.price);
+    clean.salePrice = cleanNumber(clean.salePrice);
+
     if (course.plans) {
       clean.plans = course.plans.map(p => ({
-        _id: p._id, name: p.name, duration: p.duration,
-        durationType: p.durationType, salePrice: p.salePrice,
-        price: p.price, description: p.description,
+        _id: p._id,
+        name: p.name,
+        duration: p.duration != null ? Number(p.duration) : 1,
+        durationType: p.durationType || 'Year',
+        salePrice: p.salePrice != null ? cleanNumber(p.salePrice) : null,
+        price: p.price != null ? cleanNumber(p.price) : 0,
+        description: p.description || '',
+        status: p.status || 'active'
       }));
     }
 
@@ -1520,10 +1577,10 @@ export const updateCourse = async (req, res) => {
 
     const updateData = {
       ...req.body,
-      thumbnail: req.files?.thumbnail?.[0]?.path.replace(/\\/g, "/"),
-      coverImage: req.files?.coverImage?.[0]?.path.replace(/\\/g, "/"),
-      verticalCarouselImage: req.files?.verticalCarouselImage?.[0]?.path.replace(/\\/g, "/"),
-      featuredImageBanner: req.files?.featuredImageBanner?.[0]?.path.replace(/\\/g, "/"),
+      thumbnail: req.files?.thumbnail?.[0]?.path.replace(/\\/g, "/") || req.body.thumbnail,
+      coverImage: req.files?.coverImage?.[0]?.path.replace(/\\/g, "/") || req.body.coverImage,
+      verticalCarouselImage: req.files?.verticalCarouselImage?.[0]?.path.replace(/\\/g, "/") || req.body.verticalCarouselImage,
+      featuredImageBanner: req.files?.featuredImageBanner?.[0]?.path.replace(/\\/g, "/") || req.body.featuredImageBanner,
       mentorImage: req.files?.mentorImage?.[0]?.path.replace(/\\/g, "/") || req.body.mentorImage,
       certificateImage: req.files?.certificateImage?.[0]?.path.replace(/\\/g, "/") || req.body.certificateImage,
       demoVideo: req.files?.demoVideo?.[0]?.path
@@ -1548,6 +1605,7 @@ export const updateCourse = async (req, res) => {
       accessPeriod,
       accessType,
       accessExpiry,
+      ...(req.body.showLifetimePlan !== undefined && { showLifetimePlan: parseBoolean(req.body.showLifetimePlan) }),
 
 
       // Dynamic content fields
@@ -1609,16 +1667,19 @@ export const updateCourse = async (req, res) => {
 
     const updatedCourse = await courseService.updateById(id, updateData, req.user);
 
-    //update course plans
+    // update course plans
     let plansArray = [];
+    let hasPlansField = false;
     if (Array.isArray(req.body.plans)) {
       plansArray = req.body.plans;
+      hasPlansField = true;
     } else {
       const planFieldRegex = /^plans\[(\d+)\](?:\[(.*?)\]|\.(.*?))$/;
       const planMap = {};
       for (const key in req.body) {
         const match = key.match(planFieldRegex);
         if (match) {
+          hasPlansField = true;
           const idx = parseInt(match[1], 10);
           const field = match[2] || match[3];
           if (!planMap[idx]) planMap[idx] = {};
@@ -1630,7 +1691,7 @@ export const updateCourse = async (req, res) => {
         .map(idx => planMap[idx]);
     }
 
-    if (plansArray.length > 0) {
+    if (hasPlansField || req.body.plans !== undefined || req.body.hasPlansSubmitted === 'true') {
       const formattedPlans = plansArray.map(plan => ({
         _id: plan._id,
         name: plan.name,
@@ -1656,7 +1717,7 @@ export const updateCourse = async (req, res) => {
       err: {},
     });
   } catch (err) {
-    // console.error("❌ Update Course Error:", err);
+    console.error("❌ Update Course Error:", err);
     if (
       err.message === "Course not found" ||
       err.message === "No valid fields to update" ||

@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchCourseDetail } from '../redux/slices/courseSlice'
@@ -304,6 +304,10 @@ const CourseDetail = () => {
                                     src={displayImage} 
                                     alt={lesson.title} 
                                     className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700" 
+                                    onError={(e) => {
+                                      e.currentTarget.onerror = null;
+                                      e.currentTarget.src = '/courses/curator.png';
+                                    }}
                                   />
                                 </div>
                               )}

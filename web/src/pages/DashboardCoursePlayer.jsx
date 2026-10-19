@@ -334,13 +334,26 @@ const DashboardCoursePlayer = () => {
                 return `https://www.youtube.com/embed/${ytId}?enablejsapi=1&origin=${origin}&modestbranding=1&rel=0&controls=1&showinfo=0&fs=1`;
             }
             if (video.sourcePlatform === 'vimeo') {
-                const url = decSecureUrl || decVideoUrl || video.embedUrl || '';
+                const rawEmbed = video.vimeoEmbedCode || video.embedUrl || '';
+                const embedMatch = typeof rawEmbed === 'string' ? rawEmbed.match(/<iframe[^>]+src=["']([^"']+)["']/i) : null;
+                const embedUrl = embedMatch ? embedMatch[1].replace(/&amp;/g, '&') : rawEmbed;
+                // Prefer embedUrl if it's already a valid player link, otherwise fallback to secureUrl/videoUrl
+                const url = (embedUrl && embedUrl.includes('player.vimeo.com/video/'))
+                    ? embedUrl
+                    : (decSecureUrl || decVideoUrl || embedUrl || '');
+
                 if (url.includes('player.vimeo.com/video/')) {
                     const separator = url.includes('?') ? '&' : '?';
-                    return `${url}${separator}api=1&title=0&byline=0&portrait=0&dnt=1`;
+                    const withApi = url.includes('api=1') ? url : `${url}${separator}api=1&title=0&byline=0&portrait=0&dnt=1`;
+                    return withApi;
                 }
-                const cleanId = decVideoId || url.replace(/^https?:\/\/(?:www\.)?vimeo\.com\//, '').split('?')[0];
-                return `https://player.vimeo.com/video/${cleanId}?api=1&title=0&byline=0&portrait=0&dnt=1`;
+
+                // If standard vimeo.com link, extract videoId and optional privacy hash
+                const pathParts = url.replace(/^https?:\/\/(?:www\.)?vimeo\.com\//, '').split('?')[0].split('/');
+                const id = decVideoId || pathParts[0];
+                const hash = pathParts[1] || '';
+                const hashParam = hash ? `&h=${hash}` : '';
+                return `https://player.vimeo.com/video/${id}?api=1${hashParam}&title=0&byline=0&portrait=0&dnt=1`;
             }
             if (decVideoUrl) return decVideoUrl;
             if (decSecureUrl) return decSecureUrl;

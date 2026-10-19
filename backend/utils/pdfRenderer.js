@@ -144,6 +144,14 @@ export async function renderHtmlToPdf(html, options = {}) {
   try {
     const browser = await getBrowser();
     page = await browser.newPage();
+    if (options.isolated) {
+      await page.setJavaScriptEnabled(false);
+      await page.setRequestInterception(true);
+      page.on('request', request => {
+        if (request.url().startsWith('data:') || request.url() === 'about:blank') request.continue();
+        else request.abort();
+      });
+    }
 
     if (viewport) {
       await page.setViewport(viewport);

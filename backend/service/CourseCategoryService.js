@@ -4,6 +4,7 @@ import AppError from '../utils/app-error.js';
 import { StatusCodes } from 'http-status-codes';
 import { Types } from 'mongoose';
 import path from 'path';
+import fs from 'fs/promises';
 const { ObjectId } = Types;
 class CourseCategoryService {
   constructor() {

@@ -1,9 +1,10 @@
-﻿import React, { useEffect, useRef, useState, useMemo } from 'react'
+import React, { useEffect, useRef, useState, useMemo } from 'react'
 import { gsap } from 'gsap'
 import DashboardHeader from '../components/dashboard/DashboardHeader'
 import { useLanguage } from '../context/LanguageContext'
 import authorizedFetch from '../utils/apiClient'
 import sanitizeDisplay from '../utils/textSanitize'
+import DOMPurify from 'dompurify'
 
 const MyResults = () => {
    const containerRef = useRef(null)
@@ -263,7 +264,7 @@ const MyResults = () => {
                                           <svg className="w-5 h-5 text-[#2171B5]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                                           <span className="text-xs font-bold text-[#2171B5] uppercase tracking-wider">Explanation</span>
                                        </div>
-                                       <div className="p-5 text-slate-700 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: reviewQ.explanation }} />
+                                       <div className="p-5 text-slate-700 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(reviewQ.explanation || '') }} />
                                     </div>
                                  )}
                               </div>

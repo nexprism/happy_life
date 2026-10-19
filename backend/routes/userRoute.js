@@ -48,13 +48,13 @@ userRouter.get('/me', accessTokenAutoRefresh, passport.authenticate('jwt', { ses
 // userRouter.put('/profile',upload.single("profilePicture"), accessTokenAutoRefresh, passport.authenticate("jwt", { session: false }),updateProfile);
 userRouter.put(
   '/profile',
+  accessTokenAutoRefresh,
+  passport.authenticate("jwt", { session: false }),
+  isUserBanned,
   upload.fields([
     { name: 'profilePicture', maxCount: 1 },
     { name: 'documentation', maxCount: 5 } // or more, adjust as needed
   ]),
-  accessTokenAutoRefresh,
-  passport.authenticate("jwt", { session: false }),
-  isUserBanned,
   updateProfile
 );
 userRouter.delete('/documentation/:documentId',

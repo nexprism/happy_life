@@ -13,6 +13,9 @@ export const fetchMyEnrollments = createAsyncThunk(
       });
 
       const data = await res.json();
+      if (res.status === 404 || (data?.message && data.message.toLowerCase().includes('no enrollment'))) {
+        return { data: [] };
+      }
       if (!res.ok) return rejectWithValue(data?.message || 'Failed to fetch enrollments');
       return data;
     } catch (err) {

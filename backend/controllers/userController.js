@@ -3,6 +3,7 @@ import path from "path";
 import { promises as fs } from "fs";
 import User from "../models/user.js";
 import FcmToken from "../models/fcmTokens.js";
+import Notification from "../models/Notifications.js";
 import notificationService from "../utils/notificationService.js";
 import Course from "../models/Course.js";
 import CourseBundle from "../models/CourseBundle.js";
@@ -41,14 +42,20 @@ export const signup = async (req, res) => {
       });
     }
 
-    // ✅ Check if is_verify is explicitly true
-    if (req.body.is_verify !== true) {
-      return res.status(400).json({
-        message: "Email not verified",
-        data: {},
-        success: false,
-        err: { email: "Please verify your email before signing up" },
-      });
+    // Verify email proof from server-side OTP verification
+    const redis = await initRedis();
+    const proofKey = `email_verified:${req.body.email?.trim().toLowerCase()}`;
+    const proof = req.body.verificationToken;
+    let consumed = false;
+    if (typeof proof === 'string' && proof.length === 48) {
+      if (redis.consumeValue) consumed = await redis.consumeValue(proofKey, proof);
+      else consumed = Boolean(await redis.eval(
+        "if redis.call('GET', KEYS[1]) == ARGV[1] then return redis.call('DEL', KEYS[1]) else return 0 end",
+        { keys: [proofKey], arguments: [proof] }
+      ));
+    }
+    if (!consumed) {
+      return res.status(400).json({ success: false, message: 'Email verification proof required. Please verify OTP first.' });
     }
 
     const user = await userService.getUserByEmail(req.body.email);
@@ -72,7 +79,7 @@ export const signup = async (req, res) => {
       fullName: req.body.fullName,
       phone: req.body.phone,
       role: "student",
-      is_verify: req.body.is_verify, // Pass is_verify to the service
+      is_verify: true, // Derived from consumed OTP proof
     });
 
     //console.log("✅ New user created:", newUser);
@@ -96,9 +103,6 @@ export const signup = async (req, res) => {
 
     // Generate tokens
     const { accessToken, refreshToken, accessTokenExp, refreshTokenExp } = await Token.generateTokens(newUser, req.body.platform || "web", req.body.deviceId);
-
-    // Connect to Redis
-    const redis = await initRedis();
 
     // Store tokens in Redis with TTL
     if (redis) {
@@ -1705,10 +1709,22 @@ export const logout = async (req, res) => {
       }
     }
 
-    Token.clearTokensCookies(res);
+    if (typeof Token?.clearTokensCookies === 'function') {
+      Token.clearTokensCookies(res);
+    } else if (res?.clearCookie) {
+      res.clearCookie("accessToken", { path: '/' });
+      res.clearCookie("refreshToken", { path: '/' });
+      res.clearCookie("is_auth", { path: '/' });
+    }
     return res.status(200).json({ success: true, message: "Logged out" });
   } catch (err) {
-    Token.clearTokensCookies(res);
+    if (typeof Token?.clearTokensCookies === 'function') {
+      Token.clearTokensCookies(res);
+    } else if (res?.clearCookie) {
+      res.clearCookie("accessToken", { path: '/' });
+      res.clearCookie("refreshToken", { path: '/' });
+      res.clearCookie("is_auth", { path: '/' });
+    }
     return res.status(200).json({ success: true, message: "Logged out" });
   }
 };
@@ -1716,7 +1732,8 @@ export const logout = async (req, res) => {
 // API: POST /logout-all-sessions
 export const logoutAllSessions = async (req, res) => {
   try {
-    const userId = req.body.userId || req.user?._id;
+    const isPrivileged = req.user && ['admin', 'super_admin'].includes(req.user.role);
+    const userId = (isPrivileged && req.body?.userId) ? req.body.userId : req.user?._id;
 
     if (!userId) {
       return res.status(400).json({
@@ -1731,11 +1748,17 @@ export const logoutAllSessions = async (req, res) => {
     const result = await userService.logoutFromAllDevices(userId);
 
     // Also clear this device's auth cookies.
-    Token.clearTokensCookies(res);
+    if (typeof Token?.clearTokensCookies === 'function') {
+      Token.clearTokensCookies(res);
+    } else if (res?.clearCookie) {
+      res.clearCookie("accessToken", { path: '/' });
+      res.clearCookie("refreshToken", { path: '/' });
+      res.clearCookie("is_auth", { path: '/' });
+    }
 
     return res.status(200).json({
       success: true,
-      message: result.message,
+      message: result?.message || "Logged out from all devices",
       data: { userId },
       err: {}
     });
@@ -2036,8 +2059,9 @@ export const listDeviceApprovalRequests = async (req, res) => {
 
 // Approve a device approval request
 export const manageDeviceRequest = async (req, res) => {
+  const status = req.body?.status;
   try {
-    const { deviceApprovalId, status, rejectionReason } = req.body;
+    const { deviceApprovalId, rejectionReason } = req.body;
     const adminId = req.user._id; // Assuming req.user is set by passport middleware
 
     // Validate inputs
@@ -2516,6 +2540,17 @@ export const verifyOtpviaemail = async (req, res) => {
       // Delete OTP and attempts from Redis after successful verification
       await redis.del(`otp:${email}`);
       await redis.del(attemptKey);
+
+      // Record verified state in Redis for 15 minutes to bind to subsequent signup
+      const verificationToken = crypto.randomBytes(24).toString("hex");
+      await redis.setEx(`email_verified:${email.toLowerCase()}`, 900, verificationToken);
+
+      return res.status(200).json({
+        success: true,
+        message: "OTP verified successfully",
+        data: { verificationToken, email },
+        err: {},
+      });
     }
 
     return res.status(200).json({
@@ -2639,11 +2674,31 @@ export const checkDeviceApprovalStatus = async (req, res) => {
   }
 };
 
-// Update user role (Admin only)
 export const updateUserRole = async (req, res) => {
   try {
     const { userId } = req.params;
     const { role } = req.body;
+
+    // SECURITY (F04): Only actual admins (not instructors) can update roles,
+    // and self-elevation/self-role-modification is forbidden.
+    const callerRole = req.user?.role;
+    if (!['admin', 'super_admin'].includes(callerRole)) {
+      return res.status(403).json({
+        success: false,
+        message: 'Forbidden: Only admin or super_admin can change user roles',
+        data: {},
+        err: { message: 'Unauthorized role update' },
+      });
+    }
+
+    if (req.user?._id && userId && req.user._id.toString() === userId.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: 'Forbidden: You cannot modify your own role',
+        data: {},
+        err: { message: 'Self role modification blocked' },
+      });
+    }
 
     if (!userId) {
       return res.status(400).json({

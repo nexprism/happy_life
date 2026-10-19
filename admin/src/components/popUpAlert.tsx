@@ -19,8 +19,6 @@ const PopupAlert: React.FC<PopupAlertProps> = ({
   confirmLabel = "Yes",
   cancelLabel = "Cancel",
 }) => {
-  if (!isVisible) return null;
-
   const showConfirm = typeof onConfirm === "function";
 
   useEffect(() => {
@@ -30,6 +28,8 @@ const PopupAlert: React.FC<PopupAlertProps> = ({
       console.log("PopupAlert visible", { type, message });
     }
   }, [isVisible, type, message]);
+
+  if (!isVisible) return null;
 
   return (
     <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center" style={{ zIndex: 999999 }} role="dialog" aria-modal="true">

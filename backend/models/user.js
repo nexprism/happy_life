@@ -74,10 +74,12 @@ const userSchema = new mongoose.Schema({
 
   // Password reset fields
   passwordChangedAt: { type: Date },
+  sessionVersion: { type: Number, default: 0 },
   passwordResetToken: { type: String, default: null },
   passwordResetExpiry: { type: Date, default: null },
 
 otp: { type: String, default: null },
+otpAttempts: { type: Number, default: 0 },
 otpExpiry: { type: Date, default: null },
 emailVerified: { type: Boolean, default: false },
 mobileVerified: { type: Boolean, default: false },

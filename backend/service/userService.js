@@ -2,6 +2,7 @@ import UserRepository from "../repository/userRepository.js";
 import { getUserLeaderboard } from '../service/leaderboardService.js';
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
+import User from '../models/user.js';
 
 class UserService {
   constructor() {
@@ -12,18 +13,10 @@ class UserService {
   // Async Password comparison
   async comparePassword(inputPassword, hashedPassword) {
     try {
-      // console?.log("inputPassword:", inputPassword);
-      console?.log("hashedPassword:", hashedPassword);
-      const isMatch = await bcrypt.compare(inputPassword, hashedPassword);
-      if (isMatch) {
-        //console.log("✅ Password match successful");
-      } else {
-        console.warn("❌ Password match failed");
-      }
-      return isMatch; // ✅ This is correct
+      return await bcrypt.compare(inputPassword, hashedPassword);
     } catch (error) {
       console.error("❌ Password comparison error:", error);
-      return false; // ✅ This is also correct
+      return false;
     }
   }
 
@@ -441,6 +434,8 @@ class UserService {
 
   async logoutFromAllDevices(userId) {
     try {
+        // Durable across Redis outages, worker restarts and multiple processes.
+        await User.findByIdAndUpdate(userId, { $inc: { sessionVersion: 1 } });
       const { initRedis } = await import("../config/redisClient.js");
       const { cleanupExpiredAccessTokensForUser, getAllAccessTokensForUser, blacklistAccessToken } = await import("../utils/tokens/generateTokens.js");
       const jwt = await import("jsonwebtoken");

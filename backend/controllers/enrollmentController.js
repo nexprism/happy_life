@@ -1,5 +1,6 @@
 import enrollmentService from '../service/enrollmentService.js';
 import Course from '../models/Course.js';
+import CourseBundle from '../models/CourseBundle.js';
 import { initRedis } from '../config/redisClient.js';
 import fcmTokenss from "../models/fcmTokens.js";
 import notificationService from "../utils/notificationService.js";

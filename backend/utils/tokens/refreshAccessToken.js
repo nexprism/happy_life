@@ -43,6 +43,10 @@ const refreshAccessToken = async (req, res) => {
       //console.log("❌ User not found for ID:", tokenDetails._id);
       throw new Error("User not found");
     }
+    if (user.isBanned || user.status === 'inactive' || user.isActive === false) {
+      throw new Error('Account is not active');
+    }
+    if ((tokenDetails.sessionVersion || 0) !== (user.sessionVersion || 0)) throw new Error('Session revoked');
 
     // Reject refresh token if issued before last password change
     if (user.passwordChangedAt && tokenDetails.iat) {

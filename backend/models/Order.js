@@ -37,7 +37,8 @@ const orderSchema = new Schema({
     deliveryStatus: { type: String, enum: ['pending', 'shipped', 'delivered', 'cancelled'], default: 'pending' },
     payment: {
         provider: { type: String, enum: ['stripe', 'razorpay', 'paypal', 'free', 'apple_iap', 'google_play'], required: true },
-        paymentIntent: { type: String, default: null }, // Store payment intent or transaction ID
+        paymentIntent: { type: String, default: null, index: true, sparse: true }, // Store payment intent or transaction ID
+        consumptionKey: { type: String },
         status: { type: String, enum: ['pending', 'paid', 'failed', 'refunded'], default: 'pending' }
     },
     meta: { type: Schema.Types.Mixed },
@@ -45,4 +46,5 @@ const orderSchema = new Schema({
     invoice_url: { type: String } // PDF invoice file name only
 }, { timestamps: true });
 
+orderSchema.index({ 'payment.consumptionKey': 1 }, { unique: true, partialFilterExpression: { 'payment.consumptionKey': { $type: 'string' } }, name: 'unique_payment_consumption' });
 export default mongoose.model('Order', orderSchema);

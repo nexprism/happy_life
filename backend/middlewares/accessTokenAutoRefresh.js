@@ -48,7 +48,7 @@ const accessTokenAutoRefresh = async (req, res, next) => {
     }
 
     // If access token exists and is not blacklisted, check device approval and proceed
-    if (accessToken) {
+    if (accessToken && decodedUser) {
       req.headers["authorization"] = `Bearer ${accessToken}`;
 
       // Device approval guard for existing access tokens
@@ -185,6 +185,7 @@ const accessTokenAutoRefresh = async (req, res, next) => {
 
       // Set the new access token in the Authorization header
       req.headers["authorization"] = `Bearer ${newAccessToken}`;
+      req.cookies.accessToken = newAccessToken;
 
       // Device approval guard: prevent token refresh for unapproved devices
       try {

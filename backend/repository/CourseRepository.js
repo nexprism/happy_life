@@ -1011,7 +1011,7 @@ class CourseRepository extends CrudRepository {
                         // Only fetch OTP for VdoCipher videos
                         if (videoLesson.sourcePlatform === 'vdocipher' && videoLesson.videoId) {
                           try {
-                            const vdoCipherData = await getVdoCipherOTP(videoLesson.videoId);
+                            const vdoCipherData = await this.getVdoCipherOTP(videoLesson.videoId);
 
                             // Add VdoCipher playback data to the video lesson
                             videoLesson.vdoCipherPlayback = {
@@ -1794,9 +1794,11 @@ class CourseRepository extends CrudRepository {
 
   async softDeleteById(id) {
     try {
+      const course = await Course.findById(id);
+      const newSlug = course ? `${course.slug}-deleted-${Date.now()}` : undefined;
       const deletedCourse = await Course.findOneAndUpdate(
         { _id: id, isDeleted: false },
-        { isDeleted: true, deletedAt: new Date() },
+        { isDeleted: true, deletedAt: new Date(), ...(newSlug && { slug: newSlug }) },
         { new: true }
       )
         .populate("categoryId")

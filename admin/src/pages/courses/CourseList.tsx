@@ -487,8 +487,14 @@ const CourseList: React.FC = () => {
         {error && (
           <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-4 mb-6">
             <div className="flex items-center gap-2">
-              <XCircle className="w-5 h-5 text-red-600" />
-              <p className="text-red-800 dark:text-red-200 font-medium">{error}</p>
+              <XCircle className="w-5 h-5 text-red-600 flex-shrink-0" />
+              <p className="text-red-800 dark:text-red-200 font-medium">
+                {typeof error === "string"
+                  ? error
+                  : (error as any)?.message ||
+                    (error as any)?.err?.message ||
+                    JSON.stringify(error)}
+              </p>
             </div>
           </div>
         )}

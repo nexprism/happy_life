@@ -1,6 +1,8 @@
+import { canReadCourse } from '../utils/courseAccess.js';
 import TextLessonService from "../service/textLessonService.js";
-import { initRedis } from "../config/redisClient.js";
+import { initRedis, deleteKeysByPattern } from "../config/redisClient.js";
 import NotificationService from "../service/notificationService.js"; // Import notification service
+import CourseEnrollment from "../models/CourseEnrollment.js";
 
 // Create a new text lesson
 export const createTextLesson = async (req, res) => {
@@ -29,7 +31,7 @@ export const createTextLesson = async (req, res) => {
     const lesson = await TextLessonService.createTextLesson(lessonData);
 
     const redis = await initRedis();
-    await redis.del("textlessons:all*");
+    await deleteKeysByPattern("textlessons:all*");
 
     // Notify enrolled students
     const notificationData = {
@@ -115,6 +117,20 @@ export const getTextLessonById = async (req, res) => {
         .status(404)
         .json({ success: false, message: "Text lesson not found" });
     }
+
+    const isFree = (lesson.accessibility || '').toLowerCase() === 'free';
+    const isPrivileged = req.user && ['admin', 'super_admin', 'instructor'].includes(req.user.role);
+
+    if (!isFree && !isPrivileged) {
+      if (!req.user) {
+        return res.status(401).json({ success: false, message: "Authentication required to access this lesson" });
+      }
+      const courseId = lesson.course?._id || lesson.course;
+      if (!await canReadCourse(req.user, courseId)) {
+        return res.status(403).json({ success: false, message: 'Active course enrollment required to access this lesson' });
+      }
+    }
+
     res.json({
       success: true,
       message: "Text lesson fetched successfully",
@@ -139,7 +155,7 @@ export const updateTextLesson = async (req, res) => {
     }
 
     const redis = await initRedis();
-    await redis.del("textlessons:all*");
+    await deleteKeysByPattern("textlessons:all*");
 
     res.json({
       success: true,
@@ -162,7 +178,7 @@ export const deleteTextLesson = async (req, res) => {
     }
 
     const redis = await initRedis();
-    await redis.del("textlessons:all*");
+    await deleteKeysByPattern("textlessons:all*");
 
     res.json({ success: true, message: "Text lesson deleted successfully" });
   } catch (error) {

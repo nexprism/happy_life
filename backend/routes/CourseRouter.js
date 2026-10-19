@@ -4,7 +4,7 @@ import { createCourse, getCourseById, getAllCourses, updateCourse, deleteCourse,
 // import { createCourse, getCourseById, getAllCourses, updateCourse, deleteCourse, getCourseContents, getCourseAttachments,getMyCourses  } from '../controllers/CourseController.js';
 import accessTokenAutoRefresh from '../middlewares/accessTokenAutoRefresh.js';
 import passport from 'passport';
-import { isAdmin } from '../middlewares/isAdmin.js';
+import { isContentManager as isAdmin } from '../middlewares/isAdmin.js';
 import isUserBanned from '../middlewares/isUserBanned.js';
 import requireDeviceApproval from '../middlewares/requireDeviceApproval.js';
 import optionalAuthenticate from '../middlewares/optionalAuthenticate.js';
@@ -115,9 +115,21 @@ courseRouter.get('/category/:categoryId', getCoursesByCategory);
 
 
 //:courseId/attachments?type=video
-// Get course attachments by course ID (public)
-courseRouter.get('/:courseId/attachments', getCourseAttachments);
-courseRouter.get('/:courseId/all-attachments', getAllCourseAttachments);
+// Get course attachments by course ID (admin only)
+courseRouter.get(
+  '/:courseId/attachments',
+  accessTokenAutoRefresh,
+  passport.authenticate('jwt', { session: false }),
+  isAdmin,
+  getCourseAttachments
+);
+courseRouter.get(
+  '/:courseId/all-attachments',
+  accessTokenAutoRefresh,
+  passport.authenticate('jwt', { session: false }),
+  isAdmin,
+  getAllCourseAttachments
+);
 // courseRouter.get('/:courseId/all-attachments-new', getAllCourseAttachmentsNested);
 
 

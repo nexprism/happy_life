@@ -65,6 +65,7 @@ const courseSchema = new mongoose.Schema({
     }
   },
   discountExpiry: { type: Date },
+  showLifetimePlan: { type: Boolean, default: true },
 
   // Course Details
   duration: { type: Number }, // in minutes

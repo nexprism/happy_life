@@ -108,7 +108,15 @@ async submitQuiz(quizId, userId, answers, timeTakenFrontend = 0) {
       });
     });
 
+    const seenQuestions = new Set();
     for (const answer of answers) {
+      if (!answer || !answer.question) continue;
+      const qKey = String(answer.question).trim();
+      if (seenQuestions.has(qKey)) {
+        continue;
+      }
+      seenQuestions.add(qKey);
+
       const question = questionMap.get(answer.question);
       if (question) {
         const isCorrect = question.correctAnswer === answer.selectedOption;
@@ -130,7 +138,10 @@ async submitQuiz(quizId, userId, answers, timeTakenFrontend = 0) {
       }
     }
 
-    const percentage = totalMarks > 0 ? Number(((score / totalMarks) * 100).toFixed(2)) : 0;
+    // Ensure score does not exceed totalMarks and percentage is bounded [0, 100]
+    score = Math.min(score, totalMarks);
+    const rawPercentage = totalMarks > 0 ? (score / totalMarks) * 100 : 0;
+    const percentage = Math.min(100, Math.max(0, Number(rawPercentage.toFixed(2))));
 
     // Calculate time taken from QuizAttempt if exists
     let calculatedTimeTaken = timeTakenFrontend;

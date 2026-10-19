@@ -146,10 +146,10 @@ export const resetPassword = createAsyncThunk(
 
 export const registerUser = createAsyncThunk(
   'auth/registerUser',
-  async ({ name, email, password, fullName, role, is_verify, phone }, { rejectWithValue }) => {
+  async ({ name, email, password, fullName, role, is_verify, phone }, { rejectWithValue, getState }) => {
     try {
       // API expects signup payload (some endpoints use /signup)
-      const payload = { name, email, password }
+      const payload = { name, email, password, verificationToken: getState().auth.verificationToken }
       if (fullName) payload.fullName = fullName
       if (role) payload.role = role
       if (phone) payload.phone = phone
@@ -178,6 +178,7 @@ const authSlice = createSlice({
     loading: false,
     error: null,
     otpVerified: false,
+    verificationToken: null,
     otpEmail: null,
   },
   reducers: {
@@ -235,7 +236,8 @@ const authSlice = createSlice({
       })
       .addCase(resetPassword.rejected, rejected)
       .addCase(verifyOtp.pending, pending)
-      .addCase(verifyOtp.fulfilled, (state, { meta }) => {
+      .addCase(verifyOtp.fulfilled, (state, { meta, payload }) => {
+        state.verificationToken = payload?.data?.verificationToken || null
         state.loading = false
         state.error = null
         state.otpVerified = true

@@ -1,4 +1,6 @@
 import express from "express";
+import protectedUploads from "./middlewares/protectedUploads.js";
+import downloadLinks from "./middlewares/downloadLinks.js";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import routes from "./routes/index.js";
@@ -18,8 +20,23 @@ import "./config/jwt-authenticate.js";
 const app = express();
 app.set("trust proxy", 1); // Trust first proxy (Render load balancer)
 
-// Serve static files
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+app.use(cookieParser());
+app.use(passport.initialize());
+app.use("/uploads", protectedUploads);
+
+// Serve static files with secure headers and fallback placeholder
+app.use("/uploads", express.static(path.join(__dirname, "uploads"), {
+  setHeaders: (res, filePath) => {
+    res.setHeader("X-Content-Type-Options", "nosniff");
+    const lower = filePath.toLowerCase();
+    if (lower.endsWith(".html") || lower.endsWith(".htm") || lower.endsWith(".svg") || lower.endsWith(".xml")) {
+      res.setHeader("Content-Disposition", "attachment");
+    }
+  }
+}), (req, res) => {
+  const defaultFile = path.join(__dirname, "uploads", "default_course.png");
+  res.sendFile(defaultFile);
+});
 
 // CORS config — dynamic origin to support credentials (wildcard '*' is
 // incompatible with credentials:true per the browser spec)
@@ -41,8 +58,6 @@ const corsOptions = {
     if (!origin) return callback(null, true);
     // Allow any localhost port for local development
     if (/^https?:\/\/localhost(:\d+)?$/.test(origin)) return callback(null, true);
-    // Allow Vercel and Render domains dynamically
-    if (origin.endsWith('.vercel.app') || origin.endsWith('.onrender.com')) return callback(null, true);
     
     if (ALLOWED_ORIGINS.includes(origin)) return callback(null, true);
     // Deny unknown origins
@@ -77,9 +92,9 @@ app.disable("x-powered-by");
 
 // Middlewares
 app.use(express.json());
-app.use(cookieParser());
+
 app.use(express.urlencoded({ extended: true }));
-app.use(passport.initialize());
+
 app.use(helmet({
   crossOriginResourcePolicy: false, // Allow cross-origin asset serving
   frameguard: { action: 'sameorigin' }, // Protect against clickjacking
@@ -98,6 +113,12 @@ app.use('/login', authLimiter);
 app.use('/signup', authLimiter);
 app.use('/sendotp', authLimiter);
 app.use('/verifyotp', authLimiter);
+app.use('/send-otp', authLimiter);
+app.use('/verify-otp', authLimiter);
+app.use('/user/send-otp', authLimiter);
+app.use('/user/verify-otp', authLimiter);
+app.use('/user/sendotp', authLimiter);
+app.use('/user/verifyotp', authLimiter);
 app.use('/forgot-password', authLimiter);
 app.use('/reset-password', authLimiter);
 
@@ -118,6 +139,7 @@ app.use((req, res, next) => {
 });
 
 // API Routes
+app.use(downloadLinks);
 app.use("/", routes);
 
 // Global 404 handler for unmatched API routes

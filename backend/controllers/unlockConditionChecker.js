@@ -9,6 +9,7 @@ import Quiz from '../models/Quiz.js';
 import AssignmentSubmission from '../models/assignmentSubmission.js';
 import Assignment from '../models/Assignment.js';
 import Module from '../models/Module.js';
+import Feedback from '../models/CourseFeedback.js';
 /**
  * API to check if drip conditions are satisfied for unlocking content
  * POST /api/drip/check-unlock-conditions

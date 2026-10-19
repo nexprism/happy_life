@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchCourseById, updateCourse } from "../../store/slices/course";
 import CategorySubcategoryDropdowns from "../../components/CategorySubcategoryDropdowns";
@@ -43,6 +43,16 @@ import LandingPageSections from "./LandingPageSections";
 import AddReview from "./AddReview";
 
 const baseUrl = import.meta.env.VITE_IMAGE_URL || import.meta.env.VITE_BASE_URL || "https://happy-life-sx03.onrender.com/";
+
+const getFullImageUrl = (url: string | null | undefined) => {
+  if (!url) return "";
+  if (url.startsWith("http://") || url.startsWith("https://") || url.startsWith("blob:") || url.startsWith("data:")) {
+    return url;
+  }
+  const cleanBase = (baseUrl || "").replace(/\/+$/, "");
+  const cleanPath = url.replace(/^\/+/, "");
+  return `${cleanBase}/${cleanPath}`;
+};
 
 // Success Popup Component (unchanged)
 const SuccessPopup = ({
@@ -94,13 +104,16 @@ const SuccessPopup = ({
   );
 };
 
-// File Upload Component (unchanged)
+// File Upload Component with live preview and existing image support
 type FileUploadProps = {
   label: string;
   accept: string;
   onFileChange: (file: File | null) => void;
   currentFile: File | null;
+  existingUrl?: string;
   icon: React.ElementType;
+  helperText?: string;
+  onClearExisting?: () => void;
 };
 
 const FileUpload = ({
@@ -108,11 +121,41 @@ const FileUpload = ({
   accept,
   onFileChange,
   currentFile,
+  existingUrl,
   icon: Icon,
+  helperText,
+  onClearExisting,
 }: FileUploadProps) => {
   const [dragOver, setDragOver] = useState(false);
+  const inputId = useMemo(
+    () => `file-${label.toLowerCase().replace(/[^a-z0-9]/g, "-")}-${Math.random().toString(36).substr(2, 6)}`,
+    [label]
+  );
 
-  const handleDrop = (e) => {
+  const previewUrl = useMemo(() => {
+    if (currentFile) {
+      try {
+        return URL.createObjectURL(currentFile);
+      } catch (e) {
+        return "";
+      }
+    }
+    return "";
+  }, [currentFile]);
+
+  useEffect(() => {
+    return () => {
+      if (previewUrl && previewUrl.startsWith("blob:")) {
+        try {
+          URL.revokeObjectURL(previewUrl);
+        } catch (e) {
+          // ignore
+        }
+      }
+    };
+  }, [previewUrl]);
+
+  const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     setDragOver(false);
     const files = e.dataTransfer.files;
@@ -121,7 +164,7 @@ const FileUpload = ({
     }
   };
 
-  const handleDragOver = (e) => {
+  const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
     setDragOver(true);
   };
@@ -130,39 +173,121 @@ const FileUpload = ({
     setDragOver(false);
   };
 
+  const hasImage = Boolean(currentFile || existingUrl);
+
   return (
     <div className="space-y-2">
-      <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 flex items-center gap-2">
-        <Icon className="w-4 h-4" />
-        {label}
+      <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 flex items-center justify-between">
+        <span className="flex items-center gap-2">
+          <Icon className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+          {label}
+        </span>
+        {helperText && <span className="text-xs text-gray-400 font-normal">{helperText}</span>}
       </label>
-      <div
-        className={`border-2 border-dashed rounded-lg p-4 text-center transition-colors ${dragOver ? "border-blue-400 bg-blue-50 dark:bg-blue-900/30" : "border-gray-300 dark:border-gray-600"
-          }`}
-        onDrop={handleDrop}
-        onDragOver={handleDragOver}
-        onDragLeave={handleDragLeave}
-      >
-        <input
-          type="file"
-          accept={accept}
-          onChange={(e) => onFileChange(e.target.files?.[0] || null)}
-          className="hidden"
-          id={`file-${label}`}
-        />
-        <label htmlFor={`file-${label}`} className="cursor-pointer">
-          <Upload className="w-8 h-8 mx-auto mb-2 text-gray-400 dark:text-gray-500" />
-          <p className="text-sm text-gray-600 dark:text-gray-400">
-            Drop file here or{" "}
-            <span className="text-blue-600 hover:underline">browse</span>
-          </p>
-        </label>
-        {currentFile && (
-          <div className="mt-2 p-2 bg-gray-100 dark:bg-gray-700 rounded text-xs text-gray-700 dark:text-gray-300">
-            {currentFile.name} ({(currentFile.size / 1024 / 1024).toFixed(2)} MB)
+
+      {hasImage ? (
+        <div className="relative border border-gray-200 dark:border-gray-700 rounded-xl p-3 bg-gray-50/70 dark:bg-gray-800/50 flex items-center gap-4 group">
+          <div className="w-24 h-16 rounded-lg overflow-hidden bg-gray-200 dark:bg-gray-700 flex-shrink-0 border border-gray-200 dark:border-gray-600 relative">
+            <img
+              src={currentFile ? previewUrl : getFullImageUrl(existingUrl)}
+              alt={label}
+              className="w-full h-full object-cover"
+              onError={(e) => {
+                (e.target as HTMLImageElement).src =
+                  "https://placehold.co/600x400/1e293b/ffffff?text=Image+Not+Found";
+              }}
+            />
           </div>
-        )}
-      </div>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2">
+              <span
+                className={`text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full ${
+                  currentFile
+                    ? "bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300"
+                    : "bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300"
+                }`}
+              >
+                {currentFile ? "New file selected" : "Current saved image"}
+              </span>
+            </div>
+            <p className="text-xs font-medium text-gray-800 dark:text-gray-200 truncate mt-1">
+              {currentFile ? currentFile.name : (existingUrl?.split("/").pop() || "Saved Image")}
+            </p>
+            {currentFile && (
+              <p className="text-[11px] text-gray-500 dark:text-gray-400">
+                {(currentFile.size / 1024 / 1024).toFixed(2)} MB
+              </p>
+            )}
+          </div>
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <input
+              type="file"
+              accept={accept}
+              onChange={(e) => {
+                if (e.target.files?.[0]) {
+                  onFileChange(e.target.files[0]);
+                }
+              }}
+              className="hidden"
+              id={inputId}
+            />
+            <label
+              htmlFor={inputId}
+              className="px-3 py-1.5 text-xs font-semibold bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer transition-colors shadow-sm"
+            >
+              Change
+            </label>
+            {currentFile ? (
+              <button
+                type="button"
+                onClick={() => onFileChange(null)}
+                className="p-1.5 text-gray-400 hover:text-red-500 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                title="Remove selection"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            ) : onClearExisting ? (
+              <button
+                type="button"
+                onClick={onClearExisting}
+                className="p-1.5 text-gray-400 hover:text-red-500 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                title="Remove image"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            ) : null}
+          </div>
+        </div>
+      ) : (
+        <div
+          className={`border-2 border-dashed rounded-xl p-5 text-center transition-all ${
+            dragOver
+              ? "border-blue-500 bg-blue-50/60 dark:bg-blue-900/20 scale-[0.99]"
+              : "border-gray-300 dark:border-gray-600 hover:border-gray-400 bg-gray-50/30 dark:bg-gray-800/20"
+          }`}
+          onDrop={handleDrop}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+        >
+          <input
+            type="file"
+            accept={accept}
+            onChange={(e) => onFileChange(e.target.files?.[0] || null)}
+            className="hidden"
+            id={inputId}
+          />
+          <label htmlFor={inputId} className="cursor-pointer block">
+            <Upload className="w-8 h-8 mx-auto mb-2 text-gray-400 dark:text-gray-500" />
+            <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              Drop file here or{" "}
+              <span className="text-blue-600 dark:text-blue-400 hover:underline">browse</span>
+            </p>
+            <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+              Supports PNG, JPG, JPEG, WEBP
+            </p>
+          </label>
+        </div>
+      )}
     </div>
   );
 };
@@ -410,6 +535,7 @@ const EditCourse = () => {
     isFeatured: false,
     enableWaitlist: false,
     coursePosition: "",
+    showLifetimePlan: true,
     // Mentor fields
     mentorName: "",
     mentorTitle: "",
@@ -576,7 +702,8 @@ const EditCourse = () => {
   // Always process course data when it changes
   useEffect(() => {
     if (courseData) {
-      const course = courseData.data || courseData;
+      const course = courseData?.data?.course || courseData?.course || courseData?.data || courseData;
+      if (!course || (!course._id && !course.title)) return;
 
       setFormData((prev) => ({
         ...prev,
@@ -627,6 +754,7 @@ const EditCourse = () => {
         isFeatured: course.isFeatured || false,
         enableWaitlist: course.enableWaitlist || false,
         coursePosition: course.coursePosition || "",
+        showLifetimePlan: course.showLifetimePlan !== false,
         // Mentor fields
         mentorName: course.mentorName || "",
         mentorTitle: course.mentorTitle || "",
@@ -835,19 +963,33 @@ const EditCourse = () => {
 
   // Add or update plan
   const handleAddOrUpdatePlan = () => {
-    if (!planForm.name.trim() || !planForm.price.trim() || !planForm.durationType || !planForm.duration.trim()) {
+    const name = String(planForm.name || "").trim();
+    const price = String(planForm.price ?? "").trim();
+    const durationType = String(planForm.durationType || "Month");
+    const duration = String(planForm.duration ?? "").trim();
+    const description = String(planForm.description || "").trim();
+    const salePrice = String(planForm.salePrice ?? "").trim();
+    const status = String(planForm.status || "active");
+
+    if (!name || !price || !durationType || !duration) {
       setPlanFormError("Name, price, duration type, and duration are required");
       return;
     }
+
     if (editingPlanIdx !== null) {
-      // Update existing plan
+      // Update existing plan preserving its _id
+      const existingId = plans[editingPlanIdx]?._id || planForm._id;
       setPlans((prev) =>
-        prev.map((p, idx) => (idx === editingPlanIdx ? { ...planForm } : p))
+        prev.map((p, idx) =>
+          idx === editingPlanIdx
+            ? { name, price, description, durationType, duration, salePrice, status, _id: existingId }
+            : p
+        )
       );
       setEditingPlanIdx(null);
     } else {
       // Add new plan
-      setPlans([...plans, { ...planForm }]);
+      setPlans([...plans, { name, price, description, durationType, duration, salePrice, status }]);
     }
     setPlanForm({ name: "", price: "", description: "", durationType: "Month", duration: "", salePrice: "", status: "active", _id: undefined });
     setPlanFormError("");
@@ -855,7 +997,18 @@ const EditCourse = () => {
 
   // Edit plan
   const handleEditPlan = (idx: number) => {
-    setPlanForm({ ...plans[idx] });
+    const p = plans[idx];
+    if (!p) return;
+    setPlanForm({
+      name: p.name || "",
+      price: String(p.price ?? ""),
+      description: p.description || "",
+      durationType: p.durationType || "Month",
+      duration: String(p.duration ?? ""),
+      salePrice: String(p.salePrice ?? ""),
+      status: p.status || "active",
+      _id: p._id,
+    });
     setEditingPlanIdx(idx);
     setPlanFormError("");
   };
@@ -983,8 +1136,14 @@ const EditCourse = () => {
             submitFormData.append(key, JSON.stringify(value));
           }
         }
-      } else if (value !== null && value !== undefined) {
-        submitFormData.append(key, String(value));
+      } else if (value !== null && value !== undefined && value !== "") {
+        if (key === "instructorId" || key === "subCategoryId") {
+          if (String(value).trim()) {
+            submitFormData.append(key, String(value));
+          }
+        } else {
+          submitFormData.append(key, String(value));
+        }
       }
     });
 
@@ -1020,14 +1179,19 @@ const EditCourse = () => {
     if (coverImageFile) submitFormData.set("coverImage", coverImageFile);
 
     // --- FLATTEN PLANS IN PAYLOAD WITHOUT QUOTES ---
-    plans.forEach((plan, idx) => {
+    let finalPlans = [...plans];
+    if (editingPlanIdx !== null && planForm.name && planForm.price) {
+      const existingId = plans[editingPlanIdx]?._id || planForm._id;
+      finalPlans = finalPlans.map((p, idx) =>
+        idx === editingPlanIdx ? { ...planForm, _id: existingId } : p
+      );
+    }
+
+    submitFormData.set("hasPlansSubmitted", "true");
+    finalPlans.forEach((plan, idx) => {
       Object.entries(plan).forEach(([key, value]) => {
-        if (key !== "_id") {
-          submitFormData.append(`plans[${idx}][${key}]`, value);
-        }
-        // Optionally, send _id for existing plans if backend supports updating by _id
-        if (key === "_id" && value) {
-          submitFormData.append(`plans[${idx}][_id]`, value);
+        if (value !== undefined && value !== null && value !== "") {
+          submitFormData.append(`plans[${idx}][${key}]`, String(value));
         }
       });
     });
@@ -1048,10 +1212,15 @@ const EditCourse = () => {
       const token = localStorage.getItem("token") || "";
       dispatch(fetchCourseById({ courseId, token }));
 
-    } catch (error) {
+    } catch (error: any) {
       setPopup({
         isVisible: true,
-        message: error.message || "Failed to update course. Please try again.",
+        message:
+          typeof error === "string"
+            ? error
+            : error?.message ||
+              error?.err?.message ||
+              "Failed to update course. Please try again.",
         type: "error",
       });
     }
@@ -1169,8 +1338,14 @@ const EditCourse = () => {
 
           {error && (
             <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-700 rounded-lg p-4 mb-6 flex items-center gap-3">
-              <AlertCircle className="w-5 h-5 text-red-500" />
-              <span className="text-red-700 dark:text-red-300 text-sm">{error}</span>
+              <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0" />
+              <span className="text-red-700 dark:text-red-300 text-sm">
+                {typeof error === "string"
+                  ? error
+                  : (error as any)?.message ||
+                    (error as any)?.err?.message ||
+                    JSON.stringify(error)}
+              </span>
             </div>
           )}
 
@@ -1440,6 +1615,8 @@ const EditCourse = () => {
                         accept="image/*"
                         onFileChange={setThumbnailFile}
                         currentFile={thumbnailFile}
+                        existingUrl={formData.thumbnail}
+                        onClearExisting={() => setFormData((prev: any) => ({ ...prev, thumbnail: "" }))}
                         icon={Image}
                       />
                       <FileUpload
@@ -1447,6 +1624,8 @@ const EditCourse = () => {
                         accept="image/*"
                         onFileChange={setCoverImageFile}
                         currentFile={coverImageFile}
+                        existingUrl={formData.coverImage}
+                        onClearExisting={() => setFormData((prev: any) => ({ ...prev, coverImage: "" }))}
                         icon={Image}
                       />
                     </div>
@@ -1456,6 +1635,8 @@ const EditCourse = () => {
                         accept="image/*"
                         onFileChange={setVerticalCarouselImageFile}
                         currentFile={verticalCarouselImageFile}
+                        existingUrl={formData.verticalCarouselImage}
+                        onClearExisting={() => setFormData((prev: any) => ({ ...prev, verticalCarouselImage: "" }))}
                         icon={Image}
                       />
                       <FileUpload
@@ -1463,6 +1644,8 @@ const EditCourse = () => {
                         accept="image/*"
                         onFileChange={setFeaturedImageBannerFile}
                         currentFile={featuredImageBannerFile}
+                        existingUrl={formData.featuredImageBanner}
+                        onClearExisting={() => setFormData((prev: any) => ({ ...prev, featuredImageBanner: "" }))}
                         icon={Image}
                       />
                     </div>
@@ -1483,32 +1666,6 @@ const EditCourse = () => {
                       baseUrl={baseUrl}
                       error={formErrors.demoVideoUrl || formErrors.demoVideoFile}
                     />
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      {formData.thumbnail && !thumbnailFile && (
-                        <div>
-                          <p className="text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Current Thumbnail</p>
-                          <img src={`${baseUrl}${formData.thumbnail}`} alt="Thumbnail" className="w-full h-auto rounded-lg" />
-                        </div>
-                      )}
-                      {formData.coverImage && !coverImageFile && (
-                        <div>
-                          <p className="text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Current Cover Image</p>
-                          <img src={`${baseUrl}${formData.coverImage}`} alt="Cover" className="w-full h-auto rounded-lg" />
-                        </div>
-                      )}
-                      {formData.verticalCarouselImage && !verticalCarouselImageFile && (
-                        <div>
-                          <p className="text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Current Vertical Carousel Image</p>
-                          <img src={`${baseUrl}${formData.verticalCarouselImage}`} alt="Vertical Carousel" className="w-full h-auto rounded-lg" />
-                        </div>
-                      )}
-                      {formData.featuredImageBanner && !featuredImageBannerFile && (
-                        <div>
-                          <p className="text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Current Featured Image Banner</p>
-                          <img src={`${baseUrl}${formData.featuredImageBanner}`} alt="Featured Image Banner" className="w-full h-auto rounded-lg" />
-                        </div>
-                      )}
-                    </div>
                   </div>
                 )}
 
@@ -1595,6 +1752,27 @@ const EditCourse = () => {
                           </option>
                         </select>
                       </div>
+
+                      {/* Show / Hide Lifetime Plan Toggle */}
+                      <div className="col-span-full p-4 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg flex items-center justify-between">
+                        <div>
+                          <label className="text-sm font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                            Show Lifetime Full Access Plan on Frontend
+                          </label>
+                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                            Enable to offer the permanent Lifetime Access plan. Disable if you only want to offer duration plans (e.g. 1 Year, 6 Months) and hide the Lifetime Access plan.
+                          </p>
+                        </div>
+                        <label className="relative inline-flex items-center cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={formData.showLifetimePlan !== false}
+                            onChange={(e) => setFormData((prev: any) => ({ ...prev, showLifetimePlan: e.target.checked }))}
+                            className="sr-only peer"
+                          />
+                          <div className="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                        </label>
+                      </div>
                     </div>
                     {/* --- Plans Section --- */}
                     <div className="mt-8">
@@ -1655,13 +1833,24 @@ const EditCourse = () => {
                           <option value="inactive">Inactive</option>
                         </select>
                       </div>
-                      <button
-                        type="button"
-                        onClick={handleAddOrUpdatePlan}
-                        className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
-                      >
-                        {editingPlanIdx !== null ? "Update Plan" : "Add Plan"}
-                      </button>
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={handleAddOrUpdatePlan}
+                          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm font-medium"
+                        >
+                          {editingPlanIdx !== null ? "Update Plan" : "Add Plan"}
+                        </button>
+                        {editingPlanIdx !== null && (
+                          <button
+                            type="button"
+                            onClick={handleCancelEdit}
+                            className="px-3 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 text-sm font-medium dark:bg-gray-700 dark:text-gray-200"
+                          >
+                            Cancel
+                          </button>
+                        )}
+                      </div>
                       {planFormError && (
                         <div className="text-xs text-red-600 mt-1">{planFormError}</div>
                       )}
@@ -1991,28 +2180,17 @@ const EditCourse = () => {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
-                        Mentor Image
-                      </label>
                       <FileUpload
-                        label="Upload Mentor Image"
+                        label="Mentor Image (400x400px)"
                         accept="image/*"
                         onFileChange={(file) => {
-                          // Handle file upload - you may need to upload it first
                           setFormData({ ...formData, mentorImageFile: file });
                         }}
                         currentFile={formData.mentorImageFile || null}
+                        existingUrl={formData.mentorImage}
+                        onClearExisting={() => setFormData({ ...formData, mentorImage: "" })}
                         icon={Image}
                       />
-                      {formData.mentorImage && (
-                        <div className="mt-4">
-                          <img
-                            src={`${baseUrl}/${formData.mentorImage}`}
-                            alt="Current mentor image"
-                            className="w-32 h-32 object-cover rounded-lg border dark:border-gray-600"
-                          />
-                        </div>
-                      )}
                     </div>
 
                     <div>
@@ -2211,30 +2389,18 @@ const EditCourse = () => {
                     )}
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
-                        Certificate Image (Optional - Upload custom certificate design)
-                      </label>
                       <FileUpload
-                        label="Upload Certificate Image"
+                        label="Certificate Image (Custom Design / Template)"
                         accept="image/*"
                         onFileChange={(file) => {
                           setFormData({ ...formData, certificateImageFile: file });
                         }}
                         currentFile={formData.certificateImageFile || null}
+                        existingUrl={formData.certificateImage}
+                        onClearExisting={() => setFormData({ ...formData, certificateImage: "" })}
                         icon={Image}
+                        helperText="Used instead of the default template"
                       />
-                      {formData.certificateImage && (
-                        <div className="mt-4">
-                          <img
-                            src={`${baseUrl}/${formData.certificateImage}`}
-                            alt="Current certificate image"
-                            className="w-full max-w-md h-auto object-cover rounded-lg border dark:border-gray-600"
-                          />
-                        </div>
-                      )}
-                      <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
-                        If you upload a custom certificate image, it will be used instead of the default template.
-                      </p>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

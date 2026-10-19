@@ -3,7 +3,7 @@ import passport from 'passport';
 import upload from '../middlewares/upload.js';
 import { createModule, getModuleById, getAllModules, updateModule, deleteModule, disableDripForModule } from '../controllers/ModuleController.js';
 import accessTokenAutoRefresh from '../middlewares/accessTokenAutoRefresh.js';
-import { isAdmin } from '../middlewares/isAdmin.js';
+import { isContentManager as isAdmin } from '../middlewares/isAdmin.js';
 
 const router = express.Router();
 

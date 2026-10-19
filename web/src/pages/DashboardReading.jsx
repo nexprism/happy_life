@@ -1,8 +1,9 @@
-﻿import React, { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchCourseDetail } from '../redux/slices/courseSlice';
 import sanitizeDisplay from '../utils/textSanitize';
+import DOMPurify from 'dompurify';
 import DashboardHeader from '../components/dashboard/DashboardHeader';
 
 const DashboardReading = () => {
@@ -109,7 +110,7 @@ const DashboardReading = () => {
                             </div>
                             <div 
                                 className="font-montserrat text-md md:text-md text-normal/70 leading-[1.8] space-y-8 dashboard-reading-content break-all"
-                                dangerouslySetInnerHTML={{ __html: reading.content || 'No transcript data recorded for this session.' }}
+                                dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(reading.content || 'No transcript data recorded for this session.') }}
                             />
                         </div>
                     </article>

@@ -1,4 +1,6 @@
 import jwt from "jsonwebtoken";
+import crypto from 'crypto';
+import RevokedAccessToken from '../../models/RevokedAccessToken.js';
 import UserRefreshToken from "../../models/UserRefreshToken.js";
 import { ServerConfig } from "../../config/server.config.js";
 import { initRedis } from "../../config/redisClient.js";
@@ -79,11 +81,14 @@ const blacklistAccessToken = async (token, exp) => {
   // Set blacklist with TTL equal to token's remaining lifetime
   const ttl = Math.floor((exp - Date.now()) / 1000);
   if (ttl > 0) {
+    await RevokedAccessToken.updateOne(
+      { _id: crypto.createHash('sha256').update(token).digest('hex') },
+      { $set: { expiresAt: new Date(exp) } }, { upsert: true }
+    );
     if (redis) {
       await redis.setEx(`${ACCESS_TOKEN_BLACKLIST_PREFIX}${token}`, ttl, "1");
-    } else {
-      memoryBlacklist.set(token, Date.now() + ttl * 1000);
     }
+    memoryBlacklist.set(token, Date.now() + ttl * 1000);
     //console.log(`[BLACKLIST] Token ${token.substring(0, 12)}... set for ${ttl}s`);
   } else {
     //console.log(`[BLACKLIST] Token ${token.substring(0, 12)}... not set (expired)`);
@@ -91,14 +96,14 @@ const blacklistAccessToken = async (token, exp) => {
 };
 
 const isAccessTokenBlacklisted = async (token, user) => {
+  if (await RevokedAccessToken.exists({ _id: crypto.createHash('sha256').update(token).digest('hex'), expiresAt: { $gt: new Date() } })) return true;
   const redis = await getRedis();
   if (redis) {
     const result = await redis.get(`${ACCESS_TOKEN_BLACKLIST_PREFIX}${token}`);
-    return result === "1";
-  } else {
-    const expiry = memoryBlacklist.get(token);
-    return expiry && expiry > Date.now();
+    if (result === "1") return true;
   }
+  const expiry = memoryBlacklist.get(token);
+  return !!(expiry && expiry > Date.now());
 };
 
 const getTokenExp = (token) => {
@@ -116,7 +121,7 @@ const generateTokens = async (user, platform = "web", deviceId = null) => {
       throw new Error("User object is missing or invalid");
     }
 
-    const payload = { _id: user._id, roles: user.role || user.roles, platform };
+    const payload = { _id: user._id, roles: user.role || user.roles, platform, sessionVersion: user.sessionVersion || 0 };
 
     // Define secrets
     const accessSecret = process.env.JWT_ACCESS_TOKEN_SECRET_KEY || process.env.JWT_ACCESS_SECRET;
@@ -126,16 +131,23 @@ const generateTokens = async (user, platform = "web", deviceId = null) => {
       throw new Error("JWT secrets are not defined in environment variables");
     }
 
-    // Generate tokens
-    const accessToken = jwt.sign(payload, accessSecret, { expiresIn: '10y' });
-    const refreshToken = jwt.sign(payload, refreshSecret, { expiresIn: '10y' });
+    // Generate tokens with bounded lifetime (1d access, 30d refresh)
+    const accessExpires = process.env.JWT_ACCESS_EXPIRES_IN || '1d';
+    const refreshExpires = process.env.JWT_REFRESH_EXPIRES_IN || '30d';
+
+    const accessToken = jwt.sign(payload, accessSecret, { expiresIn: accessExpires });
+    const refreshToken = jwt.sign(
+      { ...payload, jti: crypto.randomUUID() },
+      refreshSecret,
+      { expiresIn: refreshExpires }
+    );
 
     // Calculate expiration times
     const decodedAccess = jwt.decode(accessToken);
     const decodedRefresh = jwt.decode(refreshToken);
 
-    const accessTokenExp = decodedAccess?.exp ? decodedAccess.exp * 1000 : Date.now() + 1000 * 60 * 60 * 24 * 365 * 10;
-    const refreshTokenExp = decodedRefresh?.exp ? decodedRefresh.exp * 1000 : Date.now() + 1000 * 60 * 60 * 24 * 365 * 10;
+    const accessTokenExp = decodedAccess?.exp ? decodedAccess.exp * 1000 : Date.now() + 1000 * 60 * 60 * 24;
+    const refreshTokenExp = decodedRefresh?.exp ? decodedRefresh.exp * 1000 : Date.now() + 1000 * 60 * 60 * 24 * 30;
 
     // Invalidate previous refresh tokens for the SAME platform only
     // This allows web + app to coexist, but only 1 device per platform
@@ -144,15 +156,27 @@ const generateTokens = async (user, platform = "web", deviceId = null) => {
       platform: platform === "web" ? "web" : { $in: ["app", "android", "ios"] }
     });
 
-    // Save new refresh token
-    const newRefreshToken = new UserRefreshToken({
-      userId: user._id,
-      token: refreshToken,
-      expiresAt: new Date(refreshTokenExp),
-      platform: platform,
-      deviceId: deviceId
-    });
-    await newRefreshToken.save();
+    // Save new refresh token safely
+    try {
+      const newRefreshToken = new UserRefreshToken({
+        userId: user._id,
+        token: refreshToken,
+        expiresAt: new Date(refreshTokenExp),
+        platform: platform,
+        deviceId: deviceId
+      });
+      await newRefreshToken.save();
+    } catch (saveErr) {
+      if (saveErr.code === 11000) {
+        await UserRefreshToken.updateOne(
+          { token: refreshToken },
+          { $set: { expiresAt: new Date(refreshTokenExp), userId: user._id, platform } },
+          { upsert: true }
+        );
+      } else {
+        throw saveErr;
+      }
+    }
 
     // Blacklist previous tokens (if not admin/super_admin/instructor) ONLY for the current platform
     // This allows web + one app device to coexist

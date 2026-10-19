@@ -1,4 +1,4 @@
-﻿import React from 'react'
+import React from 'react'
 import sanitizeDisplay from '../utils/textSanitize'
 import { Link } from 'react-router-dom'
 import { useLanguage } from '../context/LanguageContext'
@@ -25,6 +25,10 @@ const CourseCard = ({ item, className = '', variant = 'course', onRegister }) =>
           src={item.image} 
           alt={sanitizeDisplay(item.title)}
           className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
+          onError={(e) => {
+            e.currentTarget.onerror = null;
+            e.currentTarget.src = '/courses/curator.png';
+          }}
         />
         {item.isNew && (
           <div className="absolute top-4 right-4 bg-accent/90 text-white px-2 py-0.5 font-montserrat text-[8px] font-bold tracking-tighter z-30">

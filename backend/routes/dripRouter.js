@@ -1,7 +1,7 @@
 import express from 'express';
 import accessTokenAutoRefresh from '../middlewares/accessTokenAutoRefresh.js';
 import passport from 'passport';
-import { isAdmin } from '../middlewares/isAdmin.js';
+import { isContentManager as isAdmin } from '../middlewares/isAdmin.js';
 import {
     createDripRule,
     getAllDripRules,

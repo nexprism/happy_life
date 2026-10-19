@@ -14,20 +14,16 @@ class AssignmentSubmissionService {
         throw new Error('Assignment not found');
       }
 
-      //check maxAttempts = submition count
+      // Check maxAttempts
       const existingSubmissions = await this.repo.countByUserAndAssignment(data.submittedBy, data.assignmentId);
-      // if (existingSubmissions) {
-      //   //console.log(`Existing submissions for user ${data.submittedBy} and assignment ${data.assignmentId}: ${existingSubmissions}`);
-      //   if (existingSubmissions >= assignment.maxAttempts) {
-      //     throw new Error(`Maximum attempts reached for this assignment. You can only submit ${assignment.maxAttempts} times.`);
-      //   }
-      // }
-        
+      if (assignment.maxAttempts && existingSubmissions >= assignment.maxAttempts) {
+        throw new Error(`Maximum attempts reached for this assignment. You can only submit ${assignment.maxAttempts} times.`);
+      }
 
       const submission = await this.repo.create(data);
 
-      // Compare scoreGiven with assignment.score
-      if (submission.scoreGiven !== null && submission.scoreGiven >= assignment.score) {
+      // Compare scoreGiven with assignment.score only when valid score exists
+      if (submission.scoreGiven !== null && submission.scoreGiven !== undefined && submission.scoreGiven >= assignment.score) {
         submission.is_complete = true;
       } else {
         submission.is_complete = false;

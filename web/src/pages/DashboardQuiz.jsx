@@ -1,8 +1,9 @@
-﻿import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import { fetchCourseDetail } from '../redux/slices/courseSlice'
 import sanitizeDisplay from '../utils/textSanitize'
+import DOMPurify from 'dompurify'
 import authorizedFetch from '../utils/apiClient'
 import DashboardHeader from '../components/dashboard/DashboardHeader'
 
@@ -512,7 +513,7 @@ const DashboardQuiz = () => {
                                                                     <span className="text-xs font-bold text-[#2171B5] uppercase tracking-wider">Explanation</span>
                                                                 </div>
                                                                 {/* Render rich text explanation directly using dangerouslySetInnerHTML */}
-                                                                <div className="p-4 text-sm text-slate-700 prose prose-sm max-w-none prose-p:my-1 prose-ul:my-1 prose-ol:my-1" dangerouslySetInnerHTML={{ __html: reviewQ.explanation }} />
+                                                                <div className="p-4 text-sm text-slate-700 prose prose-sm max-w-none prose-p:my-1 prose-ul:my-1 prose-ol:my-1" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(reviewQ.explanation || '') }} />
                                                             </div>
                                                         )}
                                                     </div>

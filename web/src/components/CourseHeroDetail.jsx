@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
 import RollingText from './RollingText'
 import sanitizeDisplay from '../utils/textSanitize'
@@ -50,6 +50,25 @@ const CourseHeroDetail = ({ course, section }) => {
       "Proven Process"
    ]
 
+   const getNum = (val) => {
+      if (val === null || val === undefined) return 0;
+      if (typeof val === 'number') return isNaN(val) ? 0 : val;
+      if (typeof val === 'object' && val.$numberDecimal !== undefined) return Number(val.$numberDecimal) || 0;
+      if (typeof val === 'string') return parseFloat(val.replace(/[^0-9.-]+/g, '')) || 0;
+      return 0;
+   };
+
+   const mainPrice = getNum(course?.price);
+   const mainSale = getNum(course?.salePrice);
+   const effectiveMain = (mainSale > 0 && (mainPrice === 0 || mainSale < mainPrice)) ? mainSale : mainPrice;
+   const planPrices = (course?.plans || []).map(p => {
+      const sp = getNum(p.salePrice);
+      const pr = getNum(p.price);
+      return (sp > 0 && (pr === 0 || sp < pr)) ? sp : pr;
+   }).filter(p => p > 0);
+   const allPrices = [effectiveMain, ...planPrices].filter(p => p > 0);
+   const lowestPrice = allPrices.length > 0 ? Math.min(...allPrices) : null;
+
    return (
       <section ref={heroRef} className="max-w-7xl mx-auto mb-20 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center min-h-[70vh]">
 
@@ -71,9 +90,6 @@ const CourseHeroDetail = ({ course, section }) => {
                      </React.Fragment>
                   ))}
                </h1>
-               {/* <h2 className="reveal-text font-montserrat text-normal/70 pt-2 text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] transition-colors">
-            {displaySubtitle}
-          </h2> */}
             </div>
 
             <p className="reveal-text font-montserrat text-[9px] md:text-xs text-black max-w-xl leading-[1.7] tracking-widest break-words">
@@ -95,17 +111,19 @@ const CourseHeroDetail = ({ course, section }) => {
             </div>
 
             {/* Buttons */}
-            <div className="reveal-text flex flex-wrap gap-6 pt-4">
+            <div className="reveal-text flex flex-wrap items-center gap-6 pt-4">
                <button
                   onClick={() => document.getElementById('pricing-section')?.scrollIntoView({ behavior: 'smooth' })}
-                  className="group relative bg-accent px-10 md:px-12 py-4 overflow-hidden transition-all duration-700 hover:scale-105 active:scale-95"
+                  className="group relative bg-accent px-10 md:px-12 py-4 overflow-hidden transition-all duration-700 hover:scale-105 active:scale-95 cursor-pointer shadow-sm"
                >
                   <div className="absolute inset-0 bg-white/20 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out skew-x-12" />
-                  <span className="relative z-10 font-montserrat text-dark text-[9px] font-bold tracking-[0.5em] uppercase">{t('seePricing')}</span>
+                  <span className="relative z-10 font-montserrat text-dark text-[9px] font-bold tracking-[0.5em] uppercase">
+                     {t('seePricing')} {lowestPrice ? `• ₹${lowestPrice.toLocaleString('en-IN')}` : ''}
+                  </span>
                </button>
                <button
                   onClick={() => document.getElementById('curriculum-section')?.scrollIntoView({ behavior: 'smooth' })}
-                  className="group relative px-10 md:px-12 py-4 border border-border overflow-hidden hover:border-accent transition-all duration-500"
+                  className="group relative px-10 md:px-12 py-4 border border-border overflow-hidden hover:border-accent transition-all duration-500 cursor-pointer"
                >
                   <span className="relative z-10 font-montserrat text-normal text-[9px] font-bold tracking-[0.5em] uppercase">VIEW CURRICULUM</span>
                </button>

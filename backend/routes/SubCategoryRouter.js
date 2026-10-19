@@ -2,7 +2,7 @@ import express from 'express';
 import { createSubCategory, getSubCategoryById, getAllSubCategories, updateSubCategory, deleteSubCategory } from '../controllers/SubCategoryController.js';
 import accessTokenAutoRefresh from '../middlewares/accessTokenAutoRefresh.js';
 import passport from 'passport';
-import { isAdmin } from '../middlewares/isAdmin.js';
+import { isContentManager as isAdmin } from '../middlewares/isAdmin.js';
 
 const subCategoryRouter = express.Router();
 

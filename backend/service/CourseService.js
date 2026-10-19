@@ -21,10 +21,10 @@ class CourseService {
       let counter = 1;
 
       while (true) {
-        const existingCourse = await this.repository.findBy({ slug });
+        const existingCourse = await Course.findOne({ slug });
         if (
           !existingCourse ||
-          (excludeId && existingCourse._id.toString() === excludeId)
+          (excludeId && existingCourse._id.toString() === excludeId.toString())
         ) {
           return slug;
         }
@@ -133,51 +133,75 @@ class CourseService {
     }
   }
 
-  //updateCoursePlans
-  async updateCoursePlans(courseId, plans) {
+  // updateCoursePlans: Synchronizes course plans for a course (create, update, delete removed)
+  async updateCoursePlans(courseId, plans = []) {
     try {
       if (!mongoose.Types.ObjectId.isValid(courseId)) {
         throw new Error("Invalid course ID format");
       }
+
+      const CoursePlan = (await import("../models/CoursePlan.js")).default;
+      const courseObjectId = new mongoose.Types.ObjectId(courseId);
+      const keptPlanIds = [];
+
       // Validate each plan and update or create
       for (const plan of plans) {
-        if (!plan.name || !plan.price || !plan.duration || !plan.durationType) {
-          throw new Error("Invalid course plan data");
+        if (!plan.name || plan.price === undefined || plan.duration === undefined || !plan.durationType) {
+          throw new Error("Invalid course plan data: name, price, duration, durationType are required");
         }
         if (!["Month", "Year", "Day"].includes(plan.durationType)) {
           throw new Error("Invalid duration type in course plan");
         }
-        if (isNaN(plan.price) || plan.price < 0) {
+        if (isNaN(plan.price) || Number(plan.price) < 0) {
           throw new Error("Invalid price in course plan");
         }
-        if (isNaN(plan.duration) || plan.duration <= 0) {
+        if (isNaN(plan.duration) || Number(plan.duration) <= 0) {
           throw new Error("Invalid duration in course plan");
         }
+
         const coursePlanData = {
-          courseId,
-          name: plan.name,
+          courseId: courseObjectId,
+          name: String(plan.name).trim(),
           price: Number(plan.price),
-          description: plan.description || '',
+          description: plan.description ? String(plan.description).trim() : '',
           durationType: plan.durationType,
           duration: Number(plan.duration),
           salePrice: plan.salePrice ? Number(plan.salePrice) : 0,
           status: plan.status || 'active'
         };
-        if (plan._id) {
-          // Update existing plan
-          await CoursePlan.findOneAndUpdate(
-            { _id: plan._id, courseId },
+
+        const hasValidId = plan._id && mongoose.Types.ObjectId.isValid(String(plan._id));
+
+        if (hasValidId) {
+          const planObjectId = new mongoose.Types.ObjectId(String(plan._id));
+          const updated = await CoursePlan.findOneAndUpdate(
+            { _id: planObjectId, courseId: courseObjectId },
             { $set: coursePlanData },
             { new: true, runValidators: true }
           );
+          if (updated) {
+            keptPlanIds.push(updated._id);
+          } else {
+            const created = await CoursePlan.create(coursePlanData);
+            keptPlanIds.push(created._id);
+          }
         } else {
           // Create new plan
-          await CoursePlan.create(coursePlanData);
+          const created = await CoursePlan.create(coursePlanData);
+          keptPlanIds.push(created._id);
         }
       }
+
+      // Delete any existing plans that were removed by the admin
+      await CoursePlan.deleteMany({
+        courseId: courseObjectId,
+        _id: { $nin: keptPlanIds }
+      });
+
+      return await CoursePlan.find({ courseId: courseObjectId });
     } catch (error) {
       console.error("Error updating course plans:", error);
-      throw new Error("Failed to update course plans");
+      throw new Error("Failed to update course plans: " + error.message);
     }
   }
 
@@ -270,15 +294,29 @@ class CourseService {
         }
       }
 
-      // if (instructorId) {
-      //   const instructor = await User.findOne({
-      //     _id: instructorId,
-      //     role: "instructor",
-      //   });
-      //   if (!instructor) {
-      //     throw new Error("Invalid or non-existent instructor");
-      //   }
-      // }
+      if (
+        !updateFields.instructorId ||
+        updateFields.instructorId === "" ||
+        !mongoose.Types.ObjectId.isValid(updateFields.instructorId)
+      ) {
+        delete updateFields.instructorId;
+      }
+
+      if (
+        !updateFields.subCategoryId ||
+        updateFields.subCategoryId === "" ||
+        !mongoose.Types.ObjectId.isValid(updateFields.subCategoryId)
+      ) {
+        delete updateFields.subCategoryId;
+      }
+
+      if (
+        !updateFields.categoryId ||
+        updateFields.categoryId === "" ||
+        !mongoose.Types.ObjectId.isValid(updateFields.categoryId)
+      ) {
+        delete updateFields.categoryId;
+      }
 
       // if (topic && (!Array.isArray(topic) || topic.length === 0)) {
       //   throw new Error("Topic must be a non-empty array");

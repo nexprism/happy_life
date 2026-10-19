@@ -1,16 +1,25 @@
 
 import AssignmentSubmissionService from "../service/assignmentSubmissionService.js";
-import { initRedis } from "../config/redisClient.js";
+import { initRedis, deleteKeysByPattern } from "../config/redisClient.js";
 
 const service = new AssignmentSubmissionService();
 
 export const submitAssignment = async (req, res) => {
   try {
     const submissionFile = req.file?.path?.replace(/\\/g, "/");
+    const { assignmentId, courseId, lessonId, submissionText, githubUrl } = req.body || {};
     const payload = {
-      ...req.body,
+      assignmentId,
+      courseId,
+      lessonId,
+      submissionText,
+      githubUrl,
       submittedBy: req.user._id,
       submissionFile,
+      status: 'submitted',
+      scoreGiven: null,
+      feedback: null,
+      is_complete: false,
     };
 
     const submission = await service.submit(payload); // Fixed: Call submit on service instance
@@ -120,7 +129,7 @@ export const gradeSubmission = async (req, res) => {
     }
 
     const redis = await initRedis();
-    await redis.del("submissions:*");
+    await deleteKeysByPattern("submissions:*");
 
     res.status(200).json({
       success: true,
@@ -144,7 +153,7 @@ export const deleteSubmission = async (req, res) => {
     }
 
     const redis = await initRedis();
-    await redis.del("submissions:*");
+    await deleteKeysByPattern("submissions:*");
 
     res.status(200).json({
       success: true,

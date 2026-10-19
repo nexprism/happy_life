@@ -1,5 +1,7 @@
+import { canReadCourse } from '../utils/courseAccess.js';
 import fileService from "../service/file-service.js";
-import { initRedis } from "../config/redisClient.js";
+import { initRedis, deleteKeysByPattern } from "../config/redisClient.js";
+import CourseEnrollment from "../models/CourseEnrollment.js";
 
 export const createFile = async (req, res) => {
   //console.log("Creating file with data:", req.body);
@@ -27,8 +29,7 @@ export const createFile = async (req, res) => {
     });
 
     //console.log("File created with data:", file);
-    const redis = await initRedis();
-    await redis.del("files:all*");
+    await deleteKeysByPattern("files:all*");
 
     res
       .status(201)
@@ -54,6 +55,12 @@ export const getFiles = async (req, res) => {
     const filters = {};
     if (courseId) filters.courseId = courseId;
     if (lessonId) filters.lessonId = lessonId;
+
+    // Non-privileged users should only query public files by default
+    const isPrivileged = req.user && ['admin', 'super_admin', 'instructor'].includes(req.user.role);
+    if (!isPrivileged && !(courseId && await canReadCourse(req.user, courseId))) {
+      filters.isPublic = true;
+    }
 
     const options = {
       page: parseInt(page),
@@ -90,27 +97,15 @@ export const getFileById = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const redis = await initRedis();
-    const cached = await redis.get(`file:${id}`);
-
-    if (cached) {
-      return res.status(200).json({
-        success: true,
-        message: "File from cache",
-        data: JSON.parse(cached),
-        fromCache: true,
-      });
-    }
-
-    //console.log("Fetching file with ID:", id);
-
     const file = await fileService.getFile(id);
     if (!file)
       return res
         .status(404)
         .json({ success: false, message: "File not found" });
 
-    await redis.setEx(`file:${id}`, 300, JSON.stringify(file));
+    if (file.isPublic !== true && !await canReadCourse(req.user, file.courseId)) {
+      return res.status(req.user ? 403 : 401).json({ success: false, message: 'Active enrollment required to access private file' });
+    }
 
     res
       .status(200)
@@ -132,7 +127,7 @@ export const updateFile = async (req, res) => {
         .json({ success: false, message: "File not found" });
 
     const redis = await initRedis();
-    await redis.del("files:all*");
+    await deleteKeysByPattern("files:all*");
     await redis.del(`file:${id}`);
 
     res
@@ -154,7 +149,7 @@ export const deleteFile = async (req, res) => {
         .json({ success: false, message: "File not found" });
 
     const redis = await initRedis();
-    await redis.del("files:all*");
+    await deleteKeysByPattern("files:all*");
     await redis.del(`file:${id}`);
 
     res

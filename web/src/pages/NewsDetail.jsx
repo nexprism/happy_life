@@ -1,9 +1,11 @@
-﻿import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchNewsBySlug } from '../redux/slices/newsSlice'
 import { gsap } from 'gsap'
 import { useLanguage } from '../context/LanguageContext'
+import DOMPurify from 'dompurify'
+import { authorizedFetch } from '../utils/apiClient'
 
 const NewsDetail = () => {
   const { id: slug } = useParams()
@@ -14,18 +16,44 @@ const NewsDetail = () => {
   const [comment, setComment] = useState('')
   const [comments, setComments] = useState([])
 
-  const handlePostComment = () => {
+  useEffect(() => {
+    if (articleData?.comments && Array.isArray(articleData.comments)) {
+      setComments(
+        articleData.comments.map((c) => ({
+          id: c._id || Date.now() + Math.random(),
+          text: c.comment || c.text || '',
+          author: c.user?.fullName || c.author || 'Student',
+          date: c.createdAt ? new Date(c.createdAt).toLocaleDateString() : 'Recently'
+        }))
+      )
+    }
+  }, [articleData])
+
+  const handlePostComment = async () => {
     if (!comment.trim()) return
+    const commentText = comment.trim()
+    setComment('')
     
     const newComment = {
       id: Date.now(),
-      text: comment,
-      author: "USER PROFILER",
+      text: commentText,
+      author: "You",
       date: "JUST NOW"
     }
     
-    setComments([newComment, ...comments])
-    setComment('')
+    setComments((prev) => [newComment, ...prev])
+
+    try {
+      const newsId = articleData?._id || slug
+      if (newsId) {
+        await authorizedFetch(`/news/${newsId}/comment`, {
+          method: 'POST',
+          body: JSON.stringify({ comment: commentText })
+        })
+      }
+    } catch (e) {
+      console.warn('Comment post failed:', e)
+    }
   }
 
   useEffect(() => {
@@ -156,7 +184,7 @@ const NewsDetail = () => {
             <div className="flex flex-col gap-16">
                 <div 
                     className="detail-reveal opacity-0 font-montserrat text-xs md:text-[13px] leading-[1.8] text-description tracking-wide selection:bg-accent selection:text-dark news-content-html"
-                    dangerouslySetInnerHTML={{ __html: article.content }}
+                    dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(article.content || '') }}
                 />
             </div>
         </div>

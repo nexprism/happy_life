@@ -2,7 +2,7 @@ import express from "express";
 import { upload } from "../middlewares/upload-middleware.js";
 import passport from "passport";
 import accessTokenAutoRefresh from "../middlewares/accessTokenAutoRefresh.js";
-import { isAdmin } from "../middlewares/isAdmin.js";
+import { isContentManager as isAdmin } from "../middlewares/isAdmin.js";
 import {
   submitAssignment,
   getMySubmissions,
@@ -18,9 +18,9 @@ const router = express.Router();
 
 router.post(
   "/",
-  upload.single("submissionFile"),
   accessTokenAutoRefresh,
   passport.authenticate("jwt", { session: false }),
+  upload.single("submissionFile"),
   submitAssignment
 );
 

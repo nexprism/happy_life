@@ -1,5 +1,5 @@
 import QuizService from '../service/quizService.js';
-import { initRedis } from '../config/redisClient.js';
+import { initRedis, deleteKeysByPattern } from '../config/redisClient.js';
 import NotificationService from '../service/notificationService.js'; // Import notification service
 
 const quizService = new QuizService();
@@ -12,7 +12,7 @@ export const createQuiz = async (req, res) => {
     const quiz = await quizService.createQuiz(quizData);
 
     const redis = await initRedis();
-    await redis.del('quizzes:all*');
+    await deleteKeysByPattern('quizzes:all*');
 
     // Notify enrolled students
     const notificationData = {
@@ -80,11 +80,14 @@ export const getAllQuizzes = async (req, res) => {
     const cached = await redis.get(cacheKey);
 
     if (cached) {
-      return res.status(200).json({ success: true, message: 'Quizzes from cache', ...JSON.parse(cached), fromCache: true });
+      const result = JSON.parse(cached);
+      if (!req.user || !['admin', 'super_admin', 'instructor'].includes(req.user.role)) result.data = (result.data || []).map(stripQuizAnswerKeys);
+      return res.status(200).json({ success: true, message: 'Quizzes from cache', ...result, fromCache: true });
     }
 
     const quizzes = await quizService.getAllQuizzes(options);
     await redis.setEx(cacheKey, 300, JSON.stringify(quizzes));
+    if (!req.user || !['admin', 'super_admin', 'instructor'].includes(req.user.role)) quizzes.data = (quizzes.data || []).map(stripQuizAnswerKeys);
 
     res.status(200).json({ success: true, message: 'Quizzes fetched', ...quizzes });
   } catch (err) {
@@ -92,21 +95,40 @@ export const getAllQuizzes = async (req, res) => {
   }
 };
 
+const stripQuizAnswerKeys = (quiz) => {
+  if (!quiz) return quiz;
+  const clone = JSON.parse(JSON.stringify(quiz));
+  if (Array.isArray(clone.sections)) {
+    for (const section of clone.sections) {
+      if (Array.isArray(section.questions)) {
+        for (const q of section.questions) {
+          delete q.correctAnswer;
+        }
+      }
+    }
+  }
+  return clone;
+};
+
 export const getQuizById = async (req, res) => {
   try {
     const { quizId } = req.params;
+    const isPrivileged = req.user && ['admin', 'super_admin', 'instructor'].includes(req.user.role);
     const redis = await initRedis();
     const cached = await redis.get(`quiz:${quizId}`);
 
     if (cached) {
-      return res.status(200).json({ success: true, data: JSON.parse(cached), fromCache: true });
+      const parsed = JSON.parse(cached);
+      const data = isPrivileged ? parsed : stripQuizAnswerKeys(parsed);
+      return res.status(200).json({ success: true, data, fromCache: true });
     }
 
     const quiz = await quizService.getQuizById(quizId);
     if (!quiz) return res.status(404).json({ success: false, message: 'Quiz not found' });
 
     await redis.setEx(`quiz:${quizId}`, 300, JSON.stringify(quiz));
-    res.status(200).json({ success: true, data: quiz });
+    const responseData = isPrivileged ? quiz : stripQuizAnswerKeys(quiz);
+    res.status(200).json({ success: true, data: responseData });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }
@@ -127,7 +149,7 @@ export const updateQuiz = async (req, res) => {
     const updated = await quizService.updateQuiz(quizId, quizData);
 
     const redis = await initRedis();
-    await redis.del('quizzes:all*');
+    await deleteKeysByPattern('quizzes:all*');
     await redis.del(`quiz:${quizId}`);
 
     res.status(200).json({ success: true, message: 'Quiz updated', data: updated });
@@ -142,7 +164,7 @@ export const deleteQuiz = async (req, res) => {
     const deleted = await quizService.deleteQuiz(quizId);
 
     const redis = await initRedis();
-    await redis.del('quizzes:all*');
+    await deleteKeysByPattern('quizzes:all*');
     await redis.del(`quiz:${quizId}`);
 
     res.status(200).json({ success: true, message: 'Quiz deleted', data: deleted });

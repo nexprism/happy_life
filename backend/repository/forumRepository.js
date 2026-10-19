@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import ForumThread from '../models/ForumThread.js';
 import ForumReply from '../models/ForumReply.js';
 import User from '../models/user.js';
@@ -522,7 +523,7 @@ export default class ForumRepository {
     try {
       //console.log('ForumRepository.findAllTags called with courseId:', courseId);
 
-      const matchQuery = courseId ? { courseId: mongoose.Types.ObjectId(courseId) } : {};
+      const matchQuery = courseId ? { courseId: new mongoose.Types.ObjectId(courseId) } : {};
 
       const tags = await ForumThread.aggregate([
         { $match: matchQuery },

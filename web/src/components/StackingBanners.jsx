@@ -174,6 +174,10 @@ const StackingBanners = () => {
                       alt={card.title || "Module"} 
                       className="w-full h-full object-cover object-center block" 
                       src={card.image} 
+                      onError={(e) => {
+                        e.currentTarget.onerror = null;
+                        e.currentTarget.src = '/courses/architecture.png';
+                      }}
                     />
                   </div>
 

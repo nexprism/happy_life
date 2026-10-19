@@ -1,3 +1,7 @@
+import dns from 'dns';
+try {
+  dns.setServers(['8.8.8.8', '1.1.1.1']);
+} catch (e) {}
 import http from 'http';
 import { Server } from 'socket.io';
 import app from './app.js';
@@ -8,6 +12,9 @@ import { ServerConfig } from './config/server.config.js';
 import videoSocketHandler from './sockets/videoSocketHandler.js';
 import jwt from 'jsonwebtoken';
 import Message from './models/Message.js';
+import ChatRoom from './models/ChatRoom.js';
+import User from './models/user.js';
+import { isAccessTokenBlacklisted } from './utils/tokens/generateTokens.js';
 import GroupMessage from './models/GroupMessage.js';
 import GroupChatRoom from './models/GroupChatRoom.js';
 import CourseChatRoom from './models/CourseChatRoom.js';
@@ -18,9 +25,6 @@ import path from 'path';
 dotenv.config();
 import './cron/wordPressNewsCron.js';
 
-// Serve uploads directory so uploaded files are reachable
-app.use('/uploads', (await import('express')).default.static(path.join(process.cwd(), 'uploads')));
-
 // Create the HTTP server for Express and Socket.io
 const server = http.createServer(app);
 
@@ -30,7 +34,6 @@ const io = new Server(server, {
     origin: (origin, callback) => {
       if (!origin) return callback(null, true);
       if (/^https?:\/\/localhost(:\d+)?$/.test(origin)) return callback(null, true);
-      if (origin.endsWith('.vercel.app') || origin.endsWith('.onrender.com')) return callback(null, true);
       
       const allowedOrigins = [
         "https://happy-life-nu.vercel.app",
@@ -59,13 +62,51 @@ app.locals.io = io;
 // Socket.io Authentication Middleware
 const onlineUsers = new Map(); // Map userId to socketId
 
-io.use((socket, next) => {
+io.use(async (socket, next) => {
   try {
+    const rawToken = socket.handshake.auth?.token || socket.handshake.headers?.authorization?.replace(/^Bearer\s+/i, '');
+    if (!rawToken) {
+      socket.emit("auth_error", "Token required");
+      return next(new Error("Authentication error: Token required"));
+    }
+
     const decoded = jwt.verify(
-      socket.handshake.auth.token,
-      process.env.JWT_ACCESS_TOKEN_SECRET_KEY
+      rawToken,
+      process.env.JWT_ACCESS_TOKEN_SECRET_KEY || process.env.JWT_ACCESS_SECRET,
+      { algorithms: ['HS256'] }
     );
+
+    // Check token blacklist
+    if (typeof isAccessTokenBlacklisted === 'function') {
+      const isBlacklisted = await isAccessTokenBlacklisted(rawToken, decoded);
+      if (isBlacklisted) {
+        socket.emit("auth_error", "Token revoked");
+        return next(new Error("Authentication error: Token has been revoked"));
+      }
+    }
+
+    // Check database user existence and account status
+    if (User?.findById) {
+      const user = await User.findById(decoded._id).select("-password").lean();
+      if (!user) {
+        socket.emit("auth_error", "User not found");
+        return next(new Error("Authentication error: User no longer exists"));
+      }
+      if ((decoded.sessionVersion || 0) !== (user.sessionVersion || 0) || user.isBanned === true || user.status === "inactive" || user.isActive === false) {
+        socket.emit("auth_error", "Account deactivated");
+        return next(new Error("Authentication error: Account is deactivated or banned"));
+      }
+      if (user.passwordChangedAt && decoded.iat) {
+        const changedAtSec = Math.floor(new Date(user.passwordChangedAt).getTime() / 1000);
+        if (decoded.iat < changedAtSec) {
+          socket.emit("auth_error", "Password changed");
+          return next(new Error("Authentication error: Token invalidated by password change"));
+        }
+      }
+    }
+
     socket.user = decoded;
+    socket.data.accessToken = rawToken;
     socket.emit("authenticated", { userId: decoded._id });
     next();
   } catch (err) {
@@ -76,6 +117,22 @@ io.use((socket, next) => {
 
 // Handle socket connections
 io.on('connection', (socket) => {
+  // Revalidate every incoming event: an established connection is not a
+  // permanent grant after logout, expiry, a ban or a password change.
+  socket.use(async (_packet, next) => {
+    try {
+      const token = socket.data.accessToken;
+      const decoded = jwt.verify(token, process.env.JWT_ACCESS_TOKEN_SECRET_KEY || process.env.JWT_ACCESS_SECRET, { algorithms: ['HS256'] });
+      const user = await User.findById(decoded._id).select('isBanned status isActive passwordChangedAt sessionVersion').lean();
+      if (!user || (decoded.sessionVersion || 0) !== (user.sessionVersion || 0) || user.isBanned || user.status === 'inactive' || user.isActive === false ||
+          (user.passwordChangedAt && decoded.iat < Math.floor(new Date(user.passwordChangedAt).getTime() / 1000)) ||
+          await isAccessTokenBlacklisted(token, decoded)) throw new Error('Session revoked');
+      next();
+    } catch (_error) {
+      next(new Error('Authentication required'));
+      socket.disconnect(true);
+    }
+  });
   //console.log(`✅ Socket connected: ${socket.id}, User: ${socket.user._id}`);
 
   onlineUsers.set(socket.user?._id?.toString(), socket.id);
@@ -105,7 +162,7 @@ io.on('connection', (socket) => {
 
   videoSocketHandler(socket);
 
-  // One-on-one message events (unchanged)
+  // One-on-one message events
   socket.on('sendMessage', async (data) => {
     try {
       const { roomId, receiverId, message: msg, emoji, replyTo } = data;
@@ -113,6 +170,22 @@ io.on('connection', (socket) => {
       const message = emoji ? (msg ? `${msg} ${emoji}` : emoji) : msg;
       if (!roomId || !receiverId || !message) {
         return socket.emit('error', { message: 'Missing required fields: roomId, receiverId, message' });
+      }
+
+      // Check room and verify sender is a participant (F16)
+      if (typeof ChatRoom !== 'undefined' && ChatRoom?.findById) {
+        const room = await ChatRoom.findById(roomId);
+        if (!room) {
+          return socket.emit('error', { message: 'Chat room not found' });
+        }
+        const senderIdStr = String(socket.user?._id || '');
+        const isParticipant = room.participants?.some(p => String(p?._id || p) === senderIdStr);
+        const receiverIsParticipant = room.participants?.some(p => String(p?._id || p) === String(receiverId));
+        if (!isParticipant || !receiverIsParticipant) {
+          return socket.emit('error', { message: 'You are not a member of this chat room' });
+        }
+      } else {
+        return socket.emit('error', { message: 'You are not a member of this chat room' });
       }
 
       // Validate replyTo message exists and belongs to this room if provided
@@ -417,13 +490,13 @@ io.on('connection', (socket) => {
 // Start server and initialize DB + Redis
 const PORT = process.env.PORT || ServerConfig.port || 4000;
 
-server.listen(PORT, async () => {
+server.listen(PORT, '0.0.0.0', async () => {
+  console.log(`🚀 Server + WebSocket running on http://localhost:${PORT}`);
   try {
     await connectToDatabase();
     // await initRedis();
-    console.log(`🚀 Server + WebSocket running on port ${PORT}`);
   } catch (error) {
-    console.error('❌ Error starting server:', error);
+    console.error('❌ Error connecting to database:', error);
     process.exit(1);
   }
 });

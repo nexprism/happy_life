@@ -14,13 +14,19 @@ import {
 } from '../controllers/QuizController.js';
 import accessTokenAutoRefresh from '../middlewares/accessTokenAutoRefresh.js';
 import passport from 'passport';
-import { isAdmin } from '../middlewares/isAdmin.js';
+import { isContentManager as isAdmin } from '../middlewares/isAdmin.js';
 import { upload } from '../middlewares/upload-middleware.js';
 
 const quizRouter = express.Router();
 
-quizRouter.get('/', getAllQuizzes);
-quizRouter.get('/:quizId', getQuizById);
+// Optional authentication preserves public quizzes and the authenticated editor.
+const optionalAuth = (req, res, next) => passport.authenticate('jwt', { session: false }, (err, user) => {
+  if (err) return next(err);
+  if (user) req.user = user;
+  next();
+})(req, res, next);
+quizRouter.get('/', optionalAuth, getAllQuizzes);
+quizRouter.get('/:quizId', optionalAuth, getQuizById);
 quizRouter.get('/my/submitted-quizzes',
   accessTokenAutoRefresh,
   passport.authenticate('jwt', { session: false }),

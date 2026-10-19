@@ -10,7 +10,7 @@ import {
 
 import accessTokenAutoRefresh from '../middlewares/accessTokenAutoRefresh.js';
 import passport from 'passport';
-import { isAdmin } from '../middlewares/isAdmin.js';
+import { isContentManager as isAdmin } from '../middlewares/isAdmin.js';
 import { upload } from '../middlewares/upload-middleware.js';
 
 const lessonRouter = express.Router();

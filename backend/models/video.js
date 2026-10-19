@@ -46,6 +46,14 @@ const videoLessonSchema = new Schema(
     vimeoUrl: {
       type: String,
     },
+    vimeoEmbedCode: {
+      type: String,
+    },
+    vimeoInputType: {
+      type: String,
+      enum: ['direct', 'embed'],
+      default: 'direct',
+    },
     thumbnail: {
       type: String,
     },
@@ -100,7 +108,7 @@ const videoLessonSchema = new Schema(
     // VdoCipher specific fields
     uploadMethod: {
       type: String,
-      enum: ['file', 'existing_video_id'],
+      enum: ['file', 'existing_video_id', 'direct', 'embed'],
       default: 'file'
     },
     

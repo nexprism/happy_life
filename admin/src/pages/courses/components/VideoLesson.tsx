@@ -15,7 +15,9 @@ import {
   Sparkles,
   Check,
   XCircle,
-  Info
+  Info,
+  Link2,
+  Code
 } from "lucide-react";
 import {
   uploadVideo,
@@ -232,6 +234,8 @@ const VideoLesson: React.FC<VideoLessonProps> = ({
     originalUrl: "",
     youtubeUrl: "",
     vimeoUrl: "",
+    vimeoInputType: "direct" as "direct" | "embed",
+    vimeoEmbedCode: "",
     vdocipherVideoId: "", // Added for existing VdoCipher videos
     uploadMethod: "file", // Added to track upload method: "file" or "videoId"
     thumbnail: "",
@@ -324,23 +328,39 @@ const VideoLesson: React.FC<VideoLessonProps> = ({
       const response = await axiosInstance.get(`/video/${fileId}`);
       const videoData = response.data.data;
       
-      setForm({
-        title: videoData.title || "",
-        description: videoData.description || "",
-        sourcePlatform: videoData.sourcePlatform || "",
-        file: null,
-        videoId: videoData.videoId || "", // VdoCipher video ID
-        secureUrl: videoData.secureUrl || "",
-        embedUrl: videoData.secureUrl || "", // Use secureUrl for embed
-        originalUrl: videoData.secureUrl || "",
-        youtubeUrl: videoData.youtubeUrl || (videoData.sourcePlatform === "youtube" ? (videoData.originalUrl || videoData.secureUrl || "") : ""),
-        vimeoUrl: videoData.vimeoUrl || (videoData.sourcePlatform === "vimeo" ? (videoData.originalUrl || videoData.secureUrl || videoData.embedUrl || "") : ""),
-        vdocipherVideoId: videoData.videoId || "", // Set for existing video ID mode
-        uploadMethod: videoData.uploadMethod === "existing_video_id" ? "videoId" : "file",
-        thumbnail: videoData.thumbnail || "",
-        quality: videoData.quality || "auto",
-        status: videoData.status || "",
-      });
+        const isVimeoEmbed = videoData.uploadMethod === "embed" || 
+          videoData.vimeoInputType === "embed" ||
+          Boolean(videoData.vimeoEmbedCode) ||
+          Boolean(videoData.vimeoUrl && (videoData.vimeoUrl.includes("player.vimeo.com") || videoData.vimeoUrl.includes("<iframe"))) ||
+          Boolean(videoData.embedUrl && videoData.embedUrl.includes("player.vimeo.com") && (!videoData.vimeoUrl || videoData.vimeoUrl.includes("player.vimeo.com")));
+
+        const loadedDirectUrl = !isVimeoEmbed 
+          ? (videoData.vimeoUrl || (videoData.sourcePlatform === "vimeo" && videoData.originalUrl && !videoData.originalUrl.includes("player.vimeo.com") ? videoData.originalUrl : ""))
+          : "";
+
+        const loadedEmbedCode = isVimeoEmbed
+          ? (videoData.vimeoEmbedCode || (videoData.vimeoUrl && videoData.vimeoUrl.includes("player.vimeo.com") ? videoData.vimeoUrl : "") || videoData.embedUrl || videoData.originalUrl || "")
+          : "";
+
+        setForm({
+          title: videoData.title || "",
+          description: videoData.description || "",
+          sourcePlatform: videoData.sourcePlatform || "",
+          file: null,
+          videoId: videoData.videoId || "", // VdoCipher video ID
+          secureUrl: videoData.secureUrl || "",
+          embedUrl: videoData.secureUrl || "", // Use secureUrl for embed
+          originalUrl: videoData.secureUrl || "",
+          youtubeUrl: videoData.youtubeUrl || (videoData.sourcePlatform === "youtube" ? (videoData.originalUrl || videoData.secureUrl || "") : ""),
+          vimeoUrl: loadedDirectUrl,
+          vimeoInputType: isVimeoEmbed ? "embed" : "direct",
+          vimeoEmbedCode: loadedEmbedCode,
+          vdocipherVideoId: videoData.videoId || "", // Set for existing video ID mode
+          uploadMethod: videoData.uploadMethod === "existing_video_id" ? "videoId" : "file",
+          thumbnail: videoData.thumbnail || "",
+          quality: videoData.quality || "auto",
+          status: videoData.status || "",
+        });
       
       console.log("Fetched VdoCipher video data:", videoData);
     } catch (error) {
@@ -361,6 +381,20 @@ const VideoLesson: React.FC<VideoLessonProps> = ({
 
   useEffect(() => {
     if (isEditMode && data && !loading && !error) {
+      const isVimeoEmbed = data.uploadMethod === "embed" || 
+        data.vimeoInputType === "embed" ||
+        Boolean(data.vimeoEmbedCode) ||
+        Boolean(data.vimeoUrl && (data.vimeoUrl.includes("player.vimeo.com") || data.vimeoUrl.includes("<iframe"))) ||
+        Boolean(data.embedUrl && data.embedUrl.includes("player.vimeo.com") && (!data.vimeoUrl || data.vimeoUrl.includes("player.vimeo.com")));
+
+      const loadedDirectUrl = !isVimeoEmbed 
+        ? (data.vimeoUrl || (data.sourcePlatform === "vimeo" && data.originalUrl && !data.originalUrl.includes("player.vimeo.com") ? data.originalUrl : ""))
+        : "";
+
+      const loadedEmbedCode = isVimeoEmbed
+        ? (data.vimeoEmbedCode || (data.vimeoUrl && data.vimeoUrl.includes("player.vimeo.com") ? data.vimeoUrl : "") || data.embedUrl || data.originalUrl || "")
+        : "";
+
       setForm({
         title: data.title || "",
         description: data.description || "",
@@ -371,7 +405,9 @@ const VideoLesson: React.FC<VideoLessonProps> = ({
         embedUrl: data.embedUrl || data.secureUrl || "",
         originalUrl: data.originalUrl || data.secureUrl || "",
         youtubeUrl: data.youtubeUrl || (data.sourcePlatform === "youtube" ? (data.originalUrl || data.secureUrl || "") : ""),
-        vimeoUrl: data.vimeoUrl || (data.sourcePlatform === "vimeo" ? (data.originalUrl || data.secureUrl || data.embedUrl || "") : ""),
+        vimeoUrl: loadedDirectUrl,
+        vimeoInputType: isVimeoEmbed ? "embed" : "direct",
+        vimeoEmbedCode: loadedEmbedCode,
         vdocipherVideoId: data.videoId || "",
         uploadMethod: data.uploadMethod === "existing_video_id" ? "videoId" : "file",
         thumbnail: data.thumbnail || "",
@@ -413,7 +449,9 @@ const VideoLesson: React.FC<VideoLessonProps> = ({
     if (name === "file") {
       setForm((prev) => ({ ...prev, file: files?.[0] || null }));
     } else if (name === "vimeoUrl") {
-      setForm((prev) => ({ ...prev, vimeoUrl: extractVimeoUrl(value) }));
+      setForm((prev) => ({ ...prev, vimeoUrl: value }));
+    } else if (name === "vimeoEmbedCode") {
+      setForm((prev) => ({ ...prev, vimeoEmbedCode: value }));
     } else {
       setForm((prev) => ({ ...prev, [name]: value }));
     }
@@ -429,8 +467,8 @@ const VideoLesson: React.FC<VideoLessonProps> = ({
     if (!url || typeof url !== "string") return false;
     const clean = extractVimeoUrl(url);
     const vimeoRegex =
-      /^(https?:\/\/)?(www\.|player\.)?vimeo\.com\/(?:channels\/(?:\w+\/)?|groups\/[^\/]+\/videos\/|album\/(?:\d+\/)?video\/|video\/|manage\/videos\/)?(\d+)(?:\/([a-zA-Z0-9]+))?(\?.*)?$/i;
-    const directIdRegex = /^\d+(?:\/[a-zA-Z0-9]+)?$/;
+      /^(https?:\/\/)?(www\.|player\.)?vimeo\.com\/(?:channels\/(?:\w+\/)?|groups\/[^\/]+\/videos\/|album\/(?:\d+\/)?video\/|video\/|manage\/videos\/)?(\d+)(?:\/([a-zA-Z0-9_-]+))?(\?.*)?$/i;
+    const directIdRegex = /^\d+(?:\/[a-zA-Z0-9_-]+)?$/;
     return vimeoRegex.test(clean) || directIdRegex.test(clean);
   };
 
@@ -472,11 +510,14 @@ const VideoLesson: React.FC<VideoLessonProps> = ({
         return;
       }
     } else if (form.sourcePlatform === "vimeo") {
-      const cleanVimeo = extractVimeoUrl(form.vimeoUrl);
+      const activeRaw = form.vimeoInputType === "embed" ? form.vimeoEmbedCode : form.vimeoUrl;
+      const cleanVimeo = extractVimeoUrl(activeRaw);
       if (!cleanVimeo) {
         setPopup({
           isVisible: true,
-          message: "Please enter a Vimeo URL.",
+          message: form.vimeoInputType === "embed"
+            ? "Please enter a Vimeo embedded link or iframe code."
+            : "Please enter a Vimeo URL or Video ID.",
           type: "error",
         });
         return;
@@ -484,7 +525,9 @@ const VideoLesson: React.FC<VideoLessonProps> = ({
       if (!isValidVimeoUrl(cleanVimeo)) {
         setPopup({
           isVisible: true,
-          message: "Please enter a valid Vimeo URL.",
+          message: form.vimeoInputType === "embed"
+            ? "Please enter a valid Vimeo embed player link or iframe code."
+            : "Please enter a valid Vimeo URL or Video ID.",
           type: "error",
         });
         return;
@@ -615,6 +658,11 @@ const VideoLesson: React.FC<VideoLessonProps> = ({
           console?.log("finalPath", finalPath);
         }
 
+        const isVimeo = form.sourcePlatform === "vimeo";
+        const isEmbed = isVimeo && form.vimeoInputType === "embed";
+        const vimeoDirectValue = isVimeo && !isEmbed ? extractVimeoUrl(form.vimeoUrl) : "";
+        const vimeoEmbedValue = isVimeo && isEmbed ? form.vimeoEmbedCode : "";
+
         response = await dispatch(
           updateVideo({
             videoId: updateId!, // Use fileId for VdoCipher updates
@@ -623,10 +671,14 @@ const VideoLesson: React.FC<VideoLessonProps> = ({
             sourcePlatform: form.sourcePlatform,
             title: form.title,
             description: form.description,
-            uploadMethod: form.uploadMethod === "videoId" ? "existing_video_id" : "file",
+            uploadMethod: form.sourcePlatform === "videocypher" && form.uploadMethod === "videoId"
+              ? "existing_video_id"
+              : "file",
             filePath: finalPath,
             youtubeUrl: form.sourcePlatform === "youtube" ? form.youtubeUrl : undefined,
-            vimeoUrl: form.sourcePlatform === "vimeo" ? extractVimeoUrl(form.vimeoUrl) : undefined,
+            vimeoUrl: isVimeo ? vimeoDirectValue : undefined,
+            vimeoEmbedCode: isVimeo ? vimeoEmbedValue : undefined,
+            vimeoInputType: isVimeo ? form.vimeoInputType : undefined,
             // Include VdoCipher specific fields if updating VdoCipher video
             ...(form.sourcePlatform === "videocypher" && {
               quality: form.quality,
@@ -648,6 +700,11 @@ const VideoLesson: React.FC<VideoLessonProps> = ({
           finalPath = await uploadInChunks(form.file);
         }
         
+        const isVimeo = form.sourcePlatform === "vimeo";
+        const isEmbed = isVimeo && form.vimeoInputType === "embed";
+        const vimeoDirectValue = isVimeo && !isEmbed ? extractVimeoUrl(form.vimeoUrl) : "";
+        const vimeoEmbedValue = isVimeo && isEmbed ? form.vimeoEmbedCode : "";
+
         response = await dispatch(
           uploadVideo({
             ...(form.file && { file: form.file }),
@@ -656,9 +713,13 @@ const VideoLesson: React.FC<VideoLessonProps> = ({
             title: form.title,
             description: form.description,
             filePath: finalPath,
-            uploadMethod: form.uploadMethod === "videoId" ? "existing_video_id" : "file",
+            uploadMethod: form.sourcePlatform === "videocypher" && form.uploadMethod === "videoId"
+              ? "existing_video_id"
+              : "file",
             youtubeUrl: form.sourcePlatform === "youtube" ? form.youtubeUrl : undefined,
-            vimeoUrl: form.sourcePlatform === "vimeo" ? extractVimeoUrl(form.vimeoUrl) : undefined,
+            vimeoUrl: isVimeo ? vimeoDirectValue : undefined,
+            vimeoEmbedCode: isVimeo ? vimeoEmbedValue : undefined,
+            vimeoInputType: isVimeo ? form.vimeoInputType : undefined,
             // Include VdoCipher specific fields if uploading to VdoCipher
             ...(form.sourcePlatform === "videocypher" && {
               quality: form.quality || "auto",
@@ -827,42 +888,199 @@ const VideoLesson: React.FC<VideoLessonProps> = ({
         </div>
       );
     } else if (form.sourcePlatform === "vimeo") {
+      const activeEmbedUrl = extractVimeoUrl(form.vimeoEmbedCode);
+      const isEmbedValid = Boolean(form.vimeoEmbedCode && isValidVimeoUrl(form.vimeoEmbedCode));
+      const isDirectValid = Boolean(form.vimeoUrl && isValidVimeoUrl(form.vimeoUrl));
+
+      const getPreviewSrc = (raw: string) => {
+        const clean = extractVimeoUrl(raw);
+        if (clean.includes("player.vimeo.com/video/")) return clean;
+        const m = clean.match(/(\d+)(?:\/([a-zA-Z0-9_-]+))?/);
+        if (m) {
+          return m[2]
+            ? `https://player.vimeo.com/video/${m[1]}?h=${m[2]}&title=0&byline=0&portrait=0`
+            : `https://player.vimeo.com/video/${m[1]}?title=0&byline=0&portrait=0`;
+        }
+        return clean;
+      };
+
       return (
-        <div className="space-y-2.5">
-          <label className="block text-xs font-semibold uppercase tracking-wider text-gray-700">
-            Vimeo URL or ID <span className="text-red-500">*</span>
-          </label>
-          <div className="relative">
-            <input
-              type="text"
-              name="vimeoUrl"
-              value={form.vimeoUrl}
-              onChange={handleChange}
-              className="w-full pl-11 pr-4 py-2.5 text-sm border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-200"
-              placeholder="https://vimeo.com/123456789 or paste iframe / player link..."
-              required
-            />
-            <div className="absolute left-3.5 top-1/2 transform -translate-y-1/2 text-sky-500">
-              <VimeoIcon className="w-4 h-4" />
+        <div className="space-y-4">
+          {/* Vimeo Method Switcher */}
+          <div>
+            <label className="block text-xs font-semibold uppercase tracking-wider text-gray-700 mb-2">
+              Vimeo Option <span className="text-red-500">*</span>
+            </label>
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                type="button"
+                onClick={() => setForm((prev) => ({ ...prev, vimeoInputType: "direct" }))}
+                className={`flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 text-left ${
+                  form.vimeoInputType === "direct"
+                    ? "border-sky-500 bg-sky-50/90 text-sky-950 shadow-sm ring-1 ring-sky-500/20"
+                    : "border-gray-200 hover:border-gray-300 text-gray-600 bg-white"
+                }`}
+              >
+                <div
+                  className={`p-2 rounded-lg flex-shrink-0 ${
+                    form.vimeoInputType === "direct" ? "bg-sky-500 text-white" : "bg-gray-100 text-gray-500"
+                  }`}
+                >
+                  <Link2 className="w-4 h-4" />
+                </div>
+                <div className="min-w-0">
+                  <div className="text-xs font-bold">Direct Link</div>
+                  <div className="text-[11px] text-gray-500 truncate">Vimeo URL / Video ID</div>
+                </div>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setForm((prev) => ({ ...prev, vimeoInputType: "embed" }))}
+                className={`flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 text-left ${
+                  form.vimeoInputType === "embed"
+                    ? "border-sky-500 bg-sky-50/90 text-sky-950 shadow-sm ring-1 ring-sky-500/20"
+                    : "border-gray-200 hover:border-gray-300 text-gray-600 bg-white"
+                }`}
+              >
+                <div
+                  className={`p-2 rounded-lg flex-shrink-0 ${
+                    form.vimeoInputType === "embed" ? "bg-sky-500 text-white" : "bg-gray-100 text-gray-500"
+                  }`}
+                >
+                  <Code className="w-4 h-4" />
+                </div>
+                <div className="min-w-0">
+                  <div className="text-xs font-bold">Embedded Link</div>
+                  <div className="text-[11px] text-gray-500 truncate">Embed Link / &lt;iframe&gt;</div>
+                </div>
+              </button>
             </div>
           </div>
-          {form.vimeoUrl && !isValidVimeoUrl(form.vimeoUrl) && (
-            <div className="flex items-center gap-1.5 text-red-600 text-xs">
-              <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
-              <span>Please enter a valid Vimeo video URL or ID</span>
+
+          {/* Direct Link Option */}
+          {form.vimeoInputType === "direct" ? (
+            <div className="space-y-2.5">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-gray-700">
+                Direct Vimeo URL or ID <span className="text-red-500">*</span>
+              </label>
+              <div className="relative">
+                <input
+                  type="text"
+                  name="vimeoUrl"
+                  value={form.vimeoUrl}
+                  onChange={handleChange}
+                  className="w-full pl-11 pr-4 py-2.5 text-sm border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-200"
+                  placeholder="https://vimeo.com/123456789 or 123456789/abcdef"
+                  required
+                />
+                <div className="absolute left-3.5 top-1/2 transform -translate-y-1/2 text-sky-500">
+                  <VimeoIcon className="w-4 h-4" />
+                </div>
+              </div>
+
+              {form.vimeoUrl && !isDirectValid && (
+                <div className="flex items-center gap-1.5 text-red-600 text-xs">
+                  <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
+                  <span>Please enter a valid Vimeo URL (e.g., vimeo.com/123456789 or vimeo.com/123456789/hash)</span>
+                </div>
+              )}
+              {form.vimeoUrl && isDirectValid && (
+                <div className="flex items-center gap-1.5 text-green-600 text-xs">
+                  <CheckCircle2 className="w-3.5 h-3.5 flex-shrink-0" />
+                  <span>Valid Direct Vimeo link detected</span>
+                </div>
+              )}
+
+              <div className="bg-sky-50/80 border border-sky-200/80 rounded-xl p-3">
+                <p className="text-xs text-sky-800">
+                  💡 Supports direct public links (<code>vimeo.com/123456789</code>) and unlisted links with privacy hash (<code>vimeo.com/123456789/abcdef</code>).
+                </p>
+              </div>
+
+              {isDirectValid && (
+                <div className="overflow-hidden rounded-xl border border-sky-200 bg-sky-50/40 p-2.5">
+                  <div className="mb-2 flex items-center justify-between px-1">
+                    <span className="text-xs font-semibold text-sky-900 flex items-center gap-1.5">
+                      <MonitorPlay className="w-3.5 h-3.5" /> Video Preview
+                    </span>
+                    <span className="text-[11px] font-mono text-gray-500">
+                      ID: {extractVimeoUrl(form.vimeoUrl).match(/(\d+)/)?.[1]}
+                    </span>
+                  </div>
+                  <div className="relative aspect-video w-full rounded-lg overflow-hidden bg-black shadow-inner">
+                    <iframe
+                      src={getPreviewSrc(form.vimeoUrl)}
+                      className="w-full h-full border-0"
+                      allow="autoplay; fullscreen; picture-in-picture"
+                      title="Vimeo Preview"
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+          ) : (
+            /* Embedded Link Option */
+            <div className="space-y-2.5">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-gray-700">
+                Vimeo Embedded Link or &lt;iframe&gt; Code <span className="text-red-500">*</span>
+              </label>
+              <div className="relative">
+                <textarea
+                  name="vimeoEmbedCode"
+                  value={form.vimeoEmbedCode}
+                  onChange={handleChange}
+                  rows={3}
+                  className="w-full pl-11 pr-4 py-2.5 text-xs font-mono border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-200 resize-none"
+                  placeholder='Paste Vimeo embed player link (https://player.vimeo.com/video/...) or full <iframe src="https://player.vimeo.com/video/..." ...></iframe>'
+                  required
+                />
+                <div className="absolute left-3.5 top-3 text-sky-500">
+                  <Code className="w-4 h-4" />
+                </div>
+              </div>
+
+              {form.vimeoEmbedCode && !isEmbedValid && (
+                <div className="flex items-center gap-1.5 text-red-600 text-xs">
+                  <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
+                  <span>Please enter a valid Vimeo embed code or player URL (player.vimeo.com/video/...)</span>
+                </div>
+              )}
+              {form.vimeoEmbedCode && isEmbedValid && (
+                <div className="flex items-center gap-1.5 text-green-600 text-xs">
+                  <CheckCircle2 className="w-3.5 h-3.5 flex-shrink-0" />
+                  <span>Valid Vimeo embedded code/link detected</span>
+                </div>
+              )}
+
+              <div className="bg-sky-50/80 border border-sky-200/80 rounded-xl p-3">
+                <p className="text-xs text-sky-800">
+                  💡 Vimeo par video open karke <strong>Share → Copy Embed Code</strong> (ya direct player link <code>player.vimeo.com/video/...</code>) copy karke yahan paste karein.
+                </p>
+              </div>
+
+              {isEmbedValid && (
+                <div className="overflow-hidden rounded-xl border border-sky-200 bg-sky-50/40 p-2.5">
+                  <div className="mb-2 flex items-center justify-between px-1">
+                    <span className="text-xs font-semibold text-sky-900 flex items-center gap-1.5">
+                      <MonitorPlay className="w-3.5 h-3.5" /> Embedded Player Preview
+                    </span>
+                    <span className="text-[11px] font-mono text-gray-500">
+                      ID: {activeEmbedUrl.match(/(\d+)/)?.[1]}
+                    </span>
+                  </div>
+                  <div className="relative aspect-video w-full rounded-lg overflow-hidden bg-black shadow-inner">
+                    <iframe
+                      src={getPreviewSrc(form.vimeoEmbedCode)}
+                      className="w-full h-full border-0"
+                      allow="autoplay; fullscreen; picture-in-picture"
+                      title="Vimeo Embed Preview"
+                    />
+                  </div>
+                </div>
+              )}
             </div>
           )}
-          {form.vimeoUrl && isValidVimeoUrl(form.vimeoUrl) && (
-            <div className="flex items-center gap-1.5 text-green-600 text-xs">
-              <CheckCircle2 className="w-3.5 h-3.5 flex-shrink-0" />
-              <span>Valid Vimeo URL detected</span>
-            </div>
-          )}
-          <div className="bg-sky-50/80 border border-sky-200/80 rounded-xl p-3">
-            <p className="text-xs text-sky-800">
-              💡 Supports public links (<code>vimeo.com/123456789</code>), unlisted videos with privacy hash (<code>vimeo.com/123456789/abcdef</code>), player links, and embed iframe codes.
-            </p>
-          </div>
         </div>
       );
     } else if (form.sourcePlatform === "videocypher") {

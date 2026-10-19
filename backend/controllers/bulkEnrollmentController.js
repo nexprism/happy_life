@@ -1,4 +1,5 @@
 import XLSX from 'xlsx';
+import path from 'path';
 import bcrypt from 'bcryptjs';
 import User from '../models/user.js';
 import CourseEnrollment from '../models/CourseEnrollment.js';
@@ -67,13 +68,18 @@ export const bulkEnrollFromExcel = async (req, res) => {
             });
         }
 
-        // ── 1. Read the workbook ─────────────────────────────────────────────────
+        // ── 1. Read the workbook safely ─────────────────────────────────────────
         let workbook;
         if (req.file) {
             // Uploaded via multipart
-            workbook = XLSX.read(req.file.buffer, { type: 'buffer' });
+            workbook = XLSX.read(req.file.buffer, { type: 'buffer', cellFormula: false, cellHTML: false, cellText: false });
         } else if (req.body.filePath) {
-            workbook = XLSX.readFile(req.body.filePath);
+            const resolvedPath = path.resolve(req.body.filePath);
+            const allowedRoot = path.resolve('uploads');
+            if (!resolvedPath.startsWith(allowedRoot + path.sep)) {
+                return res.status(400).json({ success: false, message: 'Invalid or unauthorized filePath' });
+            }
+            workbook = XLSX.readFile(resolvedPath, { cellFormula: false, cellHTML: false, cellText: false });
         } else {
             return res.status(400).json({
                 success: false,

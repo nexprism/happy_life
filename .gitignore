@@ -6,6 +6,10 @@ node_modules/
 .env
 .env.*
 *.env
+env *
+*/env *
+login.json
+*/login.json
 !.env.example
 !*/.env.example
 
@@ -75,3 +79,10 @@ config/firebase-service-account.json
 *.7z
 *.gz
 
+# User Uploads
+uploads/*
+*/uploads/*
+!backend/uploads/default_course.png
+
+# Audit & Local Output
+audit-output/

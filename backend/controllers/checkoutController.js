@@ -37,8 +37,29 @@ import { runInTransaction } from "../utils/db/runInTransaction.js";
 
 const userService = new UserService();
 
+// Helper to escape HTML to prevent XSS / HTML injection (F22)
+const escapeHtml = (str) => {
+  if (str === null || str === undefined) return "";
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+};
+
 // Helper to render invoice HTML
 function renderInvoiceHtml(order, guestUser, company) {
+  const escapeHtml = (str) => {
+    if (str === null || str === undefined) return "";
+    return String(str)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  };
+
   return `
   <!DOCTYPE html>
   <html>
@@ -487,7 +508,7 @@ function renderInvoiceHtml(order, guestUser, company) {
             <p class="company-tagline">Online Learning & Astrology Platform</p>
           </div>
           <div class="invoice-details">
-            <div class="invoice-number">Invoice #${order.orderNo}</div>
+            <div class="invoice-number">Invoice #${escapeHtml(order.orderNo)}</div>
             <div class="invoice-date">${order.createdAt ? new Date(order.createdAt).toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'long',
@@ -503,11 +524,11 @@ function renderInvoiceHtml(order, guestUser, company) {
             <h3>Student Details</h3>
             <div class="billing-item">
               <span class="billing-label">Name:</span>
-              <div class="billing-value">${guestUser.fullName}</div>
+              <div class="billing-value">${escapeHtml(guestUser.fullName)}</div>
             </div>
             <div class="billing-item">
               <span class="billing-label">Email:</span>
-              <div class="billing-value">${guestUser.email}</div>
+              <div class="billing-value">${escapeHtml(guestUser.email)}</div>
             </div>
           </div>
           
@@ -517,13 +538,13 @@ function renderInvoiceHtml(order, guestUser, company) {
             ${company.name ? `
             <div class="billing-item">
               <span class="billing-label">Company:</span>
-              <div class="billing-value">${company.name}</div>
+              <div class="billing-value">${escapeHtml(company.name)}</div>
             </div>
             ` : ""}
             ${company.gstNumber ? `
             <div class="billing-item">
               <span class="billing-label">GST No:</span>
-              <div class="billing-value">${company.gstNumber}</div>
+              <div class="billing-value">${escapeHtml(company.gstNumber)}</div>
             </div>
             ` : ""}
           </div>
@@ -565,7 +586,7 @@ function renderInvoiceHtml(order, guestUser, company) {
                   </td>
                   <td><span class="item-code">${item.courseId || item.courseBundleId}</span></td>
                   <td class="price-cell">₹${parseFloat(item.pricePaid).toFixed(2)}</td>
-                  <td>${item.currency}</td>
+                  <td>${escapeHtml(item.currency)}</td>
                 </tr>
               `).join("")}
             </tbody>
@@ -637,6 +658,7 @@ function renderInvoiceHtml(order, guestUser, company) {
 async function htmlToPdfBuffer(html) {
   try {
     const buffer = await renderHtmlToPdf(html, {
+    isolated: true,
       viewport: { width: 1122, height: 794, deviceScaleFactor: 1 },
       waitUntil: "networkidle0",
       pdfOptions: {
@@ -651,6 +673,37 @@ async function htmlToPdfBuffer(html) {
     console.error("Error generating invoice PDF:", err?.message);
     throw new Error("Failed to generate invoice PDF");
   }
+}
+
+let paymentIndexReady;
+async function requirePaymentProof(req, res) {
+  const { orderId, paymentId, signature } = req.body;
+  if (!await verifyRazorpaySignature({ orderId, paymentId, signature })) {
+    res.status(400).json({ message: 'Invalid payment signature' });
+    return false;
+  }
+  const { keyId, keySecret } = await getRazorpayKeys();
+  const { data: gatewayOrder } = await axios.get(`https://api.razorpay.com/v1/orders/${encodeURIComponent(orderId)}`, {
+    headers: { Authorization: `Basic ${Buffer.from(`${keyId}:${keySecret}`).toString('base64')}` }, timeout: 15000
+  });
+  const email = String(req.body.guestEmail || req.user?.email || '').trim().toLowerCase();
+  if (!email || String(gatewayOrder.notes?.guestEmail || '').trim().toLowerCase() !== email) {
+    res.status(400).json({ message: 'Payment belongs to another buyer' });
+    return false;
+  }
+  for (const field of ['courseId', 'courseBundleId', 'coursePlanId']) {
+    if (gatewayOrder.notes?.bindingVersion === '1' && String(gatewayOrder.notes[field] || '') !== String(req.body[field] || '')) {
+      res.status(400).json({ message: 'Payment belongs to another product' });
+      return false;
+    }
+  }
+  // A new field avoids conflicts with legacy duplicates; the existing lookup
+  // continues to reject historical payments. Index creation must finish before capture.
+  if (!paymentIndexReady) paymentIndexReady = Order.collection.createIndex(
+    { 'payment.consumptionKey': 1 }, { unique: true, partialFilterExpression: { 'payment.consumptionKey': { $type: 'string' } }, name: 'unique_payment_consumption' }
+  ).catch(error => { paymentIndexReady = null; throw error; });
+  await paymentIndexReady;
+  return true;
 }
 
 export const checkout = async (req, res) => {
@@ -745,15 +798,30 @@ export const checkout = async (req, res) => {
     const tax = parseFloat((taxableAmount * GST_RATE).toFixed(2)); // Calculate GST
     const grandTotal = parseFloat((taxableAmount + tax).toFixed(2)); // Add GST to grand total
 
-    // Step 4.5: SECURITY — verify the Razorpay payment server-side BEFORE creating
-    // the order or granting any enrollment. Previously this handler hard-coded
-    // payment.status = 'paid' for razorpay with NO gateway verification, so anyone
-    // could POST /checkout and be enrolled in their whole cart for free.
+    // Step 4.5: SECURITY & REPLAY PROTECTION (F02, F03)
     const paymentId = req.body.paymentId;
-    if (paymentProvider === "razorpay" && grandTotal > 0) {
+    let effectiveProvider = paymentProvider;
+
+    if (grandTotal > 0) {
+      if (paymentProvider === "free" || !["razorpay"].includes(paymentProvider)) {
+        return res.status(400).json({ message: "Invalid payment provider for paid order" });
+      }
       if (!paymentId) {
         return res.status(400).json({ message: "Payment ID is required for Razorpay" });
       }
+
+      if (!await requirePaymentProof(req, res)) return;
+
+      // F03: Prevent payment replay across orders
+      const existingPaidOrder = await Order.findOne({
+        "payment.paymentIntent": paymentId,
+        "payment.status": "paid"
+      });
+      if (existingPaidOrder) {
+        return res.status(400).json({ message: "Payment ID has already been used for another order" });
+      }
+      effectiveProvider = "razorpay";
+
       const { keyId: apiKey, keySecret: apiSecret } = await getRazorpayKeys();
       const expectedPaise = Math.round(grandTotal * 100);
       const url = `https://api.razorpay.com/v1/payments/${paymentId}`;
@@ -762,10 +830,11 @@ export const checkout = async (req, res) => {
       try {
         const paymentRes = await axios.get(url, { headers, timeout: 15000 });
         const payment = paymentRes.data || {};
-        if (payment.currency && payment.currency !== "INR") {
+        if (payment.order_id !== req.body.orderId) return res.status(400).json({ message: "Payment order mismatch" });
+        if (payment.currency !== "INR") {
           return res.status(400).json({ message: "Payment currency mismatch." });
         }
-        if (typeof payment.amount === "number" && payment.amount < expectedPaise) {
+        if (payment.amount !== expectedPaise) {
           return res.status(400).json({ message: "Paid amount does not match order amount." });
         }
         if (!["authorized", "captured"].includes(payment.status)) {
@@ -776,10 +845,10 @@ export const checkout = async (req, res) => {
         }
       } catch (err) {
         const desc = err.response?.data?.error?.description || err.message;
-        if (!desc || !desc.includes("already been captured")) {
-          return res.status(400).json({ message: "Payment verification failed: " + desc });
-        }
+        return res.status(400).json({ message: "Payment verification failed. Retry with the same verified order." });
       }
+    } else {
+      effectiveProvider = "free";
     }
 
     // Step 4.6: RELIABILITY — record the coupon redemption only now, AFTER the
@@ -793,13 +862,12 @@ export const checkout = async (req, res) => {
       }
     }
 
-    // Read-only lookup done BEFORE the transaction (so its error path can respond).
-    let defaultEnrolledStudentsCount;
+    let defaultEnrolledStudentsCount = 0;
     try {
-      defaultEnrolledStudentsCount = await Setting.getDefaultEnrolledStudentsCount();
+      defaultEnrolledStudentsCount = (await Setting.getDefaultEnrolledStudentsCount()) || 0;
     } catch (err) {
-      console.error("Error fetching default enrolled students count:", err);
-      return res.status(500).json({ message: "Failed to fetch default enrolled students count", error: err.message });
+      console.warn("Could not fetch default enrolled students count, defaulting to 0:", err.message);
+      defaultEnrolledStudentsCount = 0;
     }
 
     // ATOMICITY: create the order, grant every enrollment, update course/bundle
@@ -820,14 +888,15 @@ export const checkout = async (req, res) => {
         grandTotal,
         payment: {
           paymentIntent: paymentId || null,
-          provider: paymentProvider,
-          // 'paid' only after the verification above succeeded (or for a free order).
-          status: paymentProvider === "razorpay" ? "paid" : "pending",
+          consumptionKey: effectiveProvider === "razorpay" ? paymentId : undefined,
+          provider: effectiveProvider,
+          status: (effectiveProvider === "razorpay" || grandTotal === 0) ? "paid" : "pending",
         },
       }], { session });
 
-    // Step 6: Create enrollments
-    for (const item of items) {
+    // Step 6: Create enrollments (only if verified paid or zero-total)
+    if (effectiveProvider === "razorpay" || grandTotal === 0) {
+      for (const item of items) {
       if (item.type === "course" && item.courseId) {
         // ACCESS EXPIRY: an expired-by-date 'active' enrollment must not block
         // a renewal — only an unexpired one suppresses creating a fresh one.
@@ -998,6 +1067,7 @@ export const checkout = async (req, res) => {
         }
       }
     }
+    }
 
       // Step 7: Clear cart
       await Cart.deleteOne({ userId }, { session });
@@ -1092,7 +1162,7 @@ export const getMyEnrollments = async (req, res) => {
       .lean();
 
     if (!enrollments.length) {
-      return res.status(404).json({ message: 'No enrollments found.' });
+      return res.status(200).json({ success: true, data: [] });
     }
 
     // Belt-and-braces: reflect expiry in the returned status even if the
@@ -1733,6 +1803,10 @@ export const checkOrder = async (req, res) => {
           description: courseId ? "Course Purchase" : "Bundle Purchase",
           guestName: guestName || "Guest User",
           guestEmail: guestEmail,
+          bindingVersion: '1',
+          courseId: validCourseId || '',
+          courseBundleId: validBundleId || '',
+          coursePlanId: validPlanId || '',
         }
       };
 
@@ -1979,8 +2053,8 @@ export const importStudents = async (req, res) => {
     if (!req.body.courseId) return res.status(400).json({ message: "Course ID is required" });
 
     const filePath = req.file.path;
-    const workbook = xlsx.readFile(filePath);
-    const sheetName = workbook.SheetNames[1];
+    const workbook = xlsx.readFile(filePath, { cellFormula: false, cellHTML: false, cellText: false });
+    const sheetName = workbook.SheetNames[0] || workbook.SheetNames[1];
     if (!sheetName)
       return res.status(400).json({ message: "Sheet not found in Excel file" });
 
@@ -1989,10 +2063,11 @@ export const importStudents = async (req, res) => {
     const courseId = req.body.courseId;
     const courseBundleId = req.body.courseBundleId;
 
-    if (rows.length === 0) return res.status(400).json({ message: "Excel file is empty" });
+    if (!rows || rows.length === 0) return res.status(400).json({ message: "Excel file is empty" });
+    if (rows.length > 5000) return res.status(400).json({ message: "Excel file exceeds limit of 5000 rows" });
 
     // Log column names for debugging
-    const columnNames = Object.keys(rows[1]);
+    const columnNames = rows[0] ? Object.keys(rows[0]) : [];
     console.log("📋 Excel Column Names:", columnNames);
 
     const results = [];
@@ -2509,13 +2584,28 @@ export const buyNow = async (req, res) => {
     const tax = parseFloat((taxableAmount * GST_RATE).toFixed(2)); // Calculate GST
     const grandTotal = parseFloat((taxableAmount + tax).toFixed(2)); // Add GST to grand total
 
-    // Razorpay payment verification + capture logic.
-    // SECURITY: verify against the post-coupon, post-GST grandTotal — NOT the raw
-    // subTotal. Verifying against the pre-coupon subtotal did not bind the captured
-    // payment to the amount the customer actually owes for this order. This now
-    // mirrors the main `checkout` handler's verification (grandTotal in paise,
-    // amount/currency/status checks, capture, "already captured" tolerance).
-    if (paymentProvider === "razorpay" && paymentId && grandTotal > 0) {
+    // Step 4.5: SECURITY & REPLAY PROTECTION (F02, F03)
+    let effectiveProvider = paymentProvider;
+    if (grandTotal > 0) {
+      if (paymentProvider === "free" || !["razorpay"].includes(paymentProvider)) {
+        return res.status(400).json({ message: "Invalid payment provider for paid order" });
+      }
+      if (!paymentId) {
+        return res.status(400).json({ message: "Payment ID is required for paid order" });
+      }
+
+      if (!await requirePaymentProof(req, res)) return;
+
+      // F03: Prevent payment replay
+      const existingPaidOrder = await Order.findOne({
+        "payment.paymentIntent": paymentId,
+        "payment.status": "paid"
+      });
+      if (existingPaidOrder) {
+        return res.status(400).json({ message: "Payment ID has already been used for another order" });
+      }
+      effectiveProvider = "razorpay";
+
       const { keyId: apiKey, keySecret: apiSecret } = await getRazorpayKeys();
 
       const razorpayPaymentId = paymentId;
@@ -2536,15 +2626,16 @@ export const buyNow = async (req, res) => {
       try {
         const paymentRes = await axios.get(url, { headers, timeout: 15000 });
         const payment = paymentRes.data || {};
+        if (payment.order_id !== req.body.orderId) return res.status(400).json({ message: "Payment order mismatch" });
 
         // SECURITY: verify the payment actually corresponds to this order before
         // granting access. Without these checks an attacker could pass the id of ANY
         // already-captured payment (e.g. a tiny unrelated ₹1 payment) and the
         // "already captured -> skip" branch would enrol them for free.
-        if (payment.currency && payment.currency !== currency) {
+        if (payment.currency !== currency) {
           return res.status(400).json({ message: "Payment currency mismatch." });
         }
-        if (typeof payment.amount === "number" && payment.amount < amount) {
+        if (payment.amount !== amount) {
           return res.status(400).json({ message: "Paid amount does not match order amount." });
         }
         if (!["authorized", "captured"].includes(payment.status)) {
@@ -2563,14 +2654,10 @@ export const buyNow = async (req, res) => {
           }
         }
       } catch (err) {
-        // If error is "already captured", skip, else return error
-        if (err.response?.data?.error?.code === "BAD_REQUEST_ERROR" &&
-          err.response?.data?.error?.description?.includes("already been captured")) {
-          console.log("Razorpay payment already captured (error response), skipping capture step.");
-        } else {
-          return res.status(400).json({ message: 'Failed to capture payment with Razorpay: ' + (err.response?.data?.error?.description || err.message) });
-        }
+        return res.status(400).json({ message: 'Payment verification failed. Retry with the same verified order.' });
       }
+    } else {
+      effectiveProvider = "free";
     }
 
     // RELIABILITY: record the coupon redemption only now, AFTER the payment
@@ -2584,13 +2671,12 @@ export const buyNow = async (req, res) => {
       }
     }
 
-    let defaultEnrolledStudentsCount;
+    let defaultEnrolledStudentsCount = 0;
     try {
-      defaultEnrolledStudentsCount = await Setting.getDefaultEnrolledStudentsCount();
-      //console.log("Default enrolled students count fetched:", defaultEnrolledStudentsCount); // Debug log
+      defaultEnrolledStudentsCount = (await Setting.getDefaultEnrolledStudentsCount()) || 0;
     } catch (err) {
-      console.error("Error fetching default enrolled students count:", err);
-      return res.status(500).json({ message: "Failed to fetch default enrolled students count", error: err.message });
+      console.warn("Could not fetch default enrolled students count in buyNow, defaulting to 0:", err.message);
+      defaultEnrolledStudentsCount = 0;
     }
 
     // ATOMICITY: create the order and grant every enrollment inside ONE
@@ -2611,8 +2697,9 @@ export const buyNow = async (req, res) => {
         grandTotal,
         payment: {
           paymentIntent: paymentId || null,
-          provider: paymentProvider,
-          status: paymentProvider === "razorpay" ? "paid" : "pending",
+          consumptionKey: effectiveProvider === "razorpay" ? paymentId : undefined,
+          provider: effectiveProvider,
+          status: (effectiveProvider === "razorpay" || grandTotal === 0) ? "paid" : "pending",
         },
         company: {
           name: company?.name || "",
@@ -2620,7 +2707,8 @@ export const buyNow = async (req, res) => {
         }
       }], { session });
 
-      // Step 6: Enroll guest user
+      // Step 6: Enroll guest user (only if verified paid or zero-total)
+      if (effectiveProvider === "razorpay" || grandTotal === 0) {
       for (const item of items) {
         if (item.type === "coursePlan" && item.coursePlanId) {
           const CoursePlan = (await import('../models/CoursePlan.js')).default;
@@ -2840,6 +2928,7 @@ export const buyNow = async (req, res) => {
           }
         }
       }
+      }
 
       return order;
     });
@@ -2865,33 +2954,31 @@ export const buyNow = async (req, res) => {
     }
 
     // Step 7: Token generation and email
-    let oldAccessToken =
-      req.cookies?.accessToken ||
-      (req.headers.authorization && req.headers.authorization.startsWith("Bearer ")
-        ? req.headers.authorization.split(" ")[1]
-        : undefined) ||
-      req.headers["x-access-token"];
+    // SECURITY (F01): Only issue tokens to newly registered guest users or authenticated owner.
+    // Never mint or return tokens for an existing account via public unauthenticated guest checkout!
+    const isAuthenticatedOwner = req.user && req.user._id && guestUser._id && req.user._id.toString() === guestUser._id.toString();
+    const shouldIssueTokens = isNewUser || isAuthenticatedOwner;
 
-    // let oldAccessTokenExp = null;
-    // if (oldAccessToken) {
-    //   const decoded = jwt.decode(oldAccessToken);
-    //   oldAccessTokenExp = decoded?.exp ? decoded.exp * 1000 : null;
-    // }
+    let accessToken = null;
+    let refreshToken = null;
 
-    const { accessToken, refreshToken, accessTokenExp, refreshTokenExp } =
-      await Token.generateTokens(guestUser);
+    if (shouldIssueTokens) {
+      const tokens = await Token.generateTokens(guestUser);
+      accessToken = tokens.accessToken;
+      refreshToken = tokens.refreshToken;
 
-    const redis = await initRedis();
+      const redis = await initRedis();
 
-    if (redis) {
-      const accessTTL = Math.max(1, Math.floor((accessTokenExp - Date.now()) / 1000));
-      const refreshTTL = Math.max(1, Math.floor((refreshTokenExp - Date.now()) / 1000));
+      if (redis) {
+        const accessTTL = Math.max(1, Math.floor((tokens.accessTokenExp - Date.now()) / 1000));
+        const refreshTTL = Math.max(1, Math.floor((tokens.refreshTokenExp - Date.now()) / 1000));
 
-      await redis.set(`accessToken:${accessToken}`, "valid", { EX: accessTTL });
-      await redis.set(`refreshToken:${refreshToken}`, userId.toString(), { EX: refreshTTL });
+        await redis.set(`accessToken:${accessToken}`, "valid", { EX: accessTTL });
+        await redis.set(`refreshToken:${refreshToken}`, userId.toString(), { EX: refreshTTL });
+      }
+
+      Token.setTokensCookies(res, accessToken, refreshToken);
     }
-
-    Token.setTokensCookies(res, accessToken, refreshToken);
 
     try {
       // Only send password if user is new (per-account random password generated above)
@@ -2949,9 +3036,9 @@ export const buyNow = async (req, res) => {
         grandTotal: newOrder.grandTotal.toString(),
         invoice_url: newOrder.invoice_url
       },
-      guestUser,
-      accessToken,
-      refreshToken
+      guestUser: isNewUser ? guestUser : undefined,
+      accessToken: shouldIssueTokens ? accessToken : undefined,
+      refreshToken: shouldIssueTokens ? refreshToken : undefined
     });
   } catch (err) {
     console.error("Buy Now Error:", err);

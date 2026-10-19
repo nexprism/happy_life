@@ -44,4 +44,4 @@ moduleSchema.index({ courseId: 1, isPublished: 1 });
 
 // moduleSchema.index({ title: 'text' });
 
-export default mongoose.model('Module', moduleSchema);
+export default mongoose.models.Module || mongoose.model('Module', moduleSchema);
