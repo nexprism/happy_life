@@ -9,6 +9,7 @@ import {
   Play,
   Video as VideoIcon,
   Image as ImageIcon,
+  VolumeX,
 } from "lucide-react";
 import {
   LotusChakraIcon,
@@ -281,8 +282,24 @@ export default function BuilderTemplateView() {
       {template.customCss && <style>{template.customCss}</style>}
 
       {/* --- HEADER --- */}
-      {template.headerConfig?.enabled && (
-        <header className="sticky top-0 z-50 backdrop-blur-xl bg-white/95 border-b border-slate-200 shadow-xs transition-all">
+      {template.headerConfig?.enabled && (() => {
+        const shadowVal = Number(
+          template.headerConfig.shadowIntensity ??
+          (template.headerConfig.ctaButton?.variant?.match(/shadow_(\d+)/)?.[1]) ??
+          (template.customCss?.match(/\[HL_NAVBAR_SHADOW:(\d+)\]/)?.[1]) ??
+          0
+        );
+        const navShadow = shadowVal > 0
+          ? `0px ${Math.max(2, Math.round(shadowVal * 0.55))}px ${Math.round(shadowVal * 0.75)}px -${Math.max(1, Math.round(shadowVal * 0.2))}px rgba(0, 0, 0, ${(0.06 + (shadowVal / 60) * 0.18).toFixed(2)}), 0px 4px 6px -2px rgba(0, 0, 0, 0.05)`
+          : undefined;
+
+        return (
+          <header
+            style={navShadow ? { boxShadow: navShadow } : undefined}
+            className={`sticky top-0 z-50 backdrop-blur-xl bg-white/95 border-b border-slate-200 ${
+              navShadow ? "" : "shadow-xs"
+            } transition-all`}
+          >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <Link to="/" className="flex items-center hover:opacity-85 transition">
@@ -328,7 +345,8 @@ export default function BuilderTemplateView() {
             </div>
           </div>
         </header>
-      )}
+        );
+      })()}
 
       {/* --- SECTIONS --- */}
       <main className="space-y-0">
@@ -346,14 +364,22 @@ export default function BuilderTemplateView() {
             >
               <div className={`${getSectionWidthClass(section.maxWidth)} mx-auto px-4 sm:px-6 lg:px-8 relative z-10`}>
                 {/* 1-Column vs 2-Column Responsive Layout */}
-                <div
-                  className={
-                    isTwoCol
-                      ? "grid grid-cols-1 md:grid-cols-2 gap-10 lg:gap-16 items-center"
-                      : `${getSectionWidthClass(section.maxWidth)} mx-auto space-y-8`
-                  }
-                >
-                  {section.columns.map((column, cIdx) => (
+                {(() => {
+                  const isWhyJoinSelfContained =
+                    section.columns[0]?.components[0]?.content?.style === "whyJoin" &&
+                    (!section.columns[1] || section.columns[1].components.length === 0);
+
+                  return (
+                    <div
+                      className={
+                        isTwoCol && !isWhyJoinSelfContained
+                          ? "grid grid-cols-1 md:grid-cols-2 gap-10 lg:gap-16 items-center"
+                          : `${getSectionWidthClass(section.maxWidth)} mx-auto space-y-8`
+                      }
+                    >
+                      {section.columns
+                        .filter((_, cIdx) => !(isWhyJoinSelfContained && cIdx === 1))
+                        .map((column, cIdx) => (
                     <div
                       key={column.id || cIdx}
                       className={`space-y-8 ${
@@ -370,7 +396,7 @@ export default function BuilderTemplateView() {
                           {comp.type === "hero" && (
                             comp.content.style === "webinar" || comp.content.eventDate ? (
                               <div
-                                className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#071322] via-[#0d2238] to-[#17436b] text-white p-6 sm:p-10 lg:p-12 shadow-2xl border border-blue-900/50"
+                                className="relative overflow-hidden rounded-[28px] lg:rounded-3xl bg-gradient-to-b from-[#06152B] via-[#091D38] to-[#051326] lg:bg-gradient-to-r lg:from-[#071322] lg:via-[#0d2238] lg:to-[#17436b] text-white p-5 sm:p-6 lg:p-12 min-h-[80vh] lg:min-h-0 shadow-2xl border border-blue-900/40"
                                 style={
                                   comp.content.backgroundImage
                                     ? {
@@ -384,7 +410,105 @@ export default function BuilderTemplateView() {
                                 {/* Cosmic Glow */}
                                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_var(--tw-gradient-stops))] from-blue-400/10 via-transparent to-transparent pointer-events-none" />
 
-                                <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                                {/* --- MOBILE / PHONE SPECIFIC HERO LAYOUT (Matches Screenshot 2) --- */}
+                                <div className="block lg:hidden relative z-10 flex flex-col justify-between h-full min-h-[76vh] text-left">
+                                  {/* Top: Title & Subtitle */}
+                                  <div>
+                                    {/* Title */}
+                                    <h1 className="text-[25px] sm:text-[27px] font-black text-white font-serif tracking-tight leading-[1.2]">
+                                      {comp.content.title || "Mega Astrology Webinar"}
+                                    </h1>
+
+                                    {/* Subtitle */}
+                                    <p className="mt-3.5 text-[12.5px] text-[#CAD5E2] leading-[1.6] font-normal">
+                                      {comp.content.subtitle ||
+                                        "Enhance your astrological understanding with our 2 Days webinar, seamlessly integrating traditional Vedic astrology with practical, modern applications. Learn to interpret birth charts and celestial influences under the guidance of Astro Arun Pandit."}
+                                    </p>
+                                  </div>
+
+                                  {/* Center: Mentor Image with Celestial Zodiac Wheel */}
+                                  <div className="relative flex items-center justify-center my-4 h-[225px] rounded-2xl overflow-hidden bg-[#030C19] border border-blue-900/40 shadow-inner">
+                                    <div className="absolute inset-0 flex items-center justify-center text-blue-400/30 pointer-events-none scale-110">
+                                      <CelestialZodiacWheel className="w-56 h-56 sm:w-60 sm:h-60" />
+                                    </div>
+                                    <img
+                                      src={resolveMediaUrl(
+                                        comp.content.mentorImage && comp.content.mentorImage !== "/hero_image_2.png"
+                                          ? comp.content.mentorImage
+                                          : "/mentor.png"
+                                      )}
+                                      alt={comp.content.mentorName || "Mentor"}
+                                      className="relative z-10 max-h-[220px] w-full object-contain drop-shadow-[0_15px_25px_rgba(0,0,0,0.8)]"
+                                      onError={(e) => {
+                                        e.target.src = "/mentor.png";
+                                      }}
+                                    />
+                                  </div>
+
+                                  {/* Lower Center: 4 Metadata Rows with spacious gaps & clear alignment */}
+                                  <div className="space-y-3.5 my-2">
+                                    <div className="flex items-center text-[13px]">
+                                      <div className="w-[42%] flex items-center gap-2.5 text-slate-200">
+                                        <Calendar className="w-[17px] h-[17px] text-[#60A5FA] shrink-0" />
+                                        <span className="font-semibold text-slate-200">Date</span>
+                                      </div>
+                                      <div className="w-[58%] font-bold text-white text-left pl-2 tracking-wide">
+                                        {comp.content.eventDate || "24 Oct, 2026"}
+                                      </div>
+                                    </div>
+
+                                    <div className="flex items-center text-[13px]">
+                                      <div className="w-[42%] flex items-center gap-2.5 text-slate-200">
+                                        <Clock className="w-[17px] h-[17px] text-[#60A5FA] shrink-0" />
+                                        <span className="font-semibold text-slate-200">Time</span>
+                                      </div>
+                                      <div className="w-[58%] font-bold text-white text-left pl-2 tracking-wide">
+                                        {comp.content.eventTime || "01:00 PM"}
+                                      </div>
+                                    </div>
+
+                                    <div className="flex items-center text-[13px]">
+                                      <div className="w-[42%] flex items-center gap-2.5 text-slate-200">
+                                        <Hourglass className="w-[17px] h-[17px] text-[#60A5FA] shrink-0" />
+                                        <span className="font-semibold text-slate-200">Duration</span>
+                                      </div>
+                                      <div className="w-[58%] font-bold text-white text-left pl-2 tracking-wide">
+                                        {comp.content.duration || "4 Hours"}
+                                      </div>
+                                    </div>
+
+                                    <div className="flex items-center text-[13px]">
+                                      <div className="w-[42%] flex items-center gap-2.5 text-slate-200">
+                                        <UserIcon className="w-[17px] h-[17px] text-[#60A5FA] shrink-0" />
+                                        <span className="font-semibold text-slate-200">Mentor</span>
+                                      </div>
+                                      <div className="w-[58%] font-bold text-white text-left pl-2 tracking-wide">
+                                        {comp.content.mentorName || "Astro Arun Pandit"}
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                  {/* Bottom: Full Width CTA Register Button */}
+                                  <div className="pt-3">
+                                    <a
+                                      href={comp.content.buttonLink || comp.content.ctaLink || "#lead-form"}
+                                      className="w-full py-3.5 sm:py-4 px-5 bg-white text-purple-700 hover:bg-slate-50 rounded-xl font-extrabold text-sm text-center shadow-lg shadow-black/25 flex items-center justify-center gap-2 transition active:scale-98 cursor-pointer"
+                                    >
+                                      <span className="text-[#7E22CE] font-bold text-sm">Register Now</span>
+                                      {comp.content.originalPrice && (
+                                        <span className="line-through text-slate-400 text-xs font-semibold">
+                                          {comp.content.originalPrice}
+                                        </span>
+                                      )}
+                                      <span className="text-[#7E22CE] font-black text-sm">
+                                        {comp.content.discountPrice || "₹99/-"}
+                                      </span>
+                                    </a>
+                                  </div>
+                                </div>
+
+                                {/* --- DESKTOP / PC HERO LAYOUT (hidden lg:grid - Unchanged for PC) --- */}
+                                <div className="hidden lg:grid relative z-10 grid-cols-12 gap-8 items-center">
                                   {/* Left Details */}
                                   <div className="lg:col-span-7 space-y-5 text-left">
                                     {comp.content.badge && (
@@ -457,11 +581,11 @@ export default function BuilderTemplateView() {
                                       <CelestialZodiacWheel className="w-64 h-64 sm:w-80 sm:h-80" />
                                     </div>
                                     <img
-                                      src={resolveMediaUrl(comp.content.mentorImage || "/hero_image_2.png")}
+                                      src={resolveMediaUrl(comp.content.mentorImage || "/mentor.png")}
                                       alt={comp.content.mentorName || "Mentor"}
                                       className="relative z-10 max-h-[280px] sm:max-h-[340px] object-contain drop-shadow-[0_15px_25px_rgba(0,0,0,0.6)]"
                                       onError={(e) => {
-                                        e.target.src = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80";
+                                        e.target.src = "/mentor.png";
                                       }}
                                     />
                                   </div>
@@ -709,48 +833,210 @@ export default function BuilderTemplateView() {
                           )}
 
                           {/* 4. ABOUT COMPONENT (Why Join Webinar) */}
+                          {/* 4. ABOUT COMPONENT (Why Join Webinar) */}
                           {comp.type === "about" && (
-                            comp.content.style === "whyJoin" || comp.content.benefits ? (
-                              <div className="space-y-6 text-left">
-                                <div>
-                                  <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
-                                    {comp.content.title || "Why join the webinar?"}
-                                  </h2>
-                                  <p className="text-sm sm:text-base text-slate-500 mt-2 leading-relaxed">
-                                    {comp.content.subtitle || "This webinar will help you leverage the impact of stars in day-to-day life."}
-                                  </p>
-                                </div>
+                            comp.content.style === "whyJoin" || comp.content.benefits ? (() => {
+                              const align = comp.content.align || "center";
+                              const isCenter = align === "center";
+                              const isRight = align === "right";
+                              const textAlignClass = isCenter ? "text-center" : isRight ? "text-right" : "text-left";
 
-                                <div className="space-y-4 pt-2">
-                                  {(comp.content.benefits || [
-                                    "Make confident and informed life decisions.",
-                                    "Manage stress and anxiety more effectively.",
-                                    "Fulfil your dreams like buying your own house.",
-                                    "Enhance your health and well-being through spiritual insights.",
-                                    "Get logical and practical remedies to tackle life's challenges.",
-                                    "Maintain stronger relationships with family and friends."
-                                  ]).map((benefit, bIdx) => (
-                                    <div key={bIdx} className="flex items-start gap-3.5">
-                                      <div className="shrink-0 mt-0.5">
-                                        <LotusChakraIcon className="w-5 h-5 sm:w-6 sm:h-6" />
+                              const titleSizeClass =
+                                comp.content.titleFontSize === "2xl" ? "text-2xl sm:text-3xl" :
+                                comp.content.titleFontSize === "3xl" ? "text-3xl sm:text-4xl" :
+                                comp.content.titleFontSize === "5xl" ? "text-4xl sm:text-5xl lg:text-6xl" :
+                                comp.content.titleFontSize === "6xl" ? "text-5xl sm:text-6xl lg:text-7xl" :
+                                "text-3xl sm:text-4xl lg:text-5xl font-extrabold";
+
+                              const subtitleSizeClass =
+                                comp.content.subtitleFontSize === "xs" ? "text-xs sm:text-sm" :
+                                comp.content.subtitleFontSize === "sm" ? "text-sm sm:text-base" :
+                                comp.content.subtitleFontSize === "lg" ? "text-lg sm:text-xl" :
+                                "text-sm sm:text-base";
+
+                              const pointersSizeClass =
+                                comp.content.pointersFontSize === "sm" ? "text-sm sm:text-base" :
+                                comp.content.pointersFontSize === "lg" ? "text-lg sm:text-xl" :
+                                comp.content.pointersFontSize === "xl" ? "text-xl sm:text-2xl" :
+                                "text-base sm:text-lg";
+
+                              const iconSizeClass =
+                                comp.content.iconSize === "sm" ? "w-6 h-6 shrink-0" :
+                                comp.content.iconSize === "lg" ? "w-10 h-10 shrink-0" :
+                                comp.content.iconSize === "xl" ? "w-12 h-12 shrink-0" :
+                                "w-8 h-8 sm:w-9 sm:h-9 shrink-0";
+
+                              // Check for sibling video in this section if videoUrl isn't provided directly
+                              const siblingVideo = section.columns
+                                ?.flatMap((c) => c.components)
+                                ?.find((c) => c.id !== comp.id && c.type === "video");
+
+                              const videoUrl = comp.content.videoUrl || siblingVideo?.content?.videoUrl;
+                              const imageUrl = comp.content.imageUrl || comp.content.videoPoster || siblingVideo?.content?.imageUrl || "/hero_image_2.png";
+                              const videoTitle = comp.content.title || siblingVideo?.content?.title || "Webinar Video";
+                              const videoPos = comp.content.videoPosition || "belowHeading";
+                              const hasVideo = videoPos !== "none" && (videoUrl || imageUrl);
+
+                              const renderWebinarVideo = () => (
+                                <div className="max-w-2xl mx-auto my-6 w-full">
+                                  <div className="rounded-2xl sm:rounded-3xl overflow-hidden border-2 border-amber-200/80 bg-slate-900 shadow-2xl relative aspect-video flex items-center justify-center group">
+                                    {videoUrl && (videoUrl.includes("youtube") || videoUrl.includes("youtu.be")) ? (
+                                      <iframe
+                                        src={videoUrl.replace("watch?v=", "embed/")}
+                                        title={videoTitle}
+                                        className="w-full h-full border-0"
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                        allowFullScreen
+                                      />
+                                    ) : (
+                                      <div className="relative w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-900 to-blue-950">
+                                        <img
+                                          src={resolveMediaUrl(imageUrl)}
+                                          alt={videoTitle}
+                                          className="w-full h-full object-cover opacity-75"
+                                        />
+                                        <div className="absolute w-16 h-16 rounded-full bg-white/95 text-purple-900 flex items-center justify-center shadow-2xl pl-1 group-hover:scale-110 transition cursor-pointer">
+                                          <Play className="w-7 h-7 fill-purple-900" />
+                                        </div>
                                       </div>
-                                      <p className="text-sm sm:text-base font-semibold text-slate-800 leading-snug">
-                                        {benefit}
+                                    )}
+                                  </div>
+                                </div>
+                              );
+
+                              return (
+                                <div className="w-full">
+                                  {/* --- MOBILE LAYOUT (block lg:hidden) - COMPLETELY UNTOUCHED & PRESERVED --- */}
+                                  <div className={`block lg:hidden space-y-6 ${textAlignClass}`}>
+                                    <div className="max-w-2xl mx-auto">
+                                      <h2 className={`${titleSizeClass} text-slate-900 tracking-tight leading-tight`}>
+                                        {comp.content.title || "Why join the webinar?"}
+                                      </h2>
+                                      <p className={`${subtitleSizeClass} text-slate-500 mt-2.5 leading-relaxed font-normal`}>
+                                        {comp.content.subtitle || "This webinar will help you leverage the impact of stars in day-to-day life."}
                                       </p>
                                     </div>
-                                  ))}
-                                </div>
 
-                                <div className="pt-3">
-                                  <a
-                                    href={comp.content.buttonLink || "#lead-form"}
-                                    className="inline-block px-8 py-3.5 bg-[#2171B5] hover:bg-blue-700 text-white font-bold text-sm sm:text-base rounded-xl shadow-lg transition active:scale-95 cursor-pointer"
-                                  >
-                                    {comp.content.buttonText || "Register now"}
-                                  </a>
+                                    {/* Video placed below heading on phone */}
+                                    {hasVideo && videoPos === "belowHeading" && renderWebinarVideo()}
+
+                                    {/* Key Benefits Pointers on phone */}
+                                    <div className="max-w-xl mx-auto space-y-4 pt-2 text-left">
+                                      {(comp.content.benefits || [
+                                        "Make confident and informed life decisions.",
+                                        "Manage stress and anxiety more effectively.",
+                                        "Fulfil your dreams like buying your own house.",
+                                        "Enhance your health and well-being through spiritual insights.",
+                                        "Get logical and practical remedies to tackle life's challenges.",
+                                        "Maintain stronger relationships with family and friends."
+                                      ]).map((benefit, bIdx) => (
+                                        <div key={bIdx} className="flex items-start gap-4">
+                                          <div className="shrink-0 mt-0.5">
+                                            <LotusChakraIcon className={iconSizeClass} />
+                                          </div>
+                                          <p className={`${pointersSizeClass} font-semibold text-slate-800 leading-snug pt-0.5`}>
+                                            {benefit}
+                                          </p>
+                                        </div>
+                                      ))}
+                                    </div>
+
+                                    {/* Video placed below pointers on phone */}
+                                    {hasVideo && videoPos === "belowPointers" && renderWebinarVideo()}
+
+                                    {/* Phone CTA Button */}
+                                    {comp.content.buttonText && (
+                                      <div className={`pt-4 ${isCenter ? "flex justify-center" : isRight ? "flex justify-end" : "flex justify-start"}`}>
+                                        <a
+                                          href={comp.content.buttonLink || "#lead-form"}
+                                          className="inline-block px-9 py-3.5 bg-[#2171B5] hover:bg-blue-700 text-white font-bold text-sm sm:text-base rounded-xl shadow-lg transition active:scale-95 cursor-pointer"
+                                        >
+                                          {comp.content.buttonText}
+                                        </a>
+                                      </div>
+                                    )}
+                                  </div>
+
+                                  {/* --- PC / DESKTOP LAYOUT (hidden lg:block) - MATCHES SCREENSHOT 2 EXACTLY --- */}
+                                  <div className="hidden lg:block w-full max-w-6xl mx-auto py-4">
+                                    {/* 1. Header Centered at the Top */}
+                                    <div className="text-center max-w-3xl mx-auto mb-12">
+                                      <h2 className="text-3xl sm:text-4xl lg:text-[42px] font-extrabold text-slate-900 tracking-tight leading-tight">
+                                        {comp.content.title || "Why join the webinar?"}
+                                      </h2>
+                                      <p className="text-base sm:text-lg text-slate-500 mt-3 leading-relaxed font-normal">
+                                        {comp.content.subtitle || "This webinar will help you leverage the impact of stars in day-to-day life."}
+                                      </p>
+                                    </div>
+
+                                    {/* 2. Side-by-Side 2-Column Grid */}
+                                    <div className="grid grid-cols-12 gap-12 items-center">
+                                      {/* Left Column: 6 Pointers + Purple Register now Button */}
+                                      <div className="col-span-6 space-y-7 text-left">
+                                        <div className="space-y-4.5">
+                                          {(comp.content.benefits || [
+                                            "Make confident and informed life decisions.",
+                                            "Manage stress and anxiety more effectively.",
+                                            "Fulfil your dreams like buying your own house.",
+                                            "Enhance your health and well-being through spiritual insights.",
+                                            "Get logical and practical remedies to tackle life's challenges.",
+                                            "Maintain stronger relationships with family and friends."
+                                          ]).map((benefit, bIdx) => (
+                                            <div key={bIdx} className="flex items-start gap-4">
+                                              <div className="shrink-0 mt-0.5 text-purple-600">
+                                                <LotusChakraIcon className={iconSizeClass || "w-7 h-7 sm:w-8 sm:h-8"} />
+                                              </div>
+                                              <p className={`${pointersSizeClass || "text-[15px] sm:text-[16px]"} font-semibold text-slate-800 leading-snug pt-0.5`}>
+                                                {benefit}
+                                              </p>
+                                            </div>
+                                          ))}
+                                        </div>
+
+                                        {/* Purple Register now Button */}
+                                        <div className="pt-2">
+                                          <a
+                                            href={comp.content.buttonLink || "#lead-form"}
+                                            className="inline-block px-7 py-3 bg-[#7E22CE] hover:bg-[#6B21A8] text-white font-bold text-sm rounded-xl shadow-md transition"
+                                          >
+                                            {comp.content.buttonText || "Register now"}
+                                          </a>
+                                        </div>
+                                      </div>
+
+                                      {/* Right Column: Large Video Player with Golden Border */}
+                                      <div className="col-span-6">
+                                        <div className="rounded-3xl overflow-hidden border-[5px] sm:border-[6px] border-[#C5A059] bg-slate-950 shadow-2xl relative aspect-[16/10] sm:aspect-video flex items-center justify-center group">
+                                          {videoUrl && (videoUrl.includes("youtube") || videoUrl.includes("youtu.be")) ? (
+                                            <iframe
+                                              src={videoUrl.replace("watch?v=", "embed/")}
+                                              title={videoTitle}
+                                              className="w-full h-full border-0"
+                                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                              allowFullScreen
+                                            />
+                                          ) : (
+                                            <>
+                                              <img
+                                                src={resolveMediaUrl(imageUrl)}
+                                                alt={videoTitle}
+                                                className="w-full h-full object-cover"
+                                              />
+                                              <div className="absolute w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-black/60 backdrop-blur-xs text-white flex items-center justify-center shadow-2xl pl-1 group-hover:scale-110 transition cursor-pointer">
+                                                <Play className="w-6 h-6 sm:w-7 sm:h-7 fill-white text-white" />
+                                              </div>
+                                              <div className="absolute bottom-3 right-3 p-1.5 bg-black/75 backdrop-blur-xs text-white rounded-full flex items-center justify-center">
+                                                <VolumeX className="w-3.5 h-3.5 text-white/90" />
+                                              </div>
+                                            </>
+                                          )}
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
                                 </div>
-                              </div>
-                            ) : (
+                              );
+                            })() : (
                               <div className="space-y-5 text-left">
                                 {comp.content.tag && (
                                   <span className="inline-block px-3 py-1 text-xs font-bold uppercase tracking-wider text-[#2171B5] bg-blue-50 rounded-full border border-blue-200">
@@ -768,36 +1054,52 @@ export default function BuilderTemplateView() {
                           )}
 
                           {/* VIDEO / MEDIA PLAYER COMPONENT */}
-                          {comp.type === "video" && (
-                            <div className="rounded-2xl sm:rounded-3xl overflow-hidden border-2 border-amber-200/80 bg-slate-900 shadow-2xl relative aspect-video flex items-center justify-center group">
-                              {comp.content.mediaType === "image" ? (
-                                <img
-                                  src={resolveMediaUrl(comp.content.imageUrl || "/hero_image_2.png")}
-                                  alt={comp.content.title || "Webinar Media"}
-                                  className="w-full h-full object-cover"
-                                />
-                              ) : comp.content.videoUrl && (comp.content.videoUrl.includes("youtube") || comp.content.videoUrl.includes("youtu.be")) ? (
-                                <iframe
-                                  src={comp.content.videoUrl.replace("watch?v=", "embed/")}
-                                  title={comp.content.title || "Webinar Video"}
-                                  className="w-full h-full border-0"
-                                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                  allowFullScreen
-                                />
-                              ) : (
-                                <div className="relative w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-900 to-blue-950">
+                          {comp.type === "video" && (() => {
+                            // Check if this section already rendered video inside whyJoin about component
+                            const hasWhyJoinWithVideo = section.columns
+                              ?.flatMap((c) => c.components)
+                              ?.some(
+                                (c) =>
+                                  c.type === "about" &&
+                                  (c.content?.style === "whyJoin" || c.content?.benefits) &&
+                                  (c.content?.videoPosition || "belowHeading") === "belowHeading"
+                              );
+
+                            if (hasWhyJoinWithVideo) {
+                              return null; // Suppress duplicate video at the bottom!
+                            }
+
+                            return (
+                              <div className="rounded-2xl sm:rounded-3xl overflow-hidden border-2 border-amber-200/80 bg-slate-900 shadow-2xl relative aspect-video flex items-center justify-center group">
+                                {comp.content.mediaType === "image" ? (
                                   <img
                                     src={resolveMediaUrl(comp.content.imageUrl || "/hero_image_2.png")}
-                                    alt="Video Poster"
-                                    className="w-full h-full object-cover opacity-65"
+                                    alt={comp.content.title || "Webinar Media"}
+                                    className="w-full h-full object-cover"
                                   />
-                                  <div className="absolute w-16 h-16 rounded-full bg-white/95 text-purple-900 flex items-center justify-center shadow-2xl pl-1 group-hover:scale-110 transition cursor-pointer">
-                                    <Play className="w-7 h-7 fill-purple-900" />
+                                ) : comp.content.videoUrl && (comp.content.videoUrl.includes("youtube") || comp.content.videoUrl.includes("youtu.be")) ? (
+                                  <iframe
+                                    src={comp.content.videoUrl.replace("watch?v=", "embed/")}
+                                    title={comp.content.title || "Webinar Video"}
+                                    className="w-full h-full border-0"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                    allowFullScreen
+                                  />
+                                ) : (
+                                  <div className="relative w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-900 to-blue-950">
+                                    <img
+                                      src={resolveMediaUrl(comp.content.imageUrl || "/hero_image_2.png")}
+                                      alt="Video Poster"
+                                      className="w-full h-full object-cover opacity-65"
+                                    />
+                                    <div className="absolute w-16 h-16 rounded-full bg-white/95 text-purple-900 flex items-center justify-center shadow-2xl pl-1 group-hover:scale-110 transition cursor-pointer">
+                                      <Play className="w-7 h-7 fill-purple-900" />
+                                    </div>
                                   </div>
-                                </div>
-                              )}
-                            </div>
-                          )}
+                                )}
+                              </div>
+                            );
+                          })()}
 
                           {/* 5. FEATURES COMPONENT (What will you learn - 6 Vedic Cards) */}
                           {comp.type === "features" && (
@@ -876,51 +1178,61 @@ export default function BuilderTemplateView() {
                           )}
 
                           {/* 7. FAQ COMPONENT (Screenshot 4) */}
-                          {comp.type === "faq" && (
-                            <div className="space-y-6 max-w-4xl mx-auto text-left">
-                              <div className="space-y-2 text-center">
-                                <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
-                                  {comp.content.title || "Frequently Asked Questions"}
-                                </h2>
-                                {comp.content.subtitle && (
-                                  <p className="text-sm text-slate-500">
-                                    {comp.content.subtitle}
-                                  </p>
-                                )}
-                              </div>
+                          {comp.type === "faq" && (() => {
+                            const align = comp.content.align || "left";
+                            const textAlignClass =
+                              align === "center"
+                                ? "text-center"
+                                : align === "right"
+                                ? "text-right"
+                                : "text-left";
 
-                              <div className="space-y-3 pt-3">
-                                {(comp.content.faqs || []).map((faq, fi) => (
-                                  <div
-                                    key={fi}
-                                    className="rounded-xl border border-slate-200 bg-white shadow-xs overflow-hidden transition"
-                                  >
-                                    <button
-                                      type="button"
-                                      onClick={() => toggleFaq(fi)}
-                                      className="w-full px-5 py-4 text-left flex items-center justify-between text-sm sm:text-base font-bold text-slate-900 hover:text-[#2171B5] transition cursor-pointer"
+                            return (
+                              <div className={`space-y-6 max-w-4xl mx-auto ${textAlignClass}`}>
+                                <div className={`space-y-2 ${textAlignClass}`}>
+                                  <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
+                                    {comp.content.title || "Frequently Asked Questions"}
+                                  </h2>
+                                  {comp.content.subtitle && (
+                                    <p className="text-sm text-slate-500">
+                                      {comp.content.subtitle}
+                                    </p>
+                                  )}
+                                </div>
+
+                                <div className="space-y-3 pt-3">
+                                  {(comp.content.faqs || []).map((faq, fi) => (
+                                    <div
+                                      key={fi}
+                                      className="rounded-xl border border-slate-200 bg-white shadow-xs overflow-hidden transition"
                                     >
-                                      <span>{faq.question}</span>
-                                      <span className="text-slate-500 font-bold text-lg leading-none ml-4">
-                                        {openFaq[fi] ? "−" : "+"}
-                                      </span>
-                                    </button>
-                                    {openFaq[fi] && (
-                                      <div className="px-5 pb-4 pt-1 text-xs sm:text-sm text-slate-600 border-t border-slate-100 leading-relaxed">
-                                        {faq.answer}
-                                      </div>
-                                    )}
-                                  </div>
-                                ))}
+                                      <button
+                                        type="button"
+                                        onClick={() => toggleFaq(fi)}
+                                        className={`w-full px-5 py-4 ${textAlignClass} flex items-center justify-between text-sm sm:text-base font-bold text-slate-900 hover:text-[#2171B5] transition cursor-pointer`}
+                                      >
+                                        <span className={`flex-1 ${textAlignClass}`}>{faq.question}</span>
+                                        <span className="text-slate-500 font-bold text-lg leading-none ml-4 shrink-0">
+                                          {openFaq[fi] ? "−" : "+"}
+                                        </span>
+                                      </button>
+                                      {openFaq[fi] && (
+                                        <div className={`px-5 pb-4 pt-1 text-xs sm:text-sm text-slate-600 border-t border-slate-100 leading-relaxed ${textAlignClass}`}>
+                                          {faq.answer}
+                                        </div>
+                                      )}
+                                    </div>
+                                  ))}
+                                </div>
                               </div>
-                            </div>
-                          )}
+                            );
+                          })()}
 
                           {/* 8. CTA BANNER COMPONENT (Screenshot 5 - Still Thinking - Happy Life Blue) */}
                           {comp.type === "ctaBanner" && (
                             comp.content.style === "expertCallout" || comp.content.expertImage ? (
                               <div
-                                className="rounded-3xl p-8 sm:p-12 lg:p-14 text-white shadow-2xl relative overflow-hidden"
+                                className="rounded-3xl text-white shadow-2xl relative overflow-hidden"
                                 style={{
                                   background:
                                     comp.content.backgroundColor === "#2171B5" || !comp.content.backgroundColor
@@ -928,35 +1240,73 @@ export default function BuilderTemplateView() {
                                       : comp.content.backgroundColor,
                                 }}
                               >
-                                <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
-                                  <div className="md:col-span-8 space-y-6 text-left">
-                                    <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white leading-tight">
+                                {/* --- PHONE SPECIFIC LAYOUT (block md:hidden: Photo UP, Text DOWN) --- */}
+                                <div className="block md:hidden p-4 sm:p-6 pt-5 pb-8 text-center min-h-[600px] flex flex-col justify-between">
+                                  {/* Photo UP - Height increased by 40% so photo is fully visible */}
+                                  <div className="w-full rounded-2xl overflow-hidden shadow-xl border-2 border-white/20 mb-6 bg-slate-900/40">
+                                    <img
+                                      src={resolveMediaUrl(comp.content.expertImage || "/hero_image_2.png")}
+                                      alt="Expert Mentor"
+                                      className="w-full h-80 sm:h-96 object-cover object-top"
+                                      onError={(e) => {
+                                        e.target.src = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80";
+                                      }}
+                                    />
+                                  </div>
+
+                                  {/* Text DOWN */}
+                                  <div className="space-y-4 px-2 pb-2">
+                                    <h2 className="text-2xl sm:text-3xl font-black text-white leading-tight">
                                       {comp.content.title || "Still thinking? Let us help you take the first step."}
                                     </h2>
                                     {comp.content.subtitle && (
-                                      <p className="text-sm sm:text-base text-blue-100 leading-relaxed font-normal">
+                                      <p className="text-sm text-white/90 leading-relaxed font-normal">
                                         {comp.content.subtitle}
                                       </p>
                                     )}
-                                    <div>
+                                    <div className="pt-2 flex justify-center">
                                       <a
                                         href={comp.content.buttonLink || "#lead-form"}
-                                        className="inline-block px-8 py-3.5 bg-white text-[#2171B5] hover:bg-slate-50 font-bold text-sm sm:text-base rounded-xl shadow-xl transition transform hover:scale-105 active:scale-95 cursor-pointer"
+                                        className="inline-block px-8 py-3.5 bg-white text-[#7E22CE] font-bold text-sm sm:text-base rounded-xl shadow-xl transition transform active:scale-95 cursor-pointer"
                                       >
                                         {comp.content.buttonText || "Talk to an expert"}
                                       </a>
                                     </div>
                                   </div>
+                                </div>
 
-                                  <div className="md:col-span-4 flex justify-center md:justify-end">
-                                    <img
-                                      src={resolveMediaUrl(comp.content.expertImage || "/hero_image_2.png")}
-                                      alt="Expert Mentor"
-                                      className="w-48 h-48 sm:w-60 sm:h-60 object-cover rounded-2xl shadow-2xl border-4 border-white/20"
-                                      onError={(e) => {
-                                        e.target.src = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80";
-                                      }}
-                                    />
+                                {/* --- PC / DESKTOP LAYOUT (hidden md:block: COMPLETELY UNCHANGED) --- */}
+                                <div className="hidden md:block p-8 sm:p-12 lg:p-14">
+                                  <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
+                                    <div className="md:col-span-8 space-y-6 text-left">
+                                      <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white leading-tight">
+                                        {comp.content.title || "Still thinking? Let us help you take the first step."}
+                                      </h2>
+                                      {comp.content.subtitle && (
+                                        <p className="text-sm sm:text-base text-blue-100 leading-relaxed font-normal">
+                                          {comp.content.subtitle}
+                                        </p>
+                                      )}
+                                      <div>
+                                        <a
+                                          href={comp.content.buttonLink || "#lead-form"}
+                                          className="inline-block px-8 py-3.5 bg-white text-[#2171B5] hover:bg-slate-50 font-bold text-sm sm:text-base rounded-xl shadow-xl transition transform hover:scale-105 active:scale-95 cursor-pointer"
+                                        >
+                                          {comp.content.buttonText || "Talk to an expert"}
+                                        </a>
+                                      </div>
+                                    </div>
+
+                                    <div className="md:col-span-4 flex justify-center md:justify-end">
+                                      <img
+                                        src={resolveMediaUrl(comp.content.expertImage || "/hero_image_2.png")}
+                                        alt="Expert Mentor"
+                                        className="w-48 h-48 sm:w-60 sm:h-60 object-cover rounded-2xl shadow-2xl border-4 border-white/20"
+                                        onError={(e) => {
+                                          e.target.src = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80";
+                                        }}
+                                      />
+                                    </div>
                                   </div>
                                 </div>
                               </div>
@@ -981,6 +1331,8 @@ export default function BuilderTemplateView() {
                     </div>
                   ))}
                 </div>
+                  );
+                })()}
               </div>
             </section>
           );

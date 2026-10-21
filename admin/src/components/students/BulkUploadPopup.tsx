@@ -112,7 +112,7 @@ const BulkUploadPopup: React.FC<EnrollStudentPopupProps> = ({
               />
               <p className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1 mt-1">
                 <FileSpreadsheet className="w-3.5 h-3.5 text-gray-400" />
-                Required headers: <strong>Name</strong>, <strong>Email</strong> (Phone &amp; Password are optional)
+                Headers: <strong>Name</strong>, <strong>Email</strong>, <strong>Phone</strong>, <strong>Password</strong>, <strong>Course</strong>
               </p>
             </div>
             {localError && submitted && (

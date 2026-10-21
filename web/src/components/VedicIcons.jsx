@@ -1,20 +1,26 @@
 import React from "react";
 
-// 1. Glowing Lotus Chakra Bullet Icon from Screenshot 2
-export const LotusChakraIcon = ({ className = "w-5 h-5" }) => (
-  <svg viewBox="0 0 24 24" fill="none" className={className}>
+// 1. Sacred Flower Rosette Bullet Icon from Reference Screenshot
+export const LotusChakraIcon = ({
+  className = "w-7 h-7 sm:w-8 sm:h-8",
+  color = "#9333EA",
+  strokeColor = "#A855F7",
+}) => (
+  <svg viewBox="0 0 32 32" fill="none" className={className} xmlns="http://www.w3.org/2000/svg">
+    {/* 8 symmetrical overlapping petal loops creating the sacred flower rosette */}
+    <g stroke={strokeColor} strokeWidth="1.25" fill="#FAF5FF" fillOpacity="0.5">
+      <ellipse cx="16" cy="10" rx="4" ry="6.2" />
+      <ellipse cx="16" cy="10" rx="4" ry="6.2" transform="rotate(45 16 16)" />
+      <ellipse cx="16" cy="10" rx="4" ry="6.2" transform="rotate(90 16 16)" />
+      <ellipse cx="16" cy="10" rx="4" ry="6.2" transform="rotate(135 16 16)" />
+      <ellipse cx="16" cy="10" rx="4" ry="6.2" transform="rotate(180 16 16)" />
+      <ellipse cx="16" cy="10" rx="4" ry="6.2" transform="rotate(225 16 16)" />
+      <ellipse cx="16" cy="10" rx="4" ry="6.2" transform="rotate(270 16 16)" />
+      <ellipse cx="16" cy="10" rx="4" ry="6.2" transform="rotate(315 16 16)" />
+    </g>
     {/* Center core */}
-    <circle cx="12" cy="12" r="2.5" fill="#9333EA" />
-    {/* 4 cardinal petals */}
-    <path d="M12 2.5 C13.2 5 13.2 7 12 9 C10.8 7 10.8 5 12 2.5 Z" fill="#A855F7" />
-    <path d="M12 21.5 C13.2 19 13.2 17 12 15 C10.8 17 10.8 19 12 21.5 Z" fill="#A855F7" />
-    <path d="M2.5 12 C5 13.2 7 13.2 9 12 C7 10.8 5 10.8 2.5 12 Z" fill="#A855F7" />
-    <path d="M21.5 12 C19 13.2 17 13.2 15 12 C17 10.8 19 10.8 21.5 12 Z" fill="#A855F7" />
-    {/* 4 diagonal petals */}
-    <path d="M5.3 5.3 C7.5 6.5 8.5 7.8 8.2 9.2 C6.8 8.9 5.5 7.9 5.3 5.3 Z" fill="#C084FC" />
-    <path d="M18.7 18.7 C16.5 17.5 15.5 16.2 15.8 14.8 C17.2 15.1 18.5 16.1 18.7 18.7 Z" fill="#C084FC" />
-    <path d="M5.3 18.7 C6.5 16.5 7.8 15.5 9.2 15.8 C8.9 17.2 7.9 18.5 5.3 18.7 Z" fill="#C084FC" />
-    <path d="M18.7 5.3 C17.5 7.5 16.2 8.5 14.8 8.2 C15.1 6.8 16.1 5.5 18.7 5.3 Z" fill="#C084FC" />
+    <circle cx="16" cy="16" r="3.2" stroke={color} strokeWidth="1.4" fill="#FAF5FF" />
+    <circle cx="16" cy="16" r="1.3" fill={color} />
   </svg>
 );
 

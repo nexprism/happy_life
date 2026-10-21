@@ -54,6 +54,7 @@ import {
   Video as VideoIcon,
   Image as ImageIcon,
   Minus,
+  VolumeX,
 } from "lucide-react";
 import {
   LotusChakraIcon,
@@ -288,6 +289,18 @@ export default function TemplateEditor() {
               });
             });
           });
+
+          // Restore shadowIntensity from fallback markers if stripped by legacy backend
+          if (tpl.headerConfig) {
+            const rawShadow =
+              tpl.headerConfig.shadowIntensity ??
+              (tpl.headerConfig.ctaButton?.variant?.match(/shadow_(\d+)/)?.[1]) ??
+              (tpl.customCss?.match(/\[HL_NAVBAR_SHADOW:(\d+)\]/)?.[1]);
+            if (rawShadow !== undefined) {
+              tpl.headerConfig.shadowIntensity = Number(rawShadow);
+            }
+          }
+
           setTemplate(tpl);
         } else {
           toast.error("Failed to load template");
@@ -308,9 +321,42 @@ export default function TemplateEditor() {
     if (!template || !template._id) return;
     try {
       setSaving(true);
-      const res = await builderService.updateTemplate(template._id, template);
+      const payload = { ...template };
+      const shadowVal = Number(payload.headerConfig?.shadowIntensity ?? 0);
+
+      // Ensure shadow is saved across both new and existing production backend schemas
+      if (payload.headerConfig) {
+        payload.headerConfig = {
+          ...payload.headerConfig,
+          shadowIntensity: shadowVal,
+          ctaButton: {
+            ...(payload.headerConfig.ctaButton || { text: "Enroll Now", url: "#lead-form" }),
+            variant: `primary|shadow_${shadowVal}`,
+          },
+        };
+      }
+
+      // Embed marker in customCss as an additional reliable fallback
+      let cleanCss = (payload.customCss || "").replace(/\/\* \[HL_NAVBAR_SHADOW:\d+\] \*\/\s*/g, "");
+      if (shadowVal > 0) {
+        cleanCss = `/* [HL_NAVBAR_SHADOW:${shadowVal}] */\n` + cleanCss;
+      }
+      payload.customCss = cleanCss;
+
+      const res = await builderService.updateTemplate(template._id, payload);
       if (res.success) {
-        setTemplate(res.data);
+        const savedData = res.data;
+        // Restore shadowIntensity if stripped by legacy backend
+        if (savedData?.headerConfig) {
+          const rawShadow =
+            savedData.headerConfig.shadowIntensity ??
+            (savedData.headerConfig.ctaButton?.variant?.match(/shadow_(\d+)/)?.[1]) ??
+            (savedData.customCss?.match(/\[HL_NAVBAR_SHADOW:(\d+)\]/)?.[1]);
+          if (rawShadow !== undefined) {
+            savedData.headerConfig.shadowIntensity = Number(rawShadow);
+          }
+        }
+        setTemplate(savedData);
         if (showToast) toast.success("Landing page saved successfully!");
       }
     } catch (err: any) {
@@ -474,7 +520,7 @@ export default function TemplateEditor() {
                   discountPrice: "₹99/-",
                   buttonText: "Register Now ₹999 ₹99/-",
                   buttonLink: "#lead-form",
-                  mentorImage: "/hero_image_2.png",
+                  mentorImage: "/mentor.png",
                   backgroundImage: "",
                 },
               },
@@ -487,23 +533,31 @@ export default function TemplateEditor() {
       {
         id: "sec-whyjoin-" + (timestamp + 1),
         name: "Why Join The Webinar",
-        layout: "2-column",
+        layout: "1-column",
         backgroundColor: "#ffffff",
         textColor: "#0F172A",
         paddingY: "lg",
         columns: [
           {
-            id: "col-whyjoin-left",
-            width: "1/2",
+            id: "col-whyjoin",
+            width: "full",
             components: [
               {
                 id: "comp-whyjoin-info-" + (timestamp + 1),
                 type: "about",
                 content: {
                   style: "whyJoin",
+                  align: "center",
                   title: "Why join the webinar?",
                   subtitle:
                     "This webinar will help you leverage the impact of stars in day-to-day life.",
+                  titleFontSize: "4xl",
+                  subtitleFontSize: "base",
+                  pointersFontSize: "base",
+                  iconSize: "md",
+                  videoPosition: "belowHeading",
+                  videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+                  imageUrl: "/hero_image_2.png",
                   benefits: [
                     "Make confident and informed life decisions.",
                     "Manage stress and anxiety more effectively.",
@@ -514,23 +568,6 @@ export default function TemplateEditor() {
                   ],
                   buttonText: "Register now",
                   buttonLink: "#lead-form",
-                },
-              },
-            ],
-          },
-          {
-            id: "col-whyjoin-right",
-            width: "1/2",
-            components: [
-              {
-                id: "comp-whyjoin-media-" + (timestamp + 1),
-                type: "video",
-                content: {
-                  mediaType: "video",
-                  title: "Sneak Peek: Webinar Overview",
-                  videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-                  imageUrl: "/hero_image_2.png",
-                  autoPlay: false,
                 },
               },
             ],
@@ -888,22 +925,30 @@ export default function TemplateEditor() {
       newSec = {
         id: "sec-whyjoin-" + timestamp,
         name: "Why Join Webinar Section",
-        layout: "2-column",
+        layout: "1-column",
         backgroundColor: "#ffffff",
         textColor: "#0F172A",
         paddingY: "lg",
         columns: [
           {
-            id: "col-left-" + timestamp,
-            width: "1/2",
+            id: "col-whyjoin-" + timestamp,
+            width: "full",
             components: [
               {
                 id: "comp-whyjoin-info-" + timestamp,
                 type: "about",
                 content: {
                   style: "whyJoin",
+                  align: "center",
                   title: "Why join the webinar?",
                   subtitle: "This webinar will help you leverage the impact of stars in day-to-day life.",
+                  titleFontSize: "4xl",
+                  subtitleFontSize: "base",
+                  pointersFontSize: "base",
+                  iconSize: "md",
+                  videoPosition: "belowHeading",
+                  videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+                  imageUrl: "/hero_image_2.png",
                   benefits: [
                     "Make confident and informed life decisions.",
                     "Manage stress and anxiety more effectively.",
@@ -914,23 +959,6 @@ export default function TemplateEditor() {
                   ],
                   buttonText: "Register now",
                   buttonLink: "#lead-form",
-                },
-              },
-            ],
-          },
-          {
-            id: "col-right-" + timestamp,
-            width: "1/2",
-            components: [
-              {
-                id: "comp-whyjoin-media-" + timestamp,
-                type: "video",
-                content: {
-                  mediaType: "video",
-                  title: "Sneak Peek: Webinar Overview",
-                  videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-                  imageUrl: "/hero_image_2.png",
-                  autoPlay: false,
                 },
               },
             ],
@@ -2026,44 +2054,54 @@ export default function TemplateEditor() {
             </div>
 
             {/* --- HEADER --- */}
-            {template.headerConfig?.enabled && (
-              <header
-                onClick={() => {
-                  setSelectedItem({ type: "header" });
-                  setIsInspectorOpen(true);
-                }}
-                className={`cursor-pointer border-b border-slate-200/80 bg-white/95 px-6 py-4 flex items-center justify-between transition group ${
-                  selectedItem.type === "header"
-                    ? "ring-2 ring-[#2171B5] ring-inset"
-                    : "hover:bg-slate-50/50"
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <img
-                    src={template.headerConfig.logoUrl || "/logos/osa_logo.png"}
-                    alt="Happy Life Logo"
-                    className="h-8 md:h-9 w-auto object-contain"
-                  />
-                  {template.headerConfig.siteTitle && (
-                    <span className="font-extrabold text-sm text-slate-900 tracking-tight">
-                      {template.headerConfig.siteTitle}
-                    </span>
-                  )}
-                </div>
-                <div className="flex items-center gap-6">
-                  <div className="hidden sm:flex items-center gap-4 text-xs font-semibold text-slate-600">
-                    {template.headerConfig.navLinks?.map((lnk, i) => (
-                      <span key={i} className="hover:text-[#2171B5] transition">
-                        {lnk.label}
+            {template.headerConfig?.enabled && (() => {
+              const shadowVal = Number(template.headerConfig.shadowIntensity ?? 0);
+              const navShadow = shadowVal > 0
+                ? `0px ${Math.max(2, Math.round(shadowVal * 0.55))}px ${Math.round(shadowVal * 0.75)}px -${Math.max(1, Math.round(shadowVal * 0.2))}px rgba(0, 0, 0, ${(0.06 + (shadowVal / 60) * 0.18).toFixed(2)}), 0px 4px 6px -2px rgba(0, 0, 0, 0.05)`
+                : undefined;
+
+              return (
+                <header
+                  onClick={() => {
+                    setSelectedItem({ type: "header" });
+                    setIsInspectorOpen(true);
+                  }}
+                  style={navShadow ? { boxShadow: navShadow } : undefined}
+                  className={`relative z-20 cursor-pointer border-b border-slate-200/80 bg-white/95 ${
+                    isMobileView ? "px-4 py-3" : "px-6 py-4"
+                  } flex items-center justify-between transition group ${
+                    selectedItem.type === "header"
+                      ? "ring-2 ring-[#2171B5] ring-inset"
+                      : "hover:bg-slate-50/50"
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <img
+                      src={template.headerConfig.logoUrl || "/logos/osa_logo.png"}
+                      alt="Happy Life Logo"
+                      className="h-8 md:h-9 w-auto object-contain"
+                    />
+                    {template.headerConfig.siteTitle && (
+                      <span className="font-extrabold text-sm text-slate-900 tracking-tight">
+                        {template.headerConfig.siteTitle}
                       </span>
-                    ))}
+                    )}
                   </div>
-                  <span className="px-4 py-1.5 bg-[#2171B5] hover:bg-[#1a5c96] text-white rounded-xl text-xs font-bold shadow-md shadow-blue-500/20">
-                    {template.headerConfig.ctaButton?.text || "Explore"}
-                  </span>
-                </div>
-              </header>
-            )}
+                  <div className="flex items-center gap-6">
+                    <div className="hidden sm:flex items-center gap-4 text-xs font-semibold text-slate-600">
+                      {template.headerConfig.navLinks?.map((lnk, i) => (
+                        <span key={i} className="hover:text-[#2171B5] transition">
+                          {lnk.label}
+                        </span>
+                      ))}
+                    </div>
+                    <span className="px-4 py-1.5 bg-[#2171B5] hover:bg-[#1a5c96] text-white rounded-xl text-xs font-bold shadow-md shadow-blue-500/20">
+                      {template.headerConfig.ctaButton?.text || "Explore"}
+                    </span>
+                  </div>
+                </header>
+              );
+            })()}
 
             {/* --- SECTIONS (Light Canvas) --- */}
             <div className="divide-y divide-slate-100">
@@ -2084,7 +2122,9 @@ export default function TemplateEditor() {
                       backgroundColor: section.backgroundColor || "#ffffff",
                       color: section.textColor || "#0F172A",
                     }}
-                    className={`p-6 sm:p-10 relative group transition cursor-pointer ${
+                    className={`${
+                      isMobileView ? "px-2.5 py-4" : "p-6 sm:p-10"
+                    } relative group transition cursor-pointer ${
                       isSelectedSection
                         ? "ring-2 ring-[#2171B5] ring-inset"
                         : "hover:outline hover:outline-1 hover:outline-[#2171B5]/40"
@@ -2104,7 +2144,7 @@ export default function TemplateEditor() {
                           e.stopPropagation();
                           handleDuplicateSection(sIdx);
                         }}
-                        className="hover:text-blue-500 ml-1 p-0.5"
+                        className="hover:text-blue-500 ml-1 p-0.5 cursor-pointer"
                         title="Duplicate Section"
                       >
                         <Copy className="w-3 h-3" />
@@ -2115,7 +2155,7 @@ export default function TemplateEditor() {
                           e.stopPropagation();
                           handleDeleteSection(sIdx);
                         }}
-                        className="hover:text-red-500 p-0.5"
+                        className="hover:text-red-500 p-0.5 cursor-pointer"
                         title="Delete Section"
                       >
                         <Trash2 className="w-3 h-3" />
@@ -2123,15 +2163,23 @@ export default function TemplateEditor() {
                     </div>
 
                     {/* Layout Grid: 1-col OR 2-col */}
-                    <div
-                      className={
-                        isTwoCol && !isMobileView
-                          ? `grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 items-center w-full ${getMaxWidthClass(section.maxWidth)} mx-auto`
-                          : `w-full ${getMaxWidthClass(section.maxWidth)} mx-auto space-y-6`
-                      }
-                    >
-                      {section.columns.map((col, cIdx) => (
-                        <div key={col.id || cIdx} className="space-y-4">
+                    {(() => {
+                      const isWhyJoinSelfContained =
+                        section.columns[0]?.components[0]?.content?.style === "whyJoin" &&
+                        (!section.columns[1] || section.columns[1].components.length === 0);
+
+                      return (
+                        <div
+                          className={
+                            isTwoCol && !isMobileView && !isWhyJoinSelfContained
+                              ? `grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 items-center w-full ${getMaxWidthClass(section.maxWidth)} mx-auto`
+                              : `w-full ${getMaxWidthClass(section.maxWidth)} mx-auto space-y-4`
+                          }
+                        >
+                          {section.columns
+                            .filter((_, cIdx) => !(isWhyJoinSelfContained && cIdx === 1))
+                            .map((col, cIdx) => (
+                              <div key={col.id || cIdx} className="space-y-4">
                           {col.components.map((comp, compIdx) => {
                             const isSelectedComp =
                               selectedItem.type === "component" &&
@@ -2152,14 +2200,19 @@ export default function TemplateEditor() {
                                   });
                                   setIsInspectorOpen(true);
                                 }}
-                                className={`p-6 rounded-2xl bg-white border shadow-sm transition relative group/comp cursor-pointer ${
+                                className={`${
+                                  isMobileView
+                                    ? "p-0 rounded-2xl bg-transparent border-0 shadow-none"
+                                    : "p-4 sm:p-5 rounded-2xl bg-white border border-slate-200/90 shadow-sm"
+                                } transition relative group/comp cursor-pointer ${
                                   isSelectedComp
-                                    ? "ring-2 ring-[#2171B5] border-[#2171B5]"
-                                    : "border-slate-200/90 hover:border-[#2171B5]/50 hover:shadow-md"
+                                    ? "ring-2 ring-[#2171B5] ring-offset-2"
+                                    : "hover:outline hover:outline-1 hover:outline-[#2171B5]/30"
                                 }`}
                               >
-                                <div className="flex items-center justify-between text-xs text-[#2171B5] font-semibold mb-3">
-                                  <span className="uppercase tracking-wider text-[10px] bg-blue-50 text-[#2171B5] px-2 py-0.5 rounded-full border border-blue-100 font-bold">
+                                {/* Floating Absolute Component Type Tag & Actions at top-right */}
+                                <div className="absolute top-2.5 right-2.5 z-30 flex items-center gap-1.5">
+                                  <span className="uppercase tracking-wider text-[9px] font-bold bg-[#2171B5] text-white px-2 py-0.5 rounded-md shadow-md opacity-90 group-hover/comp:opacity-100 transition pointer-events-none">
                                     {comp.type} Component
                                   </span>
                                   <button
@@ -2168,7 +2221,7 @@ export default function TemplateEditor() {
                                       e.stopPropagation();
                                       handleDeleteComponent(sIdx, cIdx, compIdx);
                                     }}
-                                    className="text-slate-400 hover:text-red-500 opacity-0 group-hover/comp:opacity-100 transition p-1"
+                                    className="p-1 bg-white/95 hover:bg-white text-slate-500 hover:text-red-500 rounded-md shadow-md border border-slate-200 opacity-0 group-hover/comp:opacity-100 transition pointer-events-auto cursor-pointer"
                                     title="Delete Component"
                                   >
                                     <Trash2 className="w-3.5 h-3.5" />
@@ -2179,7 +2232,11 @@ export default function TemplateEditor() {
                                 {comp.type === "hero" && (
                                   comp.content.style === "webinar" || comp.content.eventDate ? (
                                     <div
-                                      className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-gradient-to-r from-[#071322] via-[#0d2238] to-[#17436b] text-white p-5 sm:p-8 lg:p-10 shadow-xl border border-blue-900/50"
+                                      className={`relative overflow-hidden ${
+                                        isMobileView
+                                          ? "rounded-[28px] p-5 sm:p-6 pt-7 pb-8 min-h-[80vh] flex flex-col justify-between bg-gradient-to-b from-[#06152B] via-[#091D38] to-[#051326]"
+                                          : "rounded-2xl sm:rounded-3xl p-5 sm:p-8 lg:p-10 bg-gradient-to-r from-[#071322] via-[#0d2238] to-[#17436b]"
+                                      } text-white shadow-2xl border border-blue-900/40`}
                                       style={
                                         comp.content.backgroundImage
                                           ? {
@@ -2193,85 +2250,182 @@ export default function TemplateEditor() {
                                       {/* Subtle starfield twinkle glow */}
                                       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_var(--tw-gradient-stops))] from-blue-400/10 via-transparent to-transparent pointer-events-none" />
 
-                                      <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center">
-                                        {/* Left Column: Heading, Subtitle, 4 Meta items, Price CTA */}
-                                        <div className="lg:col-span-7 space-y-4 text-left">
-                                          {comp.content.badge && (
-                                            <span className="inline-block px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-blue-300 bg-blue-900/50 border border-blue-700/50 rounded-full">
-                                              {comp.content.badge}
-                                            </span>
-                                          )}
-                                          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white font-serif tracking-tight leading-tight">
-                                            {comp.content.title || "Mega Astrology Webinar"}
-                                          </h1>
-                                          <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal">
-                                            {comp.content.subtitle ||
-                                              "Enhance your astrological understanding with our 2 Days webinar, seamlessly integrating traditional Vedic astrology with practical, modern applications. Learn to interpret birth charts and celestial influences under the guidance of Astro Arun Pandit."}
-                                          </p>
+                                      {isMobileView ? (
+                                        /* --- PHONE SPECIFIC LAYOUT (Matches Screenshot 2) --- */
+                                        <div className="relative z-10 flex flex-col justify-between h-full min-h-[76vh] text-left">
+                                          {/* Top: Title & Subtitle */}
+                                          <div>
+                                            {/* Title */}
+                                            <h1 className="text-[25px] sm:text-[27px] font-black text-white font-serif tracking-tight leading-[1.2]">
+                                              {comp.content.title || "Mega Astrology Webinar"}
+                                            </h1>
 
-                                          {/* 4 Metadata Items with icons */}
-                                          <div className="grid grid-cols-2 gap-3 pt-1">
-                                            <div className="flex items-center gap-2 text-xs text-slate-200">
-                                              <Calendar className="w-4 h-4 text-blue-400 shrink-0" />
-                                              <div>
-                                                <span className="text-[10px] text-slate-400 block uppercase font-semibold">Date</span>
-                                                <span className="font-bold text-white">{comp.content.eventDate || "24 Oct, 2026"}</span>
+                                            {/* Subtitle */}
+                                            <p className="mt-3.5 text-[12.5px] text-[#CAD5E2] leading-[1.6] font-normal">
+                                              {comp.content.subtitle ||
+                                                "Enhance your astrological understanding with our 2 Days webinar, seamlessly integrating traditional Vedic astrology with practical, modern applications. Learn to interpret birth charts and celestial influences under the guidance of Astro Arun Pandit."}
+                                            </p>
+                                          </div>
+
+                                          {/* Center: Mentor Image with Celestial Zodiac Wheel */}
+                                          <div className="relative flex items-center justify-center my-4 h-[225px] rounded-2xl overflow-hidden bg-[#030C19] border border-blue-900/40 shadow-inner">
+                                            <div className="absolute inset-0 flex items-center justify-center text-blue-400/30 pointer-events-none scale-110">
+                                              <CelestialZodiacWheel className="w-56 h-56 sm:w-60 sm:h-60" />
+                                            </div>
+                                            <img
+                                              src={resolveMediaUrl(
+                                                comp.content.mentorImage && comp.content.mentorImage !== "/hero_image_2.png"
+                                                  ? comp.content.mentorImage
+                                                  : "/mentor.png"
+                                              )}
+                                              alt={comp.content.mentorName || "Mentor"}
+                                              className="relative z-10 max-h-[220px] w-full object-contain drop-shadow-[0_15px_25px_rgba(0,0,0,0.8)]"
+                                              onError={(e) => {
+                                                (e.target as any).src = "/mentor.png";
+                                              }}
+                                            />
+                                          </div>
+
+                                          {/* Lower Center: 4 Metadata Rows with spacious gaps & clear alignment */}
+                                          <div className="space-y-3.5 my-2">
+                                            <div className="flex items-center text-[13px]">
+                                              <div className="w-[42%] flex items-center gap-2.5 text-slate-200">
+                                                <Calendar className="w-[17px] h-[17px] text-[#60A5FA] shrink-0" />
+                                                <span className="font-semibold text-slate-200">Date</span>
+                                              </div>
+                                              <div className="w-[58%] font-bold text-white text-left pl-2 tracking-wide">
+                                                {comp.content.eventDate || "24 Oct, 2026"}
                                               </div>
                                             </div>
-                                            <div className="flex items-center gap-2 text-xs text-slate-200">
-                                              <Clock className="w-4 h-4 text-blue-400 shrink-0" />
-                                              <div>
-                                                <span className="text-[10px] text-slate-400 block uppercase font-semibold">Time</span>
-                                                <span className="font-bold text-white">{comp.content.eventTime || "01:00 PM"}</span>
+
+                                            <div className="flex items-center text-[13px]">
+                                              <div className="w-[42%] flex items-center gap-2.5 text-slate-200">
+                                                <Clock className="w-[17px] h-[17px] text-[#60A5FA] shrink-0" />
+                                                <span className="font-semibold text-slate-200">Time</span>
+                                              </div>
+                                              <div className="w-[58%] font-bold text-white text-left pl-2 tracking-wide">
+                                                {comp.content.eventTime || "01:00 PM"}
                                               </div>
                                             </div>
-                                            <div className="flex items-center gap-2 text-xs text-slate-200">
-                                              <Hourglass className="w-4 h-4 text-blue-400 shrink-0" />
-                                              <div>
-                                                <span className="text-[10px] text-slate-400 block uppercase font-semibold">Duration</span>
-                                                <span className="font-bold text-white">{comp.content.duration || "4 Hours"}</span>
+
+                                            <div className="flex items-center text-[13px]">
+                                              <div className="w-[42%] flex items-center gap-2.5 text-slate-200">
+                                                <Hourglass className="w-[17px] h-[17px] text-[#60A5FA] shrink-0" />
+                                                <span className="font-semibold text-slate-200">Duration</span>
+                                              </div>
+                                              <div className="w-[58%] font-bold text-white text-left pl-2 tracking-wide">
+                                                {comp.content.duration || "4 Hours"}
                                               </div>
                                             </div>
-                                            <div className="flex items-center gap-2 text-xs text-slate-200">
-                                              <UserIcon className="w-4 h-4 text-blue-400 shrink-0" />
-                                              <div>
-                                                <span className="text-[10px] text-slate-400 block uppercase font-semibold">Mentor</span>
-                                                <span className="font-bold text-white">{comp.content.mentorName || "Astro Arun Pandit"}</span>
+
+                                            <div className="flex items-center text-[13px]">
+                                              <div className="w-[42%] flex items-center gap-2.5 text-slate-200">
+                                                <UserIcon className="w-[17px] h-[17px] text-[#60A5FA] shrink-0" />
+                                                <span className="font-semibold text-slate-200">Mentor</span>
+                                              </div>
+                                              <div className="w-[58%] font-bold text-white text-left pl-2 tracking-wide">
+                                                {comp.content.mentorName || "Astro Arun Pandit"}
                                               </div>
                                             </div>
                                           </div>
 
-                                          {/* CTA Price Button */}
-                                          <div className="pt-2">
-                                            <div className="inline-flex items-center gap-2 px-5 py-3 bg-white text-purple-900 rounded-xl font-black text-xs sm:text-sm shadow-xl">
-                                              <span>Register Now</span>
+                                          {/* Bottom: Full Width CTA Register Button */}
+                                          <div className="pt-3">
+                                            <div className="w-full py-3.5 sm:py-4 px-5 bg-white text-purple-700 hover:bg-slate-50 rounded-xl font-extrabold text-sm text-center shadow-lg shadow-black/25 flex items-center justify-center gap-2 transition cursor-pointer">
+                                              <span className="text-[#7E22CE] font-bold text-sm">Register Now</span>
                                               {comp.content.originalPrice && (
                                                 <span className="line-through text-slate-400 text-xs font-semibold">
                                                   {comp.content.originalPrice}
                                                 </span>
                                               )}
-                                              <span className="text-purple-700 font-extrabold">
+                                              <span className="text-[#7E22CE] font-black text-sm">
                                                 {comp.content.discountPrice || "₹99/-"}
                                               </span>
                                             </div>
                                           </div>
                                         </div>
+                                      ) : (
+                                        /* --- DESKTOP / PC LAYOUT (Unchanged for PC) --- */
+                                        <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center">
+                                          {/* Left Column: Heading, Subtitle, 4 Meta items, Price CTA */}
+                                          <div className="lg:col-span-7 space-y-4 text-left">
+                                            {comp.content.badge && (
+                                              <span className="inline-block px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-blue-300 bg-blue-900/50 border border-blue-700/50 rounded-full">
+                                                {comp.content.badge}
+                                              </span>
+                                            )}
+                                            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white font-serif tracking-tight leading-tight">
+                                              {comp.content.title || "Mega Astrology Webinar"}
+                                            </h1>
+                                            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal">
+                                              {comp.content.subtitle ||
+                                                "Enhance your astrological understanding with our 2 Days webinar, seamlessly integrating traditional Vedic astrology with practical, modern applications. Learn to interpret birth charts and celestial influences under the guidance of Astro Arun Pandit."}
+                                            </p>
 
-                                        {/* Right Column: Mentor cutout layered over Celestial Zodiac Mandala */}
-                                        <div className="lg:col-span-5 relative flex items-center justify-center min-h-[220px] sm:min-h-[280px]">
-                                          <div className="absolute inset-0 flex items-center justify-center text-blue-400/40 pointer-events-none scale-105">
-                                            <CelestialZodiacWheel className="w-56 h-56 sm:w-72 sm:h-72" />
+                                            {/* 4 Metadata Items with icons */}
+                                            <div className="grid grid-cols-2 gap-3 pt-1">
+                                              <div className="flex items-center gap-2 text-xs text-slate-200">
+                                                <Calendar className="w-4 h-4 text-blue-400 shrink-0" />
+                                                <div>
+                                                  <span className="text-[10px] text-slate-400 block uppercase font-semibold">Date</span>
+                                                  <span className="font-bold text-white">{comp.content.eventDate || "24 Oct, 2026"}</span>
+                                                </div>
+                                              </div>
+                                              <div className="flex items-center gap-2 text-xs text-slate-200">
+                                                <Clock className="w-4 h-4 text-blue-400 shrink-0" />
+                                                <div>
+                                                  <span className="text-[10px] text-slate-400 block uppercase font-semibold">Time</span>
+                                                  <span className="font-bold text-white">{comp.content.eventTime || "01:00 PM"}</span>
+                                                </div>
+                                              </div>
+                                              <div className="flex items-center gap-2 text-xs text-slate-200">
+                                                <Hourglass className="w-4 h-4 text-blue-400 shrink-0" />
+                                                <div>
+                                                  <span className="text-[10px] text-slate-400 block uppercase font-semibold">Duration</span>
+                                                  <span className="font-bold text-white">{comp.content.duration || "4 Hours"}</span>
+                                                </div>
+                                              </div>
+                                              <div className="flex items-center gap-2 text-xs text-slate-200">
+                                                <UserIcon className="w-4 h-4 text-blue-400 shrink-0" />
+                                                <div>
+                                                  <span className="text-[10px] text-slate-400 block uppercase font-semibold">Mentor</span>
+                                                  <span className="font-bold text-white">{comp.content.mentorName || "Astro Arun Pandit"}</span>
+                                                </div>
+                                              </div>
+                                            </div>
+
+                                            {/* CTA Price Button */}
+                                            <div className="pt-2">
+                                              <div className="inline-flex items-center gap-2 px-5 py-3 bg-white text-purple-900 rounded-xl font-black text-xs sm:text-sm shadow-xl">
+                                                <span>Register Now</span>
+                                                {comp.content.originalPrice && (
+                                                  <span className="line-through text-slate-400 text-xs font-semibold">
+                                                    {comp.content.originalPrice}
+                                                  </span>
+                                                )}
+                                                <span className="text-purple-700 font-extrabold">
+                                                  {comp.content.discountPrice || "₹99/-"}
+                                                </span>
+                                              </div>
+                                            </div>
                                           </div>
-                                          <img
-                                            src={resolveMediaUrl(comp.content.mentorImage || "/hero_image_2.png")}
-                                            alt={comp.content.mentorName || "Mentor"}
-                                            className="relative z-10 max-h-[240px] sm:max-h-[300px] object-contain drop-shadow-[0_15px_25px_rgba(0,0,0,0.6)]"
-                                            onError={(e) => {
-                                              (e.target as any).src = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80";
-                                            }}
-                                          />
+
+                                          {/* Right Column: Mentor cutout layered over Celestial Zodiac Mandala */}
+                                          <div className="lg:col-span-5 relative flex items-center justify-center min-h-[220px] sm:min-h-[280px]">
+                                            <div className="absolute inset-0 flex items-center justify-center text-blue-400/40 pointer-events-none scale-105">
+                                              <CelestialZodiacWheel className="w-56 h-56 sm:w-72 sm:h-72" />
+                                            </div>
+                                            <img
+                                              src={resolveMediaUrl(comp.content.mentorImage || "/mentor.png")}
+                                              alt={comp.content.mentorName || "Mentor"}
+                                              className="relative z-10 max-h-[240px] sm:max-h-[300px] object-contain drop-shadow-[0_15px_25px_rgba(0,0,0,0.6)]"
+                                              onError={(e) => {
+                                                (e.target as any).src = "/mentor.png";
+                                              }}
+                                            />
+                                          </div>
                                         </div>
-                                      </div>
+                                      )}
                                     </div>
                                   ) : (
                                     <div className="space-y-4 text-left">
@@ -2399,46 +2553,183 @@ export default function TemplateEditor() {
                                   </div>
                                 )}
 
-                                {/* 4. ABOUT PREVIEW (Supports Why Join Style with Lotus bullets) */}
+                                {/* 4. ABOUT PREVIEW (Supports Why Join Style with Lotus bullets & custom placement) */}
                                 {comp.type === "about" && (
-                                  comp.content.style === "whyJoin" || comp.content.benefits ? (
-                                    <div className="space-y-5 text-left">
-                                      <div>
-                                        <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-                                          {comp.content.title || "Why join the webinar?"}
-                                        </h2>
-                                        <p className="text-xs sm:text-sm text-slate-500 mt-1 leading-relaxed">
-                                          {comp.content.subtitle || "This webinar will help you leverage the impact of stars in day-to-day life."}
-                                        </p>
-                                      </div>
+                                  comp.content.style === "whyJoin" || comp.content.benefits ? (() => {
+                                    const align = comp.content.align || "center";
+                                    const isCenter = align === "center";
+                                    const isRight = align === "right";
+                                    const textAlignClass = isCenter ? "text-center" : isRight ? "text-right" : "text-left";
 
-                                      <div className="space-y-3">
-                                        {(comp.content.benefits || [
-                                          "Make confident and informed life decisions.",
-                                          "Manage stress and anxiety more effectively.",
-                                          "Fulfil your dreams like buying your own house.",
-                                          "Enhance your health and well-being through spiritual insights.",
-                                          "Get logical and practical remedies to tackle life's challenges.",
-                                          "Maintain stronger relationships with family and friends."
-                                        ]).map((benefit: string, bIdx: number) => (
-                                          <div key={bIdx} className="flex items-start gap-3">
-                                            <div className="shrink-0 mt-0.5">
-                                              <LotusChakraIcon className="w-5 h-5" />
+                                    const titleSizeClass =
+                                      comp.content.titleFontSize === "2xl" ? "text-xl sm:text-2xl" :
+                                      comp.content.titleFontSize === "3xl" ? "text-2xl sm:text-3xl" :
+                                      comp.content.titleFontSize === "5xl" ? "text-3xl sm:text-4xl lg:text-5xl" :
+                                      comp.content.titleFontSize === "6xl" ? "text-4xl sm:text-5xl lg:text-6xl" :
+                                      "text-2xl sm:text-3xl lg:text-4xl font-extrabold";
+
+                                    const subtitleSizeClass =
+                                      comp.content.subtitleFontSize === "xs" ? "text-xs" :
+                                      comp.content.subtitleFontSize === "sm" ? "text-xs sm:text-sm" :
+                                      comp.content.subtitleFontSize === "lg" ? "text-base sm:text-lg" :
+                                      "text-sm sm:text-base";
+
+                                    const pointersSizeClass =
+                                      comp.content.pointersFontSize === "sm" ? "text-xs sm:text-sm" :
+                                      comp.content.pointersFontSize === "lg" ? "text-base sm:text-lg" :
+                                      comp.content.pointersFontSize === "xl" ? "text-lg sm:text-xl" :
+                                      "text-sm sm:text-base";
+
+                                    const iconSizeClass =
+                                      comp.content.iconSize === "sm" ? "w-6 h-6 shrink-0" :
+                                      comp.content.iconSize === "lg" ? "w-10 h-10 shrink-0" :
+                                      comp.content.iconSize === "xl" ? "w-12 h-12 shrink-0" :
+                                      "w-7 h-7 sm:w-8 sm:h-8 shrink-0";
+
+                                    const videoPos = comp.content.videoPosition || "belowHeading";
+                                    const hasVideo = videoPos !== "none" && (comp.content.videoUrl || comp.content.imageUrl || comp.content.videoPoster || true);
+
+                                    const renderVideoElement = () => (
+                                      <div className="max-w-2xl mx-auto my-6">
+                                        <div className="rounded-2xl sm:rounded-3xl overflow-hidden border-2 border-amber-200/80 bg-slate-900 shadow-xl relative aspect-video flex items-center justify-center group">
+                                          <div className="relative w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-900 to-blue-950">
+                                            <img
+                                              src={resolveMediaUrl(comp.content.imageUrl || comp.content.videoPoster || "/hero_image_2.png")}
+                                              alt="Video Thumbnail"
+                                              className="w-full h-full object-cover opacity-75"
+                                            />
+                                            <div className="absolute w-14 h-14 rounded-full bg-white/95 text-purple-900 flex items-center justify-center shadow-2xl pl-1 group-hover:scale-110 transition">
+                                              <Play className="w-6 h-6 fill-purple-900" />
                                             </div>
-                                            <p className="text-xs sm:text-sm font-semibold text-slate-800 leading-snug">
-                                              {benefit}
+                                          </div>
+                                          <div className="absolute bottom-3 right-3 px-2 py-1 bg-black/75 backdrop-blur-xs text-white text-[10px] font-bold rounded-md flex items-center gap-1">
+                                            <VideoIcon className="w-3 h-3 text-purple-400" />
+                                            <span>Webinar Video</span>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    );
+
+                                    if (isMobileView) {
+                                      /* --- PHONE SPECIFIC LAYOUT (COMPLETELY PRESERVED AND UNCHANGED) --- */
+                                      return (
+                                        <div className={`space-y-6 ${textAlignClass}`}>
+                                          {/* Header Block */}
+                                          <div className="max-w-2xl mx-auto">
+                                            <h2 className={`${titleSizeClass} text-slate-900 tracking-tight font-extrabold leading-tight`}>
+                                              {comp.content.title || "Why join the webinar?"}
+                                            </h2>
+                                            <p className={`${subtitleSizeClass} text-slate-500 mt-2 leading-relaxed font-normal`}>
+                                              {comp.content.subtitle || "This webinar will help you leverage the impact of stars in day-to-day life."}
                                             </p>
                                           </div>
-                                        ))}
-                                      </div>
 
-                                      <div className="pt-2">
-                                        <span className="inline-block px-7 py-3 bg-[#2171B5] text-white font-bold text-xs sm:text-sm rounded-xl shadow-md">
-                                          {comp.content.buttonText || "Register now"}
-                                        </span>
+                                          {/* Video if positioned below heading */}
+                                          {hasVideo && videoPos === "belowHeading" && renderVideoElement()}
+
+                                          {/* Key Benefits Pointers List */}
+                                          <div className="max-w-xl mx-auto space-y-3.5 pt-1 text-left">
+                                            {(comp.content.benefits || [
+                                              "Make confident and informed life decisions.",
+                                              "Manage stress and anxiety more effectively.",
+                                              "Fulfil your dreams like buying your own house.",
+                                              "Enhance your health and well-being through spiritual insights.",
+                                              "Get logical and practical remedies to tackle life's challenges.",
+                                              "Maintain stronger relationships with family and friends."
+                                            ]).map((benefit: string, bIdx: number) => (
+                                              <div key={bIdx} className="flex items-start gap-3.5">
+                                                <div className="shrink-0 mt-0.5">
+                                                  <LotusChakraIcon className={iconSizeClass} />
+                                                </div>
+                                                <p className={`${pointersSizeClass} font-semibold text-slate-800 leading-snug pt-0.5`}>
+                                                  {benefit}
+                                                </p>
+                                              </div>
+                                            ))}
+                                          </div>
+
+                                          {/* Video if positioned below pointers */}
+                                          {hasVideo && videoPos === "belowPointers" && renderVideoElement()}
+
+                                          {/* CTA Button */}
+                                          {comp.content.buttonText && (
+                                            <div className={`pt-3 ${isCenter ? "flex justify-center" : isRight ? "flex justify-end" : "flex justify-start"}`}>
+                                              <span className="inline-block px-8 py-3 bg-[#2171B5] text-white font-bold text-xs sm:text-sm rounded-xl shadow-md">
+                                                {comp.content.buttonText}
+                                              </span>
+                                            </div>
+                                          )}
+                                        </div>
+                                      );
+                                    }
+
+                                    /* --- PC / DESKTOP LAYOUT (Matches Screenshot 2 Exactly) --- */
+                                    return (
+                                      <div className="w-full max-w-6xl mx-auto py-4">
+                                        {/* 1. Header Centered at the Top */}
+                                        <div className="text-center max-w-3xl mx-auto mb-10 lg:mb-14">
+                                          <h2 className="text-3xl sm:text-4xl lg:text-[42px] font-extrabold text-slate-900 tracking-tight leading-tight">
+                                            {comp.content.title || "Why join the webinar?"}
+                                          </h2>
+                                          <p className="text-base sm:text-lg text-slate-500 mt-3 leading-relaxed font-normal">
+                                            {comp.content.subtitle || "This webinar will help you leverage the impact of stars in day-to-day life."}
+                                          </p>
+                                        </div>
+
+                                        {/* 2. Side-by-Side 2-Column Grid */}
+                                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
+                                          {/* Left Column: 6 Pointers + Purple Register now Button */}
+                                          <div className="lg:col-span-6 space-y-7 text-left">
+                                            <div className="space-y-4 sm:space-y-5">
+                                              {(comp.content.benefits || [
+                                                "Make confident and informed life decisions.",
+                                                "Manage stress and anxiety more effectively.",
+                                                "Fulfil your dreams like buying your own house.",
+                                                "Enhance your health and well-being through spiritual insights.",
+                                                "Get logical and practical remedies to tackle life's challenges.",
+                                                "Maintain stronger relationships with family and friends."
+                                              ]).map((benefit: string, bIdx: number) => (
+                                                <div key={bIdx} className="flex items-start gap-4">
+                                                  <div className="shrink-0 mt-0.5 text-purple-600">
+                                                    <LotusChakraIcon className={iconSizeClass || "w-7 h-7 sm:w-8 sm:h-8"} />
+                                                  </div>
+                                                  <p className={`${pointersSizeClass || "text-[15px] sm:text-[16px]"} font-semibold text-slate-800 leading-snug pt-0.5`}>
+                                                    {benefit}
+                                                  </p>
+                                                </div>
+                                              ))}
+                                            </div>
+
+                                            {/* Purple Register now Button */}
+                                            <div className="pt-2">
+                                              <span className="inline-block px-7 py-3 bg-[#7E22CE] hover:bg-[#6B21A8] text-white font-bold text-sm rounded-xl shadow-md transition">
+                                                {comp.content.buttonText || "Register now"}
+                                              </span>
+                                            </div>
+                                          </div>
+
+                                          {/* Right Column: Large Video Player with Golden Border */}
+                                          <div className="lg:col-span-6">
+                                            <div className="rounded-3xl overflow-hidden border-[5px] sm:border-[6px] border-[#C5A059] bg-slate-950 shadow-2xl relative aspect-[16/10] sm:aspect-video flex items-center justify-center group">
+                                              <img
+                                                src={resolveMediaUrl(comp.content.imageUrl || comp.content.videoPoster || "/hero_image_2.png")}
+                                                alt="Webinar Preview"
+                                                className="w-full h-full object-cover"
+                                              />
+                                              {/* Centered Play Button */}
+                                              <div className="absolute w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-black/60 backdrop-blur-xs text-white flex items-center justify-center shadow-2xl pl-1 group-hover:scale-110 transition cursor-pointer">
+                                                <Play className="w-6 h-6 sm:w-7 sm:h-7 fill-white text-white" />
+                                              </div>
+                                              {/* Bottom-right Mute Icon */}
+                                              <div className="absolute bottom-3 right-3 p-1.5 bg-black/75 backdrop-blur-xs text-white rounded-full flex items-center justify-center">
+                                                <VolumeX className="w-3.5 h-3.5 text-white/90" />
+                                              </div>
+                                            </div>
+                                          </div>
+                                        </div>
                                       </div>
-                                    </div>
-                                  ) : (
+                                    );
+                                  })() : (
                                     <div className="space-y-3 text-left">
                                       {comp.content.tag && (
                                         <span className="text-[10px] font-bold text-[#2171B5] uppercase tracking-wider bg-blue-50 px-2.5 py-0.5 rounded-full border border-blue-200">
@@ -2622,58 +2913,70 @@ export default function TemplateEditor() {
                                 )}
 
                                 {/* 7. FAQ ACCORDION PREVIEW (Screenshot 4) */}
-                                {comp.type === "faq" && (
-                                  <div className="space-y-5 text-center max-w-3xl mx-auto">
-                                    <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-                                      {comp.content.title || "Frequently Asked Questions"}
-                                    </h2>
-                                    {comp.content.subtitle && (
-                                      <p className="text-xs sm:text-sm text-slate-500 -mt-2">
-                                        {comp.content.subtitle}
-                                      </p>
-                                    )}
+                                {comp.type === "faq" && (() => {
+                                  const align = comp.content.align || "left";
+                                  const textAlignClass =
+                                    align === "center"
+                                      ? "text-center"
+                                      : align === "right"
+                                      ? "text-right"
+                                      : "text-left";
 
-                                    <div className="space-y-2.5 text-left pt-1">
-                                      {(comp.content.faqs || []).map(
-                                        (faq: any, fi: number) => {
-                                          const isOpen = !!openFaqs[fi];
-                                          return (
-                                            <div
-                                              key={fi}
-                                              className="border border-slate-200 bg-white rounded-xl shadow-xs overflow-hidden transition"
-                                            >
+                                  return (
+                                    <div className={`space-y-5 ${textAlignClass} max-w-3xl mx-auto`}>
+                                      <div className={`space-y-1.5 ${textAlignClass}`}>
+                                        <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+                                          {comp.content.title || "Frequently Asked Questions"}
+                                        </h2>
+                                        {comp.content.subtitle && (
+                                          <p className="text-xs sm:text-sm text-slate-500">
+                                            {comp.content.subtitle}
+                                          </p>
+                                        )}
+                                      </div>
+
+                                      <div className="space-y-2.5 pt-1">
+                                        {(comp.content.faqs || []).map(
+                                          (faq: any, fi: number) => {
+                                            const isOpen = !!openFaqs[fi];
+                                            return (
                                               <div
-                                                onClick={(e) => {
-                                                  e.stopPropagation();
-                                                  setOpenFaqs((prev) => ({ ...prev, [fi]: !prev[fi] }));
-                                                }}
-                                                className="w-full px-5 py-3.5 flex items-center justify-between text-left hover:bg-slate-50 transition cursor-pointer"
+                                                key={fi}
+                                                className="border border-slate-200 bg-white rounded-xl shadow-xs overflow-hidden transition"
                                               >
-                                                <span className="font-bold text-xs sm:text-sm text-slate-800">
-                                                  {faq.question}
-                                                </span>
-                                                <span className="text-slate-500 font-bold text-base leading-none ml-3">
-                                                  {isOpen ? "−" : "+"}
-                                                </span>
-                                              </div>
-                                              {isOpen && (
-                                                <div className="px-5 pb-3.5 text-xs text-slate-600 leading-relaxed border-t border-slate-100 pt-2.5">
-                                                  {faq.answer}
+                                                <div
+                                                  onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    setOpenFaqs((prev) => ({ ...prev, [fi]: !prev[fi] }));
+                                                  }}
+                                                  className={`w-full px-5 py-3.5 flex items-center justify-between ${textAlignClass} hover:bg-slate-50 transition cursor-pointer`}
+                                                >
+                                                  <span className={`font-bold text-xs sm:text-sm text-slate-800 flex-1 ${textAlignClass}`}>
+                                                    {faq.question}
+                                                  </span>
+                                                  <span className="text-slate-500 font-bold text-base leading-none ml-3 shrink-0">
+                                                    {isOpen ? "−" : "+"}
+                                                  </span>
                                                 </div>
-                                              )}
-                                            </div>
-                                          );
-                                        }
-                                      )}
+                                                {isOpen && (
+                                                  <div className={`px-5 pb-3.5 text-xs text-slate-600 leading-relaxed border-t border-slate-100 pt-2.5 ${textAlignClass}`}>
+                                                    {faq.answer}
+                                                  </div>
+                                                )}
+                                              </div>
+                                            );
+                                          }
+                                        )}
+                                      </div>
                                     </div>
-                                  </div>
-                                )}
+                                  );
+                                })()}
 
                                 {/* 8. CTA BANNER PREVIEW (Still Thinking - Happy Life Blue - Screenshot 5) */}
                                 {comp.type === "ctaBanner" && (
                                   comp.content.style === "expertCallout" || comp.content.expertImage ? (
                                     <div
-                                      className="rounded-2xl sm:rounded-3xl p-6 sm:p-8 lg:p-10 text-white shadow-xl relative overflow-hidden"
+                                      className="rounded-2xl sm:rounded-3xl text-white shadow-xl relative overflow-hidden"
                                       style={{
                                         background:
                                           comp.content.backgroundColor === "#2171B5" || !comp.content.backgroundColor
@@ -2681,34 +2984,71 @@ export default function TemplateEditor() {
                                             : comp.content.backgroundColor,
                                       }}
                                     >
-                                      <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
-                                        <div className="md:col-span-8 space-y-4 text-left">
-                                          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white leading-tight">
-                                            {comp.content.title || "Still thinking? Let us help you take the first step."}
-                                          </h2>
-                                          {comp.content.subtitle && (
-                                            <p className="text-xs sm:text-sm text-blue-100 leading-relaxed">
-                                              {comp.content.subtitle}
-                                            </p>
-                                          )}
-                                          <div>
-                                            <span className="inline-block px-6 py-2.5 bg-white text-[#2171B5] font-bold text-xs sm:text-sm rounded-xl shadow-lg">
-                                              {comp.content.buttonText || "Talk to an expert"}
-                                            </span>
+                                      {isMobileView ? (
+                                        /* --- PHONE SPECIFIC LAYOUT (Matches Screenshot 1: Photo UP, Text DOWN) --- */
+                                        <div className="p-3.5 sm:p-5 pt-4 pb-7 text-center min-h-[580px] flex flex-col justify-between">
+                                          {/* Photo UP - Height increased by 40% so photo is fully visible */}
+                                          <div className="w-full rounded-2xl overflow-hidden shadow-lg border-2 border-white/20 mb-5 bg-slate-900/40">
+                                            <img
+                                              src={resolveMediaUrl(comp.content.expertImage || "/hero_image_2.png")}
+                                              alt="Expert Mentor"
+                                              className="w-full h-80 sm:h-96 object-cover object-top"
+                                              onError={(e) => {
+                                                (e.target as any).src = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80";
+                                              }}
+                                            />
+                                          </div>
+
+                                          {/* Text DOWN */}
+                                          <div className="space-y-4 px-2 pb-1">
+                                            <h2 className="text-xl sm:text-2xl font-black text-white leading-tight">
+                                              {comp.content.title || "Still thinking? Let us help you take the first step."}
+                                            </h2>
+                                            {comp.content.subtitle && (
+                                              <p className="text-xs sm:text-sm text-white/90 leading-relaxed font-normal">
+                                                {comp.content.subtitle}
+                                              </p>
+                                            )}
+                                            <div className="pt-2 flex justify-center">
+                                              <span className="inline-block px-8 py-3.5 bg-white text-[#7E22CE] font-bold text-xs sm:text-sm rounded-xl shadow-lg">
+                                                {comp.content.buttonText || "Talk to an expert"}
+                                              </span>
+                                            </div>
                                           </div>
                                         </div>
+                                      ) : (
+                                        /* --- PC / DESKTOP LAYOUT (COMPLETELY UNCHANGED) --- */
+                                        <div className="p-6 sm:p-8 lg:p-10">
+                                          <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+                                            <div className="md:col-span-8 space-y-4 text-left">
+                                              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white leading-tight">
+                                                {comp.content.title || "Still thinking? Let us help you take the first step."}
+                                              </h2>
+                                              {comp.content.subtitle && (
+                                                <p className="text-xs sm:text-sm text-blue-100 leading-relaxed">
+                                                  {comp.content.subtitle}
+                                                </p>
+                                              )}
+                                              <div>
+                                                <span className="inline-block px-6 py-2.5 bg-white text-[#2171B5] font-bold text-xs sm:text-sm rounded-xl shadow-lg">
+                                                  {comp.content.buttonText || "Talk to an expert"}
+                                                </span>
+                                              </div>
+                                            </div>
 
-                                        <div className="md:col-span-4 flex justify-center md:justify-end">
-                                          <img
-                                            src={resolveMediaUrl(comp.content.expertImage || "/hero_image_2.png")}
-                                            alt="Expert Mentor"
-                                            className="w-40 h-40 sm:w-48 sm:h-48 object-cover rounded-2xl shadow-xl border-4 border-white/20"
-                                            onError={(e) => {
-                                              (e.target as any).src = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80";
-                                            }}
-                                          />
+                                            <div className="md:col-span-4 flex justify-center md:justify-end">
+                                              <img
+                                                src={resolveMediaUrl(comp.content.expertImage || "/hero_image_2.png")}
+                                                alt="Expert Mentor"
+                                                className="w-40 h-40 sm:w-48 sm:h-48 object-cover rounded-2xl shadow-xl border-4 border-white/20"
+                                                onError={(e) => {
+                                                  (e.target as any).src = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80";
+                                                }}
+                                              />
+                                            </div>
+                                          </div>
                                         </div>
-                                      </div>
+                                      )}
                                     </div>
                                   ) : (
                                     <div className="p-6 bg-gradient-to-r from-[#2171B5] to-blue-700 text-white rounded-2xl text-center space-y-2.5 shadow-md">
@@ -2764,7 +3104,9 @@ export default function TemplateEditor() {
                         </div>
                       ))}
                     </div>
-                  </section>
+                  );
+                })()}
+              </section>
                 );
               })}
             </div>
@@ -3733,33 +4075,186 @@ export default function TemplateEditor() {
 
                 {/* If ABOUT / WHY JOIN selected */}
                 {selectedItem.type === "component" && activeComponent?.type === "about" && (
-                  <div className="space-y-3">
+                  <div className="space-y-4">
+                    {/* Alignment Control */}
                     <div>
-                      <label className="block font-semibold mb-1 text-slate-700">Section Title</label>
-                      <input
-                        type="text"
-                        value={activeComponent.content.title || ""}
-                        onChange={(e) =>
-                          updateActiveComponentContent({ title: e.target.value })
-                        }
-                        placeholder="Why join the webinar?"
-                        className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold"
-                      />
-                    </div>
-                    <div>
-                      <label className="block font-semibold mb-1 text-slate-700">Subtitle</label>
-                      <textarea
-                        rows={2}
-                        value={activeComponent.content.subtitle || activeComponent.content.description || ""}
-                        onChange={(e) =>
-                          updateActiveComponentContent({ subtitle: e.target.value, description: e.target.value })
-                        }
-                        className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs"
-                      />
+                      <label className="block font-semibold mb-1.5 text-slate-700 text-xs">
+                        Section & Heading Alignment
+                      </label>
+                      <div className="grid grid-cols-3 gap-1.5 p-1 bg-slate-100 rounded-xl">
+                        {[
+                          { id: "left", label: "Left" },
+                          { id: "center", label: "Center" },
+                          { id: "right", label: "Right" },
+                        ].map((al) => (
+                          <button
+                            key={al.id}
+                            type="button"
+                            onClick={() => updateActiveComponentContent({ align: al.id })}
+                            className={`py-1.5 text-xs font-bold rounded-lg transition ${
+                              (activeComponent.content.align || "center") === al.id
+                                ? "bg-white text-[#2171B5] shadow-xs"
+                                : "text-slate-600 hover:text-slate-900"
+                            }`}
+                          >
+                            {al.label}
+                          </button>
+                        ))}
+                      </div>
                     </div>
 
-                    {/* Benefits List */}
-                    <div className="space-y-2 pt-2 border-t border-slate-200">
+                    {/* Section Title & Font Size */}
+                    <div className="space-y-1.5">
+                      <div className="flex items-center justify-between">
+                        <label className="block font-semibold text-slate-700 text-xs">Section Title</label>
+                        <span className="text-[10px] text-slate-400 font-medium">Font Size</span>
+                      </div>
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          value={activeComponent.content.title || ""}
+                          onChange={(e) =>
+                            updateActiveComponentContent({ title: e.target.value })
+                          }
+                          placeholder="Why join the webinar?"
+                          className="flex-1 px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold"
+                        />
+                        <select
+                          value={activeComponent.content.titleFontSize || "4xl"}
+                          onChange={(e) =>
+                            updateActiveComponentContent({ titleFontSize: e.target.value })
+                          }
+                          className="w-28 px-2 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-semibold"
+                          title="Title Font Size"
+                        >
+                          <option value="2xl">Small (24px)</option>
+                          <option value="3xl">Medium (30px)</option>
+                          <option value="4xl">Large (36px)</option>
+                          <option value="5xl">XL (44px)</option>
+                          <option value="6xl">Huge (56px)</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    {/* Subtitle & Font Size */}
+                    <div className="space-y-1.5">
+                      <div className="flex items-center justify-between">
+                        <label className="block font-semibold text-slate-700 text-xs">Subtitle</label>
+                        <span className="text-[10px] text-slate-400 font-medium">Font Size</span>
+                      </div>
+                      <div className="flex gap-2">
+                        <textarea
+                          rows={2}
+                          value={activeComponent.content.subtitle || activeComponent.content.description || ""}
+                          onChange={(e) =>
+                            updateActiveComponentContent({ subtitle: e.target.value, description: e.target.value })
+                          }
+                          className="flex-1 px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs"
+                        />
+                        <select
+                          value={activeComponent.content.subtitleFontSize || "base"}
+                          onChange={(e) =>
+                            updateActiveComponentContent({ subtitleFontSize: e.target.value })
+                          }
+                          className="w-28 px-2 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-semibold self-start"
+                          title="Subtitle Font Size"
+                        >
+                          <option value="xs">Small (12px)</option>
+                          <option value="sm">Normal (14px)</option>
+                          <option value="base">Medium (16px)</option>
+                          <option value="lg">Large (18px)</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    {/* Video Placement & Settings */}
+                    <div className="p-3 bg-purple-50/70 border border-purple-200 rounded-xl space-y-2.5">
+                      <div className="flex items-center justify-between">
+                        <label className="font-bold text-xs text-purple-900 flex items-center gap-1.5">
+                          <VideoIcon className="w-3.5 h-3.5 text-purple-600" />
+                          <span>Video Placement</span>
+                        </label>
+                        <span className="text-[10px] font-semibold text-purple-600 bg-purple-100/80 px-2 py-0.5 rounded-md">
+                          Screenshot 1 Layout
+                        </span>
+                      </div>
+
+                      <div>
+                        <select
+                          value={activeComponent.content.videoPosition || "belowHeading"}
+                          onChange={(e) =>
+                            updateActiveComponentContent({ videoPosition: e.target.value })
+                          }
+                          className="w-full px-2.5 py-1.5 bg-white border border-purple-200 rounded-lg text-xs font-bold text-slate-800"
+                        >
+                          <option value="belowHeading">⭐ Between Heading & Pointers (Screenshot 1 Reference)</option>
+                          <option value="belowPointers">Below Pointers (Bottom)</option>
+                          <option value="none">No Video in this Section</option>
+                        </select>
+                      </div>
+
+                      {activeComponent.content.videoPosition !== "none" && (
+                        <div className="space-y-2 pt-1 border-t border-purple-100">
+                          <div>
+                            <label className="block text-[11px] font-medium text-slate-600 mb-0.5">
+                              Video URL (YouTube or MP4)
+                            </label>
+                            <input
+                              type="text"
+                              value={activeComponent.content.videoUrl || ""}
+                              onChange={(e) =>
+                                updateActiveComponentContent({ videoUrl: e.target.value })
+                              }
+                              placeholder="https://www.youtube.com/watch?v=..."
+                              className="w-full px-2.5 py-1.5 bg-white border border-purple-200 rounded-lg text-xs"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-[11px] font-medium text-slate-600 mb-0.5">
+                              Video Poster / Thumbnail Image
+                            </label>
+                            <div className="flex gap-2">
+                              <input
+                                type="text"
+                                value={activeComponent.content.imageUrl || activeComponent.content.videoPoster || ""}
+                                onChange={(e) =>
+                                  updateActiveComponentContent({
+                                    imageUrl: e.target.value,
+                                    videoPoster: e.target.value,
+                                  })
+                                }
+                                placeholder="/hero_image_2.png or image URL"
+                                className="flex-1 px-2.5 py-1.5 bg-white border border-purple-200 rounded-lg text-xs"
+                              />
+                              <label className="px-3 py-1.5 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-xs font-bold cursor-pointer transition flex items-center gap-1 shrink-0">
+                                <Upload className="w-3 h-3" />
+                                <span>Upload</span>
+                                <input
+                                  type="file"
+                                  accept="image/*"
+                                  className="hidden"
+                                  onChange={(e) => {
+                                    const file = e.target.files?.[0];
+                                    if (file) {
+                                      handleMediaUpload(file, "about-video-poster", (url) => {
+                                        updateActiveComponentContent({
+                                          imageUrl: url,
+                                          videoPoster: url,
+                                        });
+                                      });
+                                    }
+                                  }}
+                                />
+                              </label>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Benefits List & Typography */}
+                    <div className="space-y-2.5 pt-2 border-t border-slate-200">
                       <div className="flex items-center justify-between">
                         <span className="font-bold text-slate-800 uppercase tracking-wider text-[11px]">
                           Key Benefits ({(activeComponent.content.benefits || []).length})
@@ -3777,10 +4272,48 @@ export default function TemplateEditor() {
                         </button>
                       </div>
 
+                      {/* Font & Icon Size Controls for Pointers */}
+                      <div className="grid grid-cols-2 gap-2 bg-slate-50 p-2 rounded-lg border border-slate-200">
+                        <div>
+                          <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">
+                            Pointer Text Size
+                          </label>
+                          <select
+                            value={activeComponent.content.pointersFontSize || "base"}
+                            onChange={(e) =>
+                              updateActiveComponentContent({ pointersFontSize: e.target.value })
+                            }
+                            className="w-full px-2 py-1 bg-white border border-slate-200 rounded text-xs font-medium"
+                          >
+                            <option value="sm">Small (14px)</option>
+                            <option value="base">Medium (16px - Default)</option>
+                            <option value="lg">Large (18px)</option>
+                            <option value="xl">Extra Large (20px)</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">
+                            Flower Icon Size
+                          </label>
+                          <select
+                            value={activeComponent.content.iconSize || "md"}
+                            onChange={(e) =>
+                              updateActiveComponentContent({ iconSize: e.target.value })
+                            }
+                            className="w-full px-2 py-1 bg-white border border-slate-200 rounded text-xs font-medium"
+                          >
+                            <option value="sm">Compact (24px)</option>
+                            <option value="md">Standard (32px - Reference)</option>
+                            <option value="lg">Prominent (40px)</option>
+                            <option value="xl">Extra Large (48px)</option>
+                          </select>
+                        </div>
+                      </div>
+
                       <div className="space-y-1.5">
                         {(activeComponent.content.benefits || []).map((b: string, bi: number) => (
-                          <div key={bi} className="flex items-center gap-1.5">
-                            <LotusChakraIcon className="w-4 h-4 shrink-0" />
+                          <div key={bi} className="flex items-center gap-2">
+                            <LotusChakraIcon className="w-5 h-5 shrink-0" />
                             <input
                               type="text"
                               value={b}
@@ -3807,17 +4340,34 @@ export default function TemplateEditor() {
                       </div>
                     </div>
 
-                    <div>
-                      <label className="block font-semibold mb-1 text-slate-700">Button Text</label>
-                      <input
-                        type="text"
-                        value={activeComponent.content.buttonText || ""}
-                        onChange={(e) =>
-                          updateActiveComponentContent({ buttonText: e.target.value })
-                        }
-                        placeholder="Register now"
-                        className="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs"
-                      />
+                    {/* CTA Button */}
+                    <div className="pt-2 border-t border-slate-200 space-y-2">
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <label className="block font-semibold mb-1 text-slate-700 text-xs">Button Text</label>
+                          <input
+                            type="text"
+                            value={activeComponent.content.buttonText || ""}
+                            onChange={(e) =>
+                              updateActiveComponentContent({ buttonText: e.target.value })
+                            }
+                            placeholder="Register now (leave blank to hide)"
+                            className="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs"
+                          />
+                        </div>
+                        <div>
+                          <label className="block font-semibold mb-1 text-slate-700 text-xs">Button Link</label>
+                          <input
+                            type="text"
+                            value={activeComponent.content.buttonLink || ""}
+                            onChange={(e) =>
+                              updateActiveComponentContent({ buttonLink: e.target.value })
+                            }
+                            placeholder="#lead-form"
+                            className="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs"
+                          />
+                        </div>
+                      </div>
                     </div>
                   </div>
                 )}
@@ -3974,6 +4524,39 @@ export default function TemplateEditor() {
                         placeholder="Frequently Asked Questions"
                         className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold"
                       />
+                    </div>
+
+                    <div>
+                      <label className="block font-semibold mb-1 text-slate-700">Subtitle</label>
+                      <textarea
+                        rows={2}
+                        value={activeComponent.content.subtitle || ""}
+                        onChange={(e) =>
+                          updateActiveComponentContent({ subtitle: e.target.value })
+                        }
+                        placeholder="Find fast answers to all common questions..."
+                        className="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block font-semibold mb-1 text-slate-700 text-xs">Text Alignment</label>
+                      <div className="grid grid-cols-3 gap-1.5 bg-slate-100 p-1 rounded-xl">
+                        {(["left", "center", "right"] as const).map((a) => (
+                          <button
+                            key={a}
+                            type="button"
+                            onClick={() => updateActiveComponentContent({ align: a })}
+                            className={`py-1.5 px-3 rounded-lg text-xs font-bold capitalize transition cursor-pointer ${
+                              (activeComponent.content.align || "left") === a
+                                ? "bg-white text-[#2171B5] shadow-xs"
+                                : "text-slate-600 hover:text-slate-900"
+                            }`}
+                          >
+                            {a}
+                          </button>
+                        ))}
+                      </div>
                     </div>
 
                     <div className="space-y-2 pt-2 border-t border-slate-200">
@@ -4552,6 +5135,75 @@ export default function TemplateEditor() {
                         }
                         className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-mono"
                       />
+                    </div>
+
+                    {/* --- NAVBAR SHADOW SLIDER --- */}
+                    <div className="pt-3 border-t border-slate-200">
+                      <div className="flex items-center justify-between mb-1.5">
+                        <label className="text-xs font-semibold text-slate-700 flex items-center gap-1.5">
+                          <span>Navbar Shadow</span>
+                        </label>
+                        <span className="text-[11px] font-mono font-bold px-2 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200">
+                          {template.headerConfig.shadowIntensity || 0}px
+                        </span>
+                      </div>
+                      <input
+                        type="range"
+                        min="0"
+                        max="60"
+                        step="1"
+                        value={template.headerConfig.shadowIntensity || 0}
+                        onChange={(e) =>
+                          setTemplate({
+                            ...template,
+                            headerConfig: {
+                              ...template.headerConfig!,
+                              shadowIntensity: Number(e.target.value),
+                            },
+                          })
+                        }
+                        className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[#2171B5]"
+                      />
+                      <div className="flex items-center justify-between text-[10px] text-slate-400 mt-1">
+                        <span>None (0px)</span>
+                        <span>Soft (15px)</span>
+                        <span>Medium (30px)</span>
+                        <span>Deep (60px)</span>
+                      </div>
+
+                      {/* Quick Presets */}
+                      <div className="grid grid-cols-4 gap-1.5 mt-2.5">
+                        {[
+                          { label: "None", val: 0 },
+                          { label: "Subtle", val: 10 },
+                          { label: "Medium", val: 24 },
+                          { label: "Strong", val: 40 },
+                        ].map((preset) => {
+                          const isCurrent = (template.headerConfig?.shadowIntensity || 0) === preset.val;
+                          return (
+                            <button
+                              key={preset.label}
+                              type="button"
+                              onClick={() =>
+                                setTemplate({
+                                  ...template,
+                                  headerConfig: {
+                                    ...template.headerConfig!,
+                                    shadowIntensity: preset.val,
+                                  },
+                                })
+                              }
+                              className={`py-1 text-[10px] font-semibold rounded-md border transition cursor-pointer ${
+                                isCurrent
+                                  ? "bg-[#2171B5] text-white border-[#2171B5]"
+                                  : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50"
+                              }`}
+                            >
+                              {preset.label}
+                            </button>
+                          );
+                        })}
+                      </div>
                     </div>
                   </div>
                 )}

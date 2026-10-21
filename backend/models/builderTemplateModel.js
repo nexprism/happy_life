@@ -101,6 +101,7 @@ const builderTemplateSchema = new mongoose.Schema(
         url: { type: String, default: "#lead-form" },
         variant: { type: String, default: "primary" },
       },
+      shadowIntensity: { type: Number, default: 0 },
     },
     footerConfig: {
       enabled: { type: Boolean, default: true },

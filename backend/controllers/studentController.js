@@ -1,6 +1,10 @@
 import UserService from "../service/userService.js";
 import ProjectAnalyticsService from "../service/ProjectAnalyticsService.js";
-import CourseEnrollment from "../models/CourseEnrollment.js"; // <-- Add this import
+import CourseEnrollment from "../models/CourseEnrollment.js";
+import Course from "../models/Course.js";
+import CoursePlan from "../models/CoursePlan.js";
+import CourseChatRoom from "../models/CourseChatRoom.js";
+import { initRedis } from "../config/redisClient.js";
 import User from "../models/user.js";
 import xlsx from "xlsx";
 import bcrypt from "bcryptjs";
@@ -204,15 +208,46 @@ export const bulkImportStudents = async (req, res) => {
     }
 
     const created = [];
+    const enrolled = [];
     const skipped = [];
     const errors = [];
 
+    // Course cache to avoid querying DB for the same course on every row
+    const courseCache = new Map();
+
     for (let i = 0; i < rows.length; i++) {
       const row = rows[i];
-      const fullName = (row["Name"] || row["Full Name"] || row["fullName"] || row["Student Name"] || "").toString().trim();
-      const rawEmail = (row["Email"] || row["email"] || row["EMAIL"] || "").toString().trim();
-      const rawPhone = (row["Phone"] || row["phone"] || row["Phone No"] || row["Mobile"] || "").toString().trim();
-      const rawPassword = (row["Password"] || row["password"] || "Student@123").toString().trim();
+      const fullName = (
+        row["Name"] || row["name"] || row["Full Name"] || row["fullName"] || row["Student Name"] || ""
+      ).toString().trim();
+
+      const rawEmail = (
+        row["Email"] || row["email"] || row["EMAIL"] ||
+        row["E- mail"] || row["E-mail"] || row["e-mail"] || ""
+      ).toString().trim();
+
+      let rawPhone = (
+        row["Phone"] || row["phone"] || row["Phone No"] || row["Mobile"] || row["mobile"] ||
+        row["Contact -No."] || row["Contact-No."] || row["Contact No."] || row["Contact No"] ||
+        row["Contact"] || row["contact"] || ""
+      ).toString().trim();
+
+      // Normalize exponential format if present (e.g. 4.47901E+11)
+      if (rawPhone && rawPhone.toLowerCase().includes("e+")) {
+        const num = Number(rawPhone);
+        if (!isNaN(num)) {
+          rawPhone = BigInt(Math.round(num)).toString();
+        }
+      }
+
+      const rawPassword = (
+        row["Password"] || row["password"] || row["PASS"] || row["Pass"] || "happylife@123"
+      ).toString().trim();
+
+      const courseName = (
+        row["Course"] || row["course"] || row["Course Name"] || row["courseName"] ||
+        row["Course Title"] || row["courseTitle"] || ""
+      ).toString().trim();
 
       if (!rawEmail || !rawEmail.includes("@")) {
         errors.push({ row: i + 2, reason: "Invalid or missing email" });
@@ -222,44 +257,162 @@ export const bulkImportStudents = async (req, res) => {
       const email = rawEmail.toLowerCase();
       const name = fullName || email.split("@")[0] || "Student";
 
-      // Check if user already exists
-      const existingUser = await User.findOne({ email });
-      if (existingUser) {
-        skipped.push({ email, name, reason: "User with this email already exists" });
-        continue;
+      try {
+        // 1. Find or create user
+        let user = await User.findOne({ email });
+        let isNewUser = false;
+
+        if (!user) {
+          const hashedPassword = await bcrypt.hash(rawPassword, 10);
+          user = await User.create({
+            fullName: name,
+            email,
+            password: hashedPassword,
+            phone: rawPhone || undefined,
+            role: "student",
+            is_verify: true,
+            emailVerified: true,
+            isActive: true,
+          });
+          isNewUser = true;
+          created.push({
+            _id: user._id,
+            fullName: user.fullName,
+            email: user.email,
+            phone: user.phone,
+            role: user.role,
+            isActive: user.isActive,
+            createdAt: user.createdAt,
+          });
+        } else if (!courseName) {
+          skipped.push({ email, name, reason: "User with this email already exists" });
+          continue;
+        }
+
+        // 2. If Course column is provided, enroll user into the course
+        if (courseName) {
+          let courseData = courseCache.get(courseName.toLowerCase());
+
+          if (!courseData && !courseCache.has(courseName.toLowerCase())) {
+            const course = await Course.findOne({
+              $or: [
+                { title: { $regex: new RegExp(`^${courseName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`, "i") } },
+                { slug: courseName.toLowerCase().replace(/[^a-z0-9]+/g, "-") }
+              ]
+            }).lean();
+
+            let plan = null;
+            if (course) {
+              plan = await CoursePlan.findOne({ courseId: course._id, status: "active" }).lean() ||
+                     await CoursePlan.findOne({ courseId: course._id }).lean();
+            }
+
+            courseData = course ? { course, plan } : null;
+            courseCache.set(courseName.toLowerCase(), courseData);
+          }
+
+          if (!courseData || !courseData.course) {
+            errors.push({ row: i + 2, email, reason: `Course "${courseName}" not found in system` });
+            continue;
+          }
+
+          const { course, plan } = courseData;
+          const courseId = course._id;
+          const userId = user._id;
+
+          // Non-lifetime access expiry calculation
+          let accessExpiry = new Date();
+          if (plan && plan.duration && plan.durationType) {
+            const durType = plan.durationType.toLowerCase();
+            const dur = Number(plan.duration) || 1;
+            if (durType.includes("year")) accessExpiry.setFullYear(accessExpiry.getFullYear() + dur);
+            else if (durType.includes("month")) accessExpiry.setMonth(accessExpiry.getMonth() + dur);
+            else if (durType.includes("day")) accessExpiry.setDate(accessExpiry.getDate() + dur);
+            else accessExpiry.setFullYear(accessExpiry.getFullYear() + 1);
+          } else {
+            accessExpiry.setFullYear(accessExpiry.getFullYear() + 1); // Default 1 year non-lifetime access
+          }
+
+          const existingEnrollment = await CourseEnrollment.findOne({ userId, courseId });
+
+          if (existingEnrollment) {
+            const isExpired = existingEnrollment.accessExpiry && existingEnrollment.accessExpiry < new Date();
+            if (existingEnrollment.status === "active" && !isExpired) {
+              enrolled.push({ email, course: course.title, status: "already_active" });
+            } else {
+              // Reactivate / Renew
+              await CourseEnrollment.findByIdAndUpdate(existingEnrollment._id, {
+                status: "active",
+                enrolledAt: new Date(),
+                accessType: "limited",
+                accessExpiry,
+                coursePlanId: plan?._id || existingEnrollment.coursePlanId,
+                enrollmentSource: "import"
+              });
+              enrolled.push({ email, course: course.title, status: "renewed" });
+            }
+          } else {
+            // Create fresh enrollment
+            await CourseEnrollment.create({
+              userId,
+              courseId,
+              coursePlanId: plan?._id || undefined,
+              type: plan ? "coursePlan" : "course",
+              status: "active",
+              accessType: "limited",
+              accessExpiry,
+              enrollmentSource: "import",
+              enrolledAt: new Date()
+            });
+
+            await Course.findByIdAndUpdate(courseId, {
+              $addToSet: { enrolledStudents: userId },
+              $inc: { enrolledStudentsCount: 1 }
+            });
+
+            await User.findByIdAndUpdate(userId, {
+              $addToSet: { enrolledCourses: courseId }
+            });
+
+            enrolled.push({
+              email,
+              course: course.title,
+              status: isNewUser ? "created_and_enrolled" : "enrolled"
+            });
+          }
+
+          // Grant community chat room access if available
+          try {
+            const chatRoom = await CourseChatRoom.findOne({ courseId });
+            if (chatRoom && !chatRoom.participants.map(String).includes(String(userId))) {
+              chatRoom.participants.push(userId);
+              await chatRoom.save();
+            }
+          } catch (_) {}
+        }
+      } catch (rowErr) {
+        errors.push({ row: i + 2, email, reason: rowErr.message });
       }
+    }
 
-      const hashedPassword = await bcrypt.hash(rawPassword, 10);
-      const newUser = await User.create({
-        fullName: name,
-        email,
-        password: hashedPassword,
-        phone: rawPhone || undefined,
-        role: "student",
-        is_verify: true,
-        emailVerified: true,
-        isActive: true,
-      });
-
-      created.push({
-        _id: newUser._id,
-        fullName: newUser.fullName,
-        email: newUser.email,
-        phone: newUser.phone,
-        role: newUser.role,
-        isActive: newUser.isActive,
-        createdAt: newUser.createdAt,
-      });
+    // Invalidate Redis cache for enrollments if any enrollment happened
+    if (enrolled.length > 0) {
+      try {
+        const redis = await initRedis();
+        await redis.del("enrollments:all*");
+      } catch (_) {}
     }
 
     return res.status(200).json({
       success: true,
-      message: `Bulk import completed: ${created.length} students created, ${skipped.length} skipped, ${errors.length} failed.`,
+      message: `Bulk import completed: ${created.length} students created, ${enrolled.length} course enrollments processed, ${skipped.length} skipped, ${errors.length} failed.`,
       students: created,
       details: {
         createdCount: created.length,
+        enrolledCount: enrolled.length,
         skippedCount: skipped.length,
         errorCount: errors.length,
+        enrolled,
         skipped,
         errors,
       },

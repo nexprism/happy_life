@@ -338,23 +338,31 @@ class BuilderService {
       {
         id: "sec-whyjoin-" + (timestamp + 1),
         name: "Why Join The Webinar",
-        layout: "2-column",
+        layout: "1-column",
         backgroundColor: "#ffffff",
         textColor: "#0F172A",
         paddingY: "lg",
         columns: [
           {
-            id: "col-whyjoin-left",
-            width: "1/2",
+            id: "col-whyjoin",
+            width: "full",
             components: [
               {
                 id: "comp-whyjoin-info-" + (timestamp + 1),
                 type: "about",
                 content: {
                   style: "whyJoin",
+                  align: "center",
                   title: "Why join the webinar?",
                   subtitle:
                     "This webinar will help you leverage the impact of stars in day-to-day life.",
+                  titleFontSize: "4xl",
+                  subtitleFontSize: "base",
+                  pointersFontSize: "base",
+                  iconSize: "md",
+                  videoPosition: "belowHeading",
+                  videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+                  imageUrl: "/hero_image_2.png",
                   benefits: [
                     "Make confident and informed life decisions.",
                     "Manage stress and anxiety more effectively.",
@@ -365,23 +373,6 @@ class BuilderService {
                   ],
                   buttonText: "Register now",
                   buttonLink: "#lead-form",
-                },
-              },
-            ],
-          },
-          {
-            id: "col-whyjoin-right",
-            width: "1/2",
-            components: [
-              {
-                id: "comp-whyjoin-media-" + (timestamp + 1),
-                type: "video",
-                content: {
-                  mediaType: "video",
-                  title: "Sneak Peek: Webinar Overview",
-                  videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-                  imageUrl: "/hero_image_2.png",
-                  autoPlay: false,
                 },
               },
             ],

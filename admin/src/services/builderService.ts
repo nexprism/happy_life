@@ -52,6 +52,7 @@ export interface BuilderTemplate {
     siteTitle?: string;
     navLinks?: { label: string; url: string }[];
     ctaButton?: { text: string; url: string; variant?: string };
+    shadowIntensity?: number;
   };
   footerConfig?: {
     enabled: boolean;
