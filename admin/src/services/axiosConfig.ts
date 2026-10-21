@@ -4,18 +4,7 @@ import axios, { AxiosInstance, AxiosResponse, AxiosError } from 'axios';
 export const getApiBaseUrl = (): string => {
   const envUrl = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_BASE_URL;
 
-  // If in browser on localhost/127.0.0.1, prioritize local backend
-  if (
-    typeof window !== 'undefined' &&
-    (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
-  ) {
-    if (envUrl && envUrl.includes('localhost')) {
-      return envUrl.replace(/\/+$/, '');
-    }
-    return 'http://localhost:5000';
-  }
-
-  if (envUrl && !envUrl.includes('localhost') && !envUrl.includes('127.0.0.1')) {
+  if (envUrl) {
     return envUrl.replace(/\/+$/, '');
   }
 

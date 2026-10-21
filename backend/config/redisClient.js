@@ -3,7 +3,6 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 let redisClient = null;
-let connectionAttempted = false;
 let isRedisAvailable = false;
 
 // High-fidelity in-memory fallback store when Redis is offline or timing out
@@ -129,43 +128,79 @@ export const deleteKeysByPattern = async (pattern) => {
   }
 };
 
+let isConnecting = false;
+let lastFailureTime = 0;
+const RETRY_COOLDOWN_MS = 15000; // Wait 15s before attempting reconnection if Redis is down
+
 const initRedis = async () => {
-  if (redisClient && isRedisAvailable) {
+  if (redisClient && isRedisAvailable && redisClient.isOpen) {
     return redisClient;
   }
 
-  // If already tried and failed, return mock immediately without hanging
-  if (connectionAttempted && !isRedisAvailable) {
-    return mockRedis;
-  }
-
-  connectionAttempted = true;
-
+  // If redis credentials are not configured, always use fallback
   if (!process.env.REDIS_HOST || !process.env.REDIS_PORT || !process.env.REDIS_PASSWORD) {
-    console.warn('⚠️ Redis config missing. Operating seamlessly in fallback mode.');
     isRedisAvailable = false;
     return mockRedis;
   }
 
+  // If currently attempting connection, return mock to avoid parallel connection attempts
+  if (isConnecting) {
+    return mockRedis;
+  }
+
+  // If we recently failed or disconnected, avoid hanging requests with repeated timeouts
+  if (Date.now() - lastFailureTime < RETRY_COOLDOWN_MS) {
+    return mockRedis;
+  }
+
+  isConnecting = true;
+
   try {
+    if (redisClient) {
+      try {
+        await redisClient.disconnect();
+      } catch (_) {}
+      redisClient = null;
+    }
+
     const client = createClient({
       socket: {
         host: process.env.REDIS_HOST,
         port: Number(process.env.REDIS_PORT),
-        connectTimeout: 2000,
-        reconnectStrategy: false, // Don't hang indefinitely on connection failures
+        connectTimeout: 2500,
+        reconnectStrategy: (retries) => {
+          if (retries > 5) {
+            return false; // Stop internal loop; initRedis will manage future reconnects
+          }
+          return Math.min(retries * 200, 2000);
+        },
       },
       password: process.env.REDIS_PASSWORD,
     });
 
-    client.on('error', () => {
-      // Quietly suppress connection error spam in console
+    client.on('error', (err) => {
+      // Quietly suppress spam; mark unavailable if socket closed
+      if (!client.isOpen) {
+        isRedisAvailable = false;
+      }
     });
 
-    // Timeout connecting after 2000ms
+    client.on('end', () => {
+      isRedisAvailable = false;
+      if (redisClient === client) {
+        redisClient = null;
+      }
+    });
+
+    client.on('ready', () => {
+      isRedisAvailable = true;
+      redisClient = client;
+    });
+
+    // Timeout connecting after 2500ms
     const connectPromise = client.connect();
     const timeoutPromise = new Promise((_, reject) =>
-      setTimeout(() => reject(new Error('Redis connection timeout')), 2000)
+      setTimeout(() => reject(new Error('Redis connection timeout')), 2500)
     );
 
     await Promise.race([connectPromise, timeoutPromise]);
@@ -175,10 +210,13 @@ const initRedis = async () => {
     console.log('✅ Redis connected successfully');
     return redisClient;
   } catch (err) {
-    console.warn(`⚠️ Redis unreachable (${err.message}). Seamlessly running in fallback mode.`);
+    lastFailureTime = Date.now();
     isRedisAvailable = false;
     redisClient = null;
+    console.warn(`⚠️ Redis unreachable (${err.message}). Seamlessly running in fallback mode.`);
     return mockRedis;
+  } finally {
+    isConnecting = false;
   }
 };
 

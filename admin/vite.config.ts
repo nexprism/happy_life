@@ -24,8 +24,9 @@ export default defineConfig({
     allowedHosts: true,
     proxy: {
       '/uploads': {
-        target: 'http://localhost:5000',
+        target: 'https://api.happylifeastro.school',
         changeOrigin: true,
+        secure: false,
       },
     },
   },

@@ -5,11 +5,13 @@ import UserRefreshToken from "../../models/UserRefreshToken.js";
 import { ServerConfig } from "../../config/server.config.js";
 import { initRedis } from "../../config/redisClient.js";
 
-let redisInstance = null;
 const getRedis = async () => {
   try {
-    if (!redisInstance) redisInstance = await initRedis();
-    return redisInstance;
+    const redis = await initRedis();
+    if (redis && (redis.isOpen || redis.isReady)) {
+      return redis;
+    }
+    return null;
   } catch (err) {
     console.warn("[REDIS] Redis unavailable, using in-memory fallback");
     return null;
@@ -25,83 +27,109 @@ const USER_ACCESS_TOKENS_PREFIX = "user:accessTokens:";
 
 // Store issued access token for user in Redis or fallback
 const storeAccessTokenForUser = async (userId, token, exp, platform = "web") => {
-  const redis = await getRedis();
   const platformKey = platform === "web" ? "web" : "app";
-  const key = `${USER_ACCESS_TOKENS_PREFIX}${platformKey}:${userId}`;
-
-  if (redis) {
-    // Store token with expiration as score in a sorted set
-    await redis.zAdd(key, [{ score: exp, value: token }]);
-  } else {
-    const memKey = `${userId}:${platformKey}`;
-    if (!memoryUserTokens.has(memKey)) memoryUserTokens.set(memKey, []);
-    memoryUserTokens.get(memKey).push({ token, exp });
+  try {
+    const redis = await getRedis();
+    if (redis) {
+      const key = `${USER_ACCESS_TOKENS_PREFIX}${platformKey}:${userId}`;
+      await redis.zAdd(key, [{ score: exp, value: token }]);
+      return;
+    }
+  } catch (err) {
+    console.warn("[REDIS] storeAccessTokenForUser error, falling back to memory:", err.message);
   }
+
+  // Fallback to in-memory store
+  const memKey = `${userId}:${platformKey}`;
+  if (!memoryUserTokens.has(memKey)) memoryUserTokens.set(memKey, []);
+  memoryUserTokens.get(memKey).push({ token, exp });
 };
 
 // Get all active access tokens for user from Redis or fallback
 const getAllAccessTokensForUser = async (userId, platform = "web") => {
-  const redis = await getRedis();
   const platformKey = platform === "web" ? "web" : "app";
-  const key = `${USER_ACCESS_TOKENS_PREFIX}${platformKey}:${userId}`;
-
-  if (redis) {
-    // Get all tokens with expiration > now
-    const now = Date.now();
-    return await redis.zRangeByScore(key, now, '+inf');
-  } else {
-    const now = Date.now();
-    const memKey = `${userId}:${platformKey}`;
-    return (memoryUserTokens.get(memKey) || [])
-      .filter(t => t.exp > now)
-      .map(t => t.token);
+  try {
+    const redis = await getRedis();
+    if (redis) {
+      const key = `${USER_ACCESS_TOKENS_PREFIX}${platformKey}:${userId}`;
+      const now = Date.now();
+      return await redis.zRangeByScore(key, now, '+inf');
+    }
+  } catch (err) {
+    console.warn("[REDIS] getAllAccessTokensForUser error, falling back to memory:", err.message);
   }
+
+  const now = Date.now();
+  const memKey = `${userId}:${platformKey}`;
+  return (memoryUserTokens.get(memKey) || [])
+    .filter(t => t.exp > now)
+    .map(t => t.token);
 };
 
 // Remove expired tokens from user's set
 const cleanupExpiredAccessTokensForUser = async (userId, platform = "web") => {
-  const redis = await getRedis();
   const platformKey = platform === "web" ? "web" : "app";
-  const key = `${USER_ACCESS_TOKENS_PREFIX}${platformKey}:${userId}`;
-
-  if (redis) {
-    const now = Date.now();
-    await redis.zRemRangeByScore(key, '-inf', now);
-  } else {
-    const memKey = `${userId}:${platformKey}`;
-    if (memoryUserTokens.has(memKey)) {
+  try {
+    const redis = await getRedis();
+    if (redis) {
+      const key = `${USER_ACCESS_TOKENS_PREFIX}${platformKey}:${userId}`;
       const now = Date.now();
-      memoryUserTokens.set(memKey, memoryUserTokens.get(memKey).filter(t => t.exp > now));
+      await redis.zRemRangeByScore(key, '-inf', now);
+      return;
     }
+  } catch (err) {
+    console.warn("[REDIS] cleanupExpiredAccessTokensForUser error, falling back to memory:", err.message);
+  }
+
+  const memKey = `${userId}:${platformKey}`;
+  if (memoryUserTokens.has(memKey)) {
+    const now = Date.now();
+    memoryUserTokens.set(memKey, memoryUserTokens.get(memKey).filter(t => t.exp > now));
   }
 };
 
 const blacklistAccessToken = async (token, exp) => {
-  const redis = await getRedis();
-  // Set blacklist with TTL equal to token's remaining lifetime
   const ttl = Math.floor((exp - Date.now()) / 1000);
   if (ttl > 0) {
-    await RevokedAccessToken.updateOne(
-      { _id: crypto.createHash('sha256').update(token).digest('hex') },
-      { $set: { expiresAt: new Date(exp) } }, { upsert: true }
-    );
-    if (redis) {
-      await redis.setEx(`${ACCESS_TOKEN_BLACKLIST_PREFIX}${token}`, ttl, "1");
+    try {
+      await RevokedAccessToken.updateOne(
+        { _id: crypto.createHash('sha256').update(token).digest('hex') },
+        { $set: { expiresAt: new Date(exp) } }, { upsert: true }
+      );
+    } catch (dbErr) {
+      console.warn("[REVOKED_TOKEN] Mongo revoke error:", dbErr.message);
     }
+
+    try {
+      const redis = await getRedis();
+      if (redis) {
+        await redis.setEx(`${ACCESS_TOKEN_BLACKLIST_PREFIX}${token}`, ttl, "1");
+      }
+    } catch (err) {
+      console.warn("[REDIS] blacklistAccessToken error:", err.message);
+    }
+
     memoryBlacklist.set(token, Date.now() + ttl * 1000);
-    //console.log(`[BLACKLIST] Token ${token.substring(0, 12)}... set for ${ttl}s`);
-  } else {
-    //console.log(`[BLACKLIST] Token ${token.substring(0, 12)}... not set (expired)`);
   }
 };
 
 const isAccessTokenBlacklisted = async (token, user) => {
-  if (await RevokedAccessToken.exists({ _id: crypto.createHash('sha256').update(token).digest('hex'), expiresAt: { $gt: new Date() } })) return true;
-  const redis = await getRedis();
-  if (redis) {
-    const result = await redis.get(`${ACCESS_TOKEN_BLACKLIST_PREFIX}${token}`);
-    if (result === "1") return true;
+  try {
+    if (await RevokedAccessToken.exists({ _id: crypto.createHash('sha256').update(token).digest('hex'), expiresAt: { $gt: new Date() } })) return true;
+  } catch (dbErr) {
+    // Non-fatal, continue checking redis/memory
   }
+
+  try {
+    const redis = await getRedis();
+    if (redis) {
+      const result = await redis.get(`${ACCESS_TOKEN_BLACKLIST_PREFIX}${token}`);
+      if (result === "1") return true;
+    }
+  } catch (err) {
+    console.warn("[REDIS] isAccessTokenBlacklisted error:", err.message);
+  }
+
   const expiry = memoryBlacklist.get(token);
   return !!(expiry && expiry > Date.now());
 };
@@ -198,11 +226,15 @@ const generateTokens = async (user, platform = "web", deviceId = null) => {
         await Promise.all(blacklistPromise);
 
         // Clear the specific platform's access token list from Redis
-        const redis = await getRedis();
-        if (redis) {
-          const platformKey = platform === "web" ? "web" : "app";
-          const key = `${USER_ACCESS_TOKENS_PREFIX}${platformKey}:${user._id}`;
-          await redis.del(key);
+        try {
+          const redis = await getRedis();
+          if (redis) {
+            const platformKey = platform === "web" ? "web" : "app";
+            const key = `${USER_ACCESS_TOKENS_PREFIX}${platformKey}:${user._id}`;
+            await redis.del(key);
+          }
+        } catch (delErr) {
+          console.warn("[REDIS] del error, non-fatal:", delErr.message);
         }
       }
     }

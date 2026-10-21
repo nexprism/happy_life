@@ -71,9 +71,7 @@ export const resolveMediaUrl = (url?: string): string => {
     (window.location.hostname === "localhost" ||
       window.location.hostname === "127.0.0.1");
 
-  const defaultBase = isLocalhost
-    ? "http://localhost:5000"
-    : "https://api.happylifeastro.school";
+  const defaultBase = "https://api.happylifeastro.school";
 
   const envUrl =
     import.meta.env.VITE_IMAGE_URL ||
