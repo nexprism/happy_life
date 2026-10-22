@@ -401,50 +401,164 @@ class EmailService {
   async sendEventRegistrationEmail(email, name, eventDetails, password = null) {
     // If password is present, it's a transactional email (new user), else it's a founder/casual info email
     const fromType = password ? "transactional" : "founder";
+
+    // Format human-readable date & time
+    let formattedDate = "";
+    if (eventDetails.startDate) {
+      try {
+        const d = new Date(eventDetails.startDate);
+        formattedDate = d.toLocaleString("en-US", {
+          weekday: "short",
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+          hour: "numeric",
+          minute: "2-digit",
+          hour12: true,
+        });
+      } catch (e) {
+        formattedDate = String(eventDetails.startDate);
+      }
+    }
+
+    const online = eventDetails.onlineLink || {};
+    const hasOnlineLink = Boolean(online.url);
+    const venue = eventDetails.venue || {};
+    const venueAddress = [venue.name, venue.address, venue.city, venue.country]
+      .filter(Boolean)
+      .join(", ");
+
     const mailOptions = {
       from: this.getFrom(fromType),
       to: email,
-      subject: `Registration Confirmation for ${eventDetails.title}`,
+      subject: `Registration Confirmed: ${eventDetails.title}`,
       html: `
-        <div style="font-family: Arial, sans-serif; line-height: 1.5;">
-          <h2>Event Registration Confirmation</h2>
-          <p>Hello <strong>${name}</strong>,</p>
-          <p>Thank you for registering for the event: <strong>${eventDetails.title
-        }</strong>.</p>
-          <p>Event Details:</p>
-          <ul>
-            <li><strong>Date:</strong> ${eventDetails.startDate}</li>
-            <li><strong>Location:</strong> ${eventDetails.venue.address}, ${eventDetails.venue.city
-        }, ${eventDetails.venue.country}</li>
-          ${eventDetails.onlineLink
-          ? `
-            <li><strong>Platform:</strong> ${eventDetails.onlineLink.platform
-          }</li>
-            <li><strong>Meeting URL:</strong> <a href="${eventDetails.onlineLink.url
-          }" target="_blank">Join</a></li>
-            ${eventDetails.onlineLink.meetingId
-            ? `<li><strong>Meeting ID:</strong> ${eventDetails.onlineLink.meetingId}</li>`
-            : ""
-          }
-            ${eventDetails.onlineLink.password
-            ? `<li><strong>Password:</strong> ${eventDetails.onlineLink.password}</li>`
-            : ""
-          }
-          `
-          : ""
-        }
-          ${password
-          ? `
-          <p>Your login details are as follows:</p>
-          <p><strong>Email:</strong> ${email}</p>
-          <p><strong>Password:</strong> ${password}</p>
-          `
-          : ""
-        }
-          <p>If you have any questions or need assistance, feel free to contact our support team.</p>
-          <hr />
-          <p style="font-size: 12px; color: #777;">This is an automated email, please do not reply.</p>
-        </div>
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Event Registration Confirmation</title>
+        </head>
+        <body style="margin: 0; padding: 0; background-color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #1e293b;">
+          <table role="presentation" style="width: 100%; border-collapse: collapse; background-color: #f8fafc; padding: 24px 0;">
+            <tr>
+              <td align="center" style="padding: 16px;">
+                <table role="presentation" style="width: 100%; max-width: 600px; border-collapse: collapse; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.06); border: 1px solid #e2e8f0;">
+                  
+                  <!-- Header -->
+                  <tr>
+                    <td style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); padding: 32px 36px; text-align: center;">
+                      <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 800; letter-spacing: -0.5px;">Happy Life Astro</h1>
+                      <div style="display: inline-block; background-color: rgba(255,255,255,0.2); color: #ffffff; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; padding: 4px 12px; border-radius: 9999px; margin-top: 10px;">
+                        Event Registration Confirmed
+                      </div>
+                    </td>
+                  </tr>
+
+                  <!-- Main Content -->
+                  <tr>
+                    <td style="padding: 36px 36px 24px 36px;">
+                      <p style="margin: 0 0 16px 0; font-size: 16px; color: #334155;">
+                        Hello <strong>${name || "Attendee"}</strong>,
+                      </p>
+                      <p style="margin: 0 0 24px 0; font-size: 15px; line-height: 1.6; color: #475569;">
+                        You have successfully registered for <strong>${eventDetails.title}</strong>! Below are your session and joining details:
+                      </p>
+
+                      <!-- Event Info Box -->
+                      <table role="presentation" style="width: 100%; border-collapse: collapse; background-color: #f1f5f9; border-radius: 12px; margin-bottom: 24px;">
+                        <tr>
+                          <td style="padding: 18px 20px;">
+                            ${formattedDate ? `
+                              <div style="font-size: 12px; color: #64748b; margin-bottom: 4px; font-weight: 600; text-transform: uppercase;">Date & Time</div>
+                              <div style="font-size: 15px; color: #0f172a; font-weight: 700; margin-bottom: 12px;">📅 ${formattedDate}</div>
+                            ` : ''}
+                            ${venueAddress ? `
+                              <div style="font-size: 12px; color: #64748b; margin-bottom: 4px; font-weight: 600; text-transform: uppercase;">Location / Venue</div>
+                              <div style="font-size: 14px; color: #0f172a; font-weight: 600;">📍 ${venueAddress}</div>
+                            ` : ''}
+                          </td>
+                        </tr>
+                      </table>
+
+                      <!-- Online Meeting Details Card (Highlighted) -->
+                      ${hasOnlineLink ? `
+                        <div style="background-color: #eff6ff; border: 2px solid #bfdbfe; border-radius: 14px; padding: 24px; margin-bottom: 24px;">
+                          <div style="font-size: 12px; font-weight: 800; color: #1d4ed8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px;">
+                            🎥 Online Live Session Details
+                          </div>
+                          
+                          <table role="presentation" style="width: 100%; border-collapse: collapse; font-size: 14px; color: #1e293b; margin-bottom: 18px;">
+                            ${online.platform ? `
+                              <tr>
+                                <td style="padding: 6px 0; color: #64748b; font-weight: 600; width: 120px;">Platform:</td>
+                                <td style="padding: 6px 0; font-weight: 700; text-transform: uppercase;">${online.platform}</td>
+                              </tr>
+                            ` : ''}
+                            ${online.meetingId ? `
+                              <tr>
+                                <td style="padding: 6px 0; color: #64748b; font-weight: 600;">Meeting ID:</td>
+                                <td style="padding: 6px 0; font-family: monospace; font-size: 15px; font-weight: 700; color: #0f172a;">${online.meetingId}</td>
+                              </tr>
+                            ` : ''}
+                            ${online.password ? `
+                              <tr>
+                                <td style="padding: 6px 0; color: #64748b; font-weight: 600;">Passcode / Key:</td>
+                                <td style="padding: 6px 0; font-family: monospace; font-size: 15px; font-weight: 700; color: #0f172a;">${online.password}</td>
+                              </tr>
+                            ` : ''}
+                          </table>
+
+                          <!-- Join Button -->
+                          <div style="text-align: center; margin-top: 8px;">
+                            <a href="${online.url}" target="_blank" style="display: inline-block; background-color: #2563eb; color: #ffffff; text-decoration: none; padding: 14px 32px; border-radius: 10px; font-weight: 700; font-size: 15px; box-shadow: 0 4px 12px rgba(37,99,235,0.3);">
+                              👉 Join Live Meeting
+                            </a>
+                          </div>
+                          <div style="text-align: center; margin-top: 10px;">
+                            <a href="${online.url}" target="_blank" style="font-size: 12px; color: #2563eb; word-break: break-all;">
+                              ${online.url}
+                            </a>
+                          </div>
+                        </div>
+                      ` : ''}
+
+                      <!-- Login Credentials (if new user created) -->
+                      ${password ? `
+                        <div style="background-color: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 12px; padding: 18px 20px; margin-bottom: 24px;">
+                          <div style="font-size: 12px; font-weight: 700; color: #475569; text-transform: uppercase; margin-bottom: 8px;">
+                            Your Portal Login Credentials:
+                          </div>
+                          <div style="font-size: 13px; color: #334155; margin-bottom: 4px;"><strong>Email:</strong> ${email}</div>
+                          <div style="font-size: 13px; color: #334155;"><strong>Temporary Password:</strong> <code style="background-color: #e2e8f0; padding: 2px 6px; border-radius: 4px;">${password}</code></div>
+                        </div>
+                      ` : ''}
+
+                      <p style="margin: 0; font-size: 13px; color: #64748b; line-height: 1.5;">
+                        Please save this email for your reference. If you have any questions or need technical support before the event, reply to this email or reach out to our team.
+                      </p>
+                    </td>
+                  </tr>
+
+                  <!-- Footer -->
+                  <tr>
+                    <td style="background-color: #f8fafc; padding: 24px 36px; text-align: center; border-top: 1px solid #e2e8f0;">
+                      <p style="margin: 0 0 6px 0; font-size: 12px; color: #94a3b8; font-weight: 600;">
+                        Happy Life Astro • Guidance & Learning
+                      </p>
+                      <p style="margin: 0; font-size: 11px; color: #cbd5e1;">
+                        This is an automated confirmation sent upon successful event registration.
+                      </p>
+                    </td>
+                  </tr>
+
+                </table>
+              </td>
+            </tr>
+          </table>
+        </body>
+        </html>
       `,
     };
 
