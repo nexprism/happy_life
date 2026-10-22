@@ -1,10 +1,18 @@
 import React from 'react'
 import sanitizeDisplay from '../utils/textSanitize'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useLanguage } from '../context/LanguageContext'
 
 const CourseCard = ({ item, className = '', variant = 'course', onRegister }) => {
   const { t } = useLanguage()
+  const navigate = useNavigate()
+
+  // Compute builder/landing page destination if provided
+  const rawLandingUrl = item?.landingPageUrl ? String(item.landingPageUrl).trim() : ''
+  const isExternalLanding = rawLandingUrl.startsWith('http://') || rawLandingUrl.startsWith('https://')
+  const landingDest = rawLandingUrl
+    ? (isExternalLanding ? rawLandingUrl : (rawLandingUrl.startsWith('/') ? rawLandingUrl : `/${rawLandingUrl}`))
+    : ''
 
   const handleAction = (e) => {
     if (variant === 'event') {
@@ -12,6 +20,16 @@ const CourseCard = ({ item, className = '', variant = 'course', onRegister }) =>
         e.preventDefault()
         e.stopPropagation()
       }
+
+      if (landingDest) {
+        if (isExternalLanding) {
+          window.location.href = landingDest
+        } else {
+          navigate(landingDest)
+        }
+        return
+      }
+
       if (item?.onRegister) item.onRegister(item)
       else if (onRegister) onRegister(item)
     }
@@ -82,9 +100,24 @@ const CourseCard = ({ item, className = '', variant = 'course', onRegister }) =>
             <button 
               type="button"
               onClick={handleAction}
-              className="w-full py-3 bg-accent text-white font-montserrat text-[11px] font-bold tracking-[0.2em] uppercase hover:scale-[1.02] active:scale-98 shadow-sm transition-all duration-300 cursor-pointer text-center"
+              className="w-full py-3 bg-accent text-white font-montserrat text-[11px] font-bold tracking-[0.2em] uppercase hover:scale-[1.02] active:scale-98 shadow-sm transition-all duration-300 cursor-pointer text-center flex items-center justify-center gap-2"
             >
-              {item.buttonText || t('registerNow') || 'REGISTER NOW'}
+              <span>{landingDest ? (item.buttonText || 'EXPLORE MORE') : (item.buttonText || t('registerNow') || 'REGISTER NOW')}</span>
+              {landingDest && (
+                <svg 
+                  width="12" 
+                  height="12" 
+                  viewBox="0 0 24 24" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  strokeWidth="2.5" 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round"
+                  className="transition-transform duration-300 group-hover:translate-x-1"
+                >
+                  <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
+              )}
             </button>
           )}
         </div>

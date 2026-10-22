@@ -148,6 +148,126 @@ export const getStudentById = async (req, res) => {
   }
 };
 
+export const updateStudentByAdmin = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const {
+      fullName,
+      name,
+      email,
+      phone,
+      password,
+      bio,
+      location,
+      address,
+      company,
+      isActive,
+      status,
+      emailVerified,
+      mobileVerified,
+    } = req.body;
+
+    const student = await User.findById(id);
+    if (!student) {
+      return res.status(404).json({
+        success: false,
+        message: "Student / User not found",
+      });
+    }
+
+    // Check unique email if changing
+    const newEmail = email ? email.trim().toLowerCase() : null;
+    if (newEmail && newEmail !== student.email) {
+      const emailExists = await User.findOne({ email: newEmail, _id: { $ne: id } });
+      if (emailExists) {
+        return res.status(400).json({
+          success: false,
+          message: "Email address is already in use by another account",
+        });
+      }
+      student.email = newEmail;
+    }
+
+    // Name update
+    if (fullName !== undefined) {
+      student.fullName = fullName.trim();
+    } else if (name !== undefined) {
+      student.fullName = name.trim();
+    }
+
+    // Phone update
+    if (phone !== undefined) {
+      student.phone = typeof phone === "string" ? phone.trim() : phone;
+    }
+
+    // Password update
+    if (password && typeof password === "string" && password.trim().length > 0) {
+      if (password.trim().length < 6) {
+        return res.status(400).json({
+          success: false,
+          message: "Password must be at least 6 characters long",
+        });
+      }
+      const salt = await bcrypt.genSalt(10);
+      student.password = await bcrypt.hash(password.trim(), salt);
+      student.passwordChangedAt = new Date();
+      student.sessionVersion = (student.sessionVersion || 0) + 1;
+    }
+
+    // Bio & Location
+    if (bio !== undefined) student.bio = typeof bio === "string" ? bio.trim() : bio;
+    if (location !== undefined) student.location = typeof location === "string" ? location.trim() : location;
+
+    // Address
+    if (address && typeof address === "object") {
+      student.address = {
+        ...(student.address || {}),
+        ...address,
+      };
+    }
+
+    // Company & GST
+    if (company && typeof company === "object") {
+      student.company = {
+        name: company.name !== undefined ? company.name : student.company?.name,
+        gstNumber: company.gstNumber !== undefined ? company.gstNumber : student.company?.gstNumber,
+      };
+    }
+
+    // Status & verification flags
+    if (typeof isActive === "boolean") {
+      student.isActive = isActive;
+    }
+    if (status && ["active", "inactive"].includes(status)) {
+      student.status = status;
+    }
+    if (typeof emailVerified === "boolean") {
+      student.emailVerified = emailVerified;
+    }
+    if (typeof mobileVerified === "boolean") {
+      student.mobileVerified = mobileVerified;
+    }
+
+    await student.save();
+
+    const updatedStudent = student.toObject();
+    delete updatedStudent.password;
+    delete updatedStudent.passwordResetToken;
+
+    return res.status(200).json({
+      success: true,
+      message: "Student details updated successfully",
+      data: { student: updatedStudent },
+    });
+  } catch (error) {
+    console.error("❌ Error in updateStudentByAdmin:", error);
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Failed to update student details",
+    });
+  }
+};
+
 export const getStudentAnalytics = async (req, res) => {
   try {
     const { id } = req.params;

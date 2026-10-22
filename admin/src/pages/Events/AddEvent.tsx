@@ -1,12 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { createEvent } from "../../store/slices/event";
 import { AppDispatch, RootState } from "../../store";
 import QuillEditor from "../../components/QuillEditor";
 import PopupAlert from "../../components/popUpAlert";
+import { Globe } from "lucide-react";
+import { builderService } from "../../services/builderService";
 
 // Interface matching the MongoDB schema
 interface EventFormData {
+  landingPageUrl?: string;
   title: string;
   description: string;
   type: "online" | "offline" | "hybrid" | "";
@@ -96,7 +99,24 @@ const AddEvent: React.FC = () => {
     thumbnail: null,
     attachments: [],
     isPublic: false,
+    landingPageUrl: "",
   });
+
+  const [builderTemplates, setBuilderTemplates] = useState<any[]>([]);
+
+  useEffect(() => {
+    const loadTemplates = async () => {
+      try {
+        const res = await builderService.getAllTemplates({ limit: 100 });
+        if (res.success && res.data) {
+          setBuilderTemplates(res.data);
+        }
+      } catch (e) {
+        // silently fallback
+      }
+    };
+    loadTemplates();
+  }, []);
 
   const [newTag, setNewTag] = useState("");
 
@@ -207,6 +227,7 @@ const AddEvent: React.FC = () => {
       formDataToSend.append("category", formData.category);
       formDataToSend.append("status", formData.status);
       formDataToSend.append("isPublic", String(formData.isPublic));
+      formDataToSend.append("landingPageUrl", formData.landingPageUrl || "");
 
       // Add venue details for offline or hybrid events
       if (formData.type !== "online") {
@@ -278,6 +299,7 @@ const AddEvent: React.FC = () => {
         thumbnail: null,
         attachments: [],
         isPublic: false,
+        landingPageUrl: "",
       });
     } catch (err) {
       setPopup({
@@ -615,6 +637,64 @@ const AddEvent: React.FC = () => {
                     Make this event public
                   </label>
                 </div>
+              </div>
+
+              {/* Landing Page / Builder Link */}
+              <div className="p-4 bg-blue-50/70 border border-blue-200 rounded-xl space-y-3">
+                <div className="flex items-center justify-between">
+                  <label className="text-sm font-bold text-gray-800 flex items-center gap-2">
+                    <Globe className="w-4 h-4 text-blue-600" />
+                    <span>Landing Page / Builder Link (Optional)</span>
+                  </label>
+                  {formData.landingPageUrl?.trim() && (
+                    <span className="px-2.5 py-0.5 bg-emerald-100 text-emerald-700 font-bold rounded-full text-xs">
+                      ✓ Link Connected
+                    </span>
+                  )}
+                </div>
+
+                {builderTemplates.length > 0 && (
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-600 mb-1">
+                      Choose from Builder Pages:
+                    </label>
+                    <select
+                      value={formData.landingPageUrl}
+                      onChange={(e) => {
+                        setFormData((prev) => ({
+                          ...prev,
+                          landingPageUrl: e.target.value,
+                        }));
+                      }}
+                      className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg text-xs text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 mb-2"
+                    >
+                      <option value="">-- Choose a page from Page Builder or paste custom link below --</option>
+                      {builderTemplates.map((tpl: any) => (
+                        <option key={tpl._id} value={`/${tpl.slug}`}>
+                          {tpl.name} (/{tpl.slug})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+
+                <div>
+                  <label className="block text-xs font-semibold text-gray-600 mb-1">
+                    Or Paste Custom Link / Slug:
+                  </label>
+                  <input
+                    type="text"
+                    name="landingPageUrl"
+                    value={formData.landingPageUrl || ""}
+                    onChange={handleInputChange}
+                    placeholder="e.g. /mega-astrology-webinar or https://..."
+                    className="w-full px-3.5 py-2.5 bg-white border border-gray-300 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                <p className="text-xs text-gray-500 leading-relaxed">
+                  Paste the link or select a page created using the Page Builder. When present, the event card on the website will show <strong>"EXPLORE MORE"</strong> and redirect visitors directly to this landing page.
+                </p>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

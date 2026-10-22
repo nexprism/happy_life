@@ -3,7 +3,7 @@ import express from 'express';
 import passport from 'passport';
 import accessTokenAutoRefresh from '../middlewares/accessTokenAutoRefresh.js';
 import { isAdmin } from '../middlewares/isAdmin.js';
-import { getAllStudents, getStudentById, getStudentAnalytics } from '../controllers/studentController.js';
+import { getAllStudents, getStudentById, getStudentAnalytics, updateStudentByAdmin } from '../controllers/studentController.js';
 
 const studentRouter = express.Router();
 
@@ -21,6 +21,14 @@ studentRouter.get(
   passport.authenticate('jwt', { session: false }),
   isAdmin,
   getStudentById
+);
+
+studentRouter.put(
+  '/:id',
+  accessTokenAutoRefresh,
+  passport.authenticate('jwt', { session: false }),
+  isAdmin,
+  updateStudentByAdmin
 );
 
 studentRouter.get(

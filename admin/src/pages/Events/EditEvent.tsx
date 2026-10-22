@@ -10,6 +10,8 @@ import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import PageMeta from "../../components/common/PageMeta";
 import QuillEditor from "../../components/QuillEditor";
 import PopupAlert from "../../components/popUpAlert";
+import { Globe } from "lucide-react";
+import { builderService } from "../../services/builderService";
 
 interface Coordinates {
   latitude: number;
@@ -54,6 +56,7 @@ export interface Event {
   status: "draft" | "published" | "cancelled" | "completed";
   thumbnail?: string;
   attachments?: Attachment[];
+  landingPageUrl?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -74,6 +77,7 @@ interface EventFormData {
   status: "draft" | "published" | "cancelled" | "completed";
   thumbnail?: string;
   attachments?: Attachment[];
+  landingPageUrl?: string;
 }
 
 // Custom Popup Component for success/error messages
@@ -182,6 +186,22 @@ const EditEvent = () => {
     message: "",
   });
 
+  const [builderTemplates, setBuilderTemplates] = useState<any[]>([]);
+
+  useEffect(() => {
+    const loadTemplates = async () => {
+      try {
+        const res = await builderService.getAllTemplates({ limit: 100 });
+        if (res.success && res.data) {
+          setBuilderTemplates(res.data);
+        }
+      } catch (e) {
+        // silently fallback
+      }
+    };
+    loadTemplates();
+  }, []);
+
   useEffect(() => {
     if (data && data?.data) {
       const event = data?.data as Event;
@@ -224,6 +244,7 @@ const EditEvent = () => {
         status: event.status || "draft",
         thumbnail: typeof event.thumbnail === "string" ? event.thumbnail : "",
         attachments: [],
+        landingPageUrl: (event as any).landingPageUrl || "",
       });
     }
   }, [data]);
@@ -313,6 +334,8 @@ const EditEvent = () => {
           ) {
             formDataToSend.append(key, value);
           }
+        } else if (key === "landingPageUrl") {
+          formDataToSend.append("landingPageUrl", value ? value.toString() : "");
         } else if (value !== null && value !== undefined && value !== "") {
           formDataToSend.append(key, value.toString());
         }
@@ -772,6 +795,67 @@ const EditEvent = () => {
                 Separate multiple tags with commas
               </p>
             </div>
+          </div>
+
+          {/* Landing Page / Builder Link */}
+          <div className="p-4 bg-blue-50/70 border border-blue-200 rounded-xl space-y-3">
+            <div className="flex items-center justify-between">
+              <label className="text-sm font-bold text-gray-800 dark:text-gray-100 flex items-center gap-2">
+                <Globe className="w-4 h-4 text-blue-600" />
+                <span>Landing Page / Builder Link (Optional)</span>
+              </label>
+              {formData.landingPageUrl?.trim() && (
+                <span className="px-2.5 py-0.5 bg-emerald-100 text-emerald-700 font-bold rounded-full text-xs">
+                  ✓ Link Connected
+                </span>
+              )}
+            </div>
+
+            {builderTemplates.length > 0 && (
+              <div>
+                <label className="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1">
+                  Choose from Builder Pages:
+                </label>
+                <select
+                  value={formData.landingPageUrl}
+                  onChange={(e) => {
+                    setFormData((prev) => {
+                      if (!prev) return null;
+                      return {
+                        ...prev,
+                        landingPageUrl: e.target.value,
+                      };
+                    });
+                  }}
+                  className="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-xs text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 mb-2"
+                >
+                  <option value="">-- Choose a page from Page Builder or paste custom link below --</option>
+                  {builderTemplates.map((tpl: any) => (
+                    <option key={tpl._id} value={`/${tpl.slug}`}>
+                      {tpl.name} (/{tpl.slug})
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+
+            <div>
+              <label className="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1">
+                Or Paste Custom Link / Slug:
+              </label>
+              <input
+                type="text"
+                name="landingPageUrl"
+                value={formData.landingPageUrl || ""}
+                onChange={handleInputChange}
+                placeholder="e.g. /mega-astrology-webinar or https://..."
+                className="w-full px-3.5 py-2.5 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
+              Paste the link or select a page created using the Page Builder. When present, the event card on the website will show <strong>"EXPLORE MORE"</strong> and redirect visitors directly to this landing page.
+            </p>
           </div>
 
           <div className="space-y-4">

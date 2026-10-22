@@ -97,6 +97,11 @@ const eventSchema = new mongoose.Schema({
     default: 'draft'
   },
   thumbnail: String,
+  landingPageUrl: {
+    type: String,
+    trim: true,
+    default: ''
+  },
   attachments: [{
     name: String,
     url: String,

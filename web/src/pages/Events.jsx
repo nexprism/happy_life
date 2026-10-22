@@ -248,7 +248,8 @@ const Events = () => {
                     category: categoryBadge,
                     description: event.description,
                     image: getImageUrl(event.thumbnail || event.image),
-                    buttonText: event.buttonText || (eventPrice === 'FREE' ? 'Register Free' : `Register • ${eventPrice}`),
+                    landingPageUrl: event.landingPageUrl,
+                    buttonText: event.landingPageUrl ? (event.buttonText || 'EXPLORE MORE') : (event.buttonText || (eventPrice === 'FREE' ? 'Register Free' : `Register • ${eventPrice}`)),
                     price: eventPrice,
                     isNew: event.isNew !== undefined ? event.isNew : true,
                     onRegister: () => openEventModal(event)

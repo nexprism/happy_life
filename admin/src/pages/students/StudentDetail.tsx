@@ -44,6 +44,9 @@ import {
   MessageCircle,
   Briefcase,
   LogIn,
+  Lock,
+  EyeOff,
+  Key,
 } from "lucide-react";
 import EnrollStudentPopup from "../../components/students/EnrollStudentPopup";
 import StudentAnalyticsTab from "./StudentAnalyticsTab";
@@ -91,6 +94,13 @@ function StudentDetail() {
       name?: string;
       gstNumber?: string;
     };
+    location?: string;
+    address?: {
+      street?: string;
+      city?: string;
+      state?: string;
+      zipCode?: string;
+    };
     lastLogin?: string;
     last_login?: string;
     lastLoginAt?: string;
@@ -102,6 +112,29 @@ function StudentDetail() {
   const [error, setError] = useState(null);
   const [enrollPopupOpen, setEnrollPopupOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
+
+  // Edit User Modal State
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isSavingUser, setIsSavingUser] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [editError, setEditError] = useState("");
+  const [editFormData, setEditFormData] = useState({
+    fullName: "",
+    email: "",
+    phone: "",
+    password: "",
+    bio: "",
+    location: "",
+    street: "",
+    city: "",
+    state: "",
+    zipCode: "",
+    companyName: "",
+    gstNumber: "",
+    isActive: true,
+    emailVerified: false,
+    mobileVerified: false,
+  });
 
   // Add local state to track disabling drip
   const [dripLoading, setDripLoading] = useState<string | null>(null);
@@ -388,6 +421,104 @@ function StudentDetail() {
     }
   };
 
+  // Open Edit User Modal with pre-filled details
+  const openEditModal = () => {
+    if (!data) return;
+    setEditFormData({
+      fullName: data.fullName || data.name || "",
+      email: data.email || "",
+      phone: data.phone || "",
+      password: "",
+      bio: data.bio || "",
+      location: data.location || data.address?.city || "",
+      street: data.address?.street || "",
+      city: data.address?.city || "",
+      state: data.address?.state || "",
+      zipCode: data.address?.zipCode || "",
+      companyName: data.company?.name || "",
+      gstNumber: data.company?.gstNumber || "",
+      isActive: data.isActive !== false,
+      emailVerified: Boolean(data.emailVerified),
+      mobileVerified: Boolean(data.mobileVerified),
+    });
+    setShowPassword(false);
+    setEditError("");
+    setIsEditModalOpen(true);
+  };
+
+  // Handle Save User Details
+  const handleSaveUserDetails = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!studentId) return;
+
+    if (!editFormData.fullName.trim()) {
+      setEditError("Full name is required.");
+      return;
+    }
+    if (!editFormData.email.trim()) {
+      setEditError("Email address is required.");
+      return;
+    }
+    if (editFormData.password && editFormData.password.length < 6) {
+      setEditError("Password must be at least 6 characters.");
+      return;
+    }
+
+    setIsSavingUser(true);
+    setEditError("");
+
+    try {
+      const payload: any = {
+        fullName: editFormData.fullName.trim(),
+        email: editFormData.email.trim(),
+        phone: editFormData.phone.trim(),
+        bio: editFormData.bio.trim(),
+        location: editFormData.location.trim(),
+        address: {
+          street: editFormData.street.trim(),
+          city: editFormData.city.trim(),
+          state: editFormData.state.trim(),
+          zipCode: editFormData.zipCode.trim(),
+        },
+        company: {
+          name: editFormData.companyName.trim(),
+          gstNumber: editFormData.gstNumber.trim(),
+        },
+        isActive: editFormData.isActive,
+        status: editFormData.isActive ? "active" : "inactive",
+        emailVerified: editFormData.emailVerified,
+        mobileVerified: editFormData.mobileVerified,
+      };
+
+      if (editFormData.password.trim()) {
+        payload.password = editFormData.password.trim();
+      }
+
+      const res = await axiosInstance.put(`/students/${studentId}`, payload);
+
+      if (res.data?.success && res.data?.data?.student) {
+        const updated = res.data.data.student;
+        setData((prev: any) => ({
+          ...prev,
+          ...updated,
+          enrollments: prev?.enrollments || [],
+          personality: prev?.personality || null,
+        }));
+        setToast({ message: "User details updated successfully!", type: "success" });
+        setIsEditModalOpen(false);
+      } else {
+        setEditError(res.data?.message || "Failed to update user details.");
+      }
+    } catch (err: any) {
+      console.error("Failed to update student", err);
+      setEditError(
+        err.response?.data?.message || err.message || "Failed to update user details."
+      );
+    } finally {
+      setIsSavingUser(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
@@ -516,10 +647,17 @@ function StudentDetail() {
                   </div>
                 </div>
               </div>
-              <div className="flex space-x-3 mt-6 lg:mt-0">
+              <div className="flex flex-wrap items-center gap-3 mt-6 lg:mt-0">
+                <button
+                  onClick={openEditModal}
+                  className="inline-flex items-center px-5 py-3 border border-transparent rounded-xl shadow-sm text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 cursor-pointer"
+                >
+                  <Edit className="w-4 h-4 mr-2" />
+                  Edit User Details
+                </button>
                 <button
                   onClick={() => setEnrollPopupOpen(true)}
-                  className="inline-flex items-center px-6 py-3 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all duration-200"
+                  className="inline-flex items-center px-5 py-3 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all duration-200 cursor-pointer"
                 >
                   <Plus className="w-4 h-4 mr-2" />
                   Enroll in Course
@@ -660,10 +798,19 @@ function StudentDetail() {
                 </div>
               </div>
               <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-6 flex items-center">
-                  <User className="mr-2 h-5 w-5 text-green-500" />
-                  Contact Information
-                </h3>
+                <div className="flex items-center justify-between mb-6">
+                  <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+                    <User className="mr-2 h-5 w-5 text-green-500" />
+                    Contact Information
+                  </h3>
+                  <button
+                    onClick={openEditModal}
+                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-600 hover:text-blue-700 hover:bg-blue-50 px-2.5 py-1.5 rounded-lg transition-colors border border-blue-200 cursor-pointer"
+                  >
+                    <Edit className="w-3.5 h-3.5" />
+                    Edit
+                  </button>
+                </div>
                 <div className="space-y-4">
                   <div className="flex items-center p-3 bg-gray-50 rounded-lg">
                     <Mail className="w-5 h-5 text-gray-400 mr-3" />
@@ -1153,6 +1300,21 @@ function StudentDetail() {
               </div>
             </div>
 
+            {/* Profile Header with Edit Button */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div>
+                <h3 className="text-base font-bold text-gray-900">Student Profile & Security</h3>
+                <p className="text-xs text-gray-500 mt-0.5">Manage personal information, contact credentials, bio, and account status.</p>
+              </div>
+              <button
+                onClick={openEditModal}
+                className="inline-flex items-center px-4 py-2 border border-blue-600 rounded-lg shadow-sm text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 transition-colors cursor-pointer"
+              >
+                <Edit className="w-3.5 h-3.5 mr-1.5" />
+                Edit User Details
+              </button>
+            </div>
+
             {/* Profile Information */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
@@ -1556,6 +1718,452 @@ function StudentDetail() {
         </div>
       )}
 
+      {/* EDIT USER DETAILS MODAL */}
+      {isEditModalOpen && (
+        <div 
+          className="fixed inset-0 z-[100000] flex items-center justify-center p-3 sm:p-5 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200"
+          onClick={() => setIsEditModalOpen(false)}
+        >
+          <div 
+            className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col border border-gray-100 overflow-hidden animate-in zoom-in-95 duration-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header (Pinned) */}
+            <div className="flex-shrink-0 px-6 py-4.5 bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 text-white flex items-center justify-between shadow-sm">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 bg-white/15 rounded-xl flex items-center justify-center backdrop-blur-md border border-white/20 shadow-inner">
+                  <Edit className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-base sm:text-lg font-bold text-white tracking-tight">Edit Student Details</h3>
+                  <p className="text-xs text-blue-100/90 font-normal">
+                    Update profile, contact, credentials, and account permissions
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsEditModalOpen(false)}
+                className="w-9 h-9 flex items-center justify-center rounded-xl bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer"
+                aria-label="Close"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Modal Form */}
+            <form onSubmit={handleSaveUserDetails} className="flex flex-col flex-1 min-h-0 overflow-hidden">
+              {/* Scrollable Form Body */}
+              <div className="flex-1 overflow-y-auto px-6 py-5 space-y-6">
+                {editError && (
+                  <div className="p-3.5 bg-red-50 border border-red-200 rounded-xl text-xs text-red-600 font-medium flex items-center gap-2">
+                    <XCircle className="w-4 h-4 flex-shrink-0" />
+                    <span>{editError}</span>
+                  </div>
+                )}
+
+                {/* Section 1: Basic Information */}
+                <div className="space-y-3.5">
+                  <div className="flex items-center gap-2 pb-1 border-b border-gray-100">
+                    <div className="w-6 h-6 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600">
+                      <User className="w-3.5 h-3.5" />
+                    </div>
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-gray-700">
+                      Basic Information
+                    </h4>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-700 mb-1.5">
+                        Full Name <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        value={editFormData.fullName}
+                        onChange={(e) =>
+                          setEditFormData({ ...editFormData, fullName: e.target.value })
+                        }
+                        placeholder="e.g. John Doe"
+                        className="w-full px-3.5 py-2.5 bg-gray-50/70 hover:bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white transition-all text-gray-900"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-700 mb-1.5">
+                        Email Address <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="email"
+                        required
+                        value={editFormData.email}
+                        onChange={(e) =>
+                          setEditFormData({ ...editFormData, email: e.target.value })
+                        }
+                        placeholder="e.g. user@example.com"
+                        className="w-full px-3.5 py-2.5 bg-gray-50/70 hover:bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white transition-all text-gray-900"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-700 mb-1.5">
+                        Mobile / Phone Number
+                      </label>
+                      <input
+                        type="tel"
+                        value={editFormData.phone}
+                        onChange={(e) =>
+                          setEditFormData({ ...editFormData, phone: e.target.value })
+                        }
+                        placeholder="e.g. +91 9876543210"
+                        className="w-full px-3.5 py-2.5 bg-gray-50/70 hover:bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white transition-all text-gray-900"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-700 mb-1.5">
+                        Location / City
+                      </label>
+                      <input
+                        type="text"
+                        value={editFormData.location}
+                        onChange={(e) =>
+                          setEditFormData({ ...editFormData, location: e.target.value })
+                        }
+                        placeholder="e.g. Mumbai, India"
+                        className="w-full px-3.5 py-2.5 bg-gray-50/70 hover:bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white transition-all text-gray-900"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Section 2: Security & Password */}
+                <div className="p-4 rounded-xl border border-slate-200 bg-slate-50/70 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="w-6 h-6 rounded-lg bg-indigo-100 flex items-center justify-center text-indigo-600">
+                        <Lock className="w-3.5 h-3.5" />
+                      </div>
+                      <h4 className="text-xs font-bold uppercase tracking-wider text-slate-800">
+                        Security & Password Management
+                      </h4>
+                    </div>
+                    <span className="text-[11px] font-medium text-slate-500 bg-white border border-slate-200 px-2 py-0.5 rounded-full">
+                      Admin Reset
+                    </span>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-700 mb-1.5">
+                      Set New Password
+                    </label>
+                    <div className="relative">
+                      <input
+                        type={showPassword ? "text" : "password"}
+                        value={editFormData.password}
+                        onChange={(e) =>
+                          setEditFormData({ ...editFormData, password: e.target.value })
+                        }
+                        placeholder="Leave empty to keep existing password"
+                        className="w-full pl-3.5 pr-10 py-2.5 bg-white border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all text-gray-900"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 cursor-pointer"
+                      >
+                        {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </button>
+                    </div>
+                    <p className="text-[11px] text-slate-500 mt-1">
+                      Leave empty to keep current password. If updating, enter at least 6 characters.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Section 3: Verification & Account Status */}
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2 pb-1 border-b border-gray-100">
+                    <div className="w-6 h-6 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600">
+                      <ShieldCheck className="w-3.5 h-3.5" />
+                    </div>
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-gray-700">
+                      Account Status & Verification
+                    </h4>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    {/* Account Active */}
+                    <div
+                      onClick={() =>
+                        setEditFormData({ ...editFormData, isActive: !editFormData.isActive })
+                      }
+                      className={`p-3.5 rounded-xl border cursor-pointer transition-all flex items-center justify-between select-none ${
+                        editFormData.isActive
+                          ? "bg-emerald-50/80 border-emerald-300 text-emerald-900 shadow-sm"
+                          : "bg-rose-50/80 border-rose-300 text-rose-900"
+                      }`}
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <div
+                          className={`w-7 h-7 rounded-lg flex items-center justify-center ${
+                            editFormData.isActive
+                              ? "bg-emerald-600 text-white"
+                              : "bg-rose-600 text-white"
+                          }`}
+                        >
+                          {editFormData.isActive ? (
+                            <CheckCircle className="w-4 h-4" />
+                          ) : (
+                            <XCircle className="w-4 h-4" />
+                          )}
+                        </div>
+                        <div>
+                          <p className="text-xs font-bold leading-tight">Account Active</p>
+                          <p className="text-[10px] opacity-80">
+                            {editFormData.isActive ? "Can access platform" : "Account disabled"}
+                          </p>
+                        </div>
+                      </div>
+                      <input
+                        type="checkbox"
+                        checked={editFormData.isActive}
+                        onChange={() => {}}
+                        className="w-4 h-4 text-emerald-600 rounded focus:ring-emerald-500 pointer-events-none"
+                      />
+                    </div>
+
+                    {/* Email Verified */}
+                    <div
+                      onClick={() =>
+                        setEditFormData({ ...editFormData, emailVerified: !editFormData.emailVerified })
+                      }
+                      className={`p-3.5 rounded-xl border cursor-pointer transition-all flex items-center justify-between select-none ${
+                        editFormData.emailVerified
+                          ? "bg-blue-50/80 border-blue-300 text-blue-900 shadow-sm"
+                          : "bg-gray-50 border-gray-200 text-gray-600"
+                      }`}
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <div
+                          className={`w-7 h-7 rounded-lg flex items-center justify-center ${
+                            editFormData.emailVerified
+                              ? "bg-blue-600 text-white"
+                              : "bg-gray-300 text-gray-600"
+                          }`}
+                        >
+                          <Mail className="w-4 h-4" />
+                        </div>
+                        <div>
+                          <p className="text-xs font-bold leading-tight">Email Verified</p>
+                          <p className="text-[10px] opacity-80">
+                            {editFormData.emailVerified ? "Verified email" : "Unverified email"}
+                          </p>
+                        </div>
+                      </div>
+                      <input
+                        type="checkbox"
+                        checked={editFormData.emailVerified}
+                        onChange={() => {}}
+                        className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500 pointer-events-none"
+                      />
+                    </div>
+
+                    {/* Mobile Verified */}
+                    <div
+                      onClick={() =>
+                        setEditFormData({ ...editFormData, mobileVerified: !editFormData.mobileVerified })
+                      }
+                      className={`p-3.5 rounded-xl border cursor-pointer transition-all flex items-center justify-between select-none ${
+                        editFormData.mobileVerified
+                          ? "bg-indigo-50/80 border-indigo-300 text-indigo-900 shadow-sm"
+                          : "bg-gray-50 border-gray-200 text-gray-600"
+                      }`}
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <div
+                          className={`w-7 h-7 rounded-lg flex items-center justify-center ${
+                            editFormData.mobileVerified
+                              ? "bg-indigo-600 text-white"
+                              : "bg-gray-300 text-gray-600"
+                          }`}
+                        >
+                          <Phone className="w-4 h-4" />
+                        </div>
+                        <div>
+                          <p className="text-xs font-bold leading-tight">Mobile Verified</p>
+                          <p className="text-[10px] opacity-80">
+                            {editFormData.mobileVerified ? "Verified phone" : "Unverified phone"}
+                          </p>
+                        </div>
+                      </div>
+                      <input
+                        type="checkbox"
+                        checked={editFormData.mobileVerified}
+                        onChange={() => {}}
+                        className="w-4 h-4 text-indigo-600 rounded focus:ring-indigo-500 pointer-events-none"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Section 4: Company & Billing Info */}
+                <div className="space-y-3.5">
+                  <div className="flex items-center gap-2 pb-1 border-b border-gray-100">
+                    <div className="w-6 h-6 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600">
+                      <Building2 className="w-3.5 h-3.5" />
+                    </div>
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-gray-700">
+                      Company & Billing
+                    </h4>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-700 mb-1.5">
+                        Company Name
+                      </label>
+                      <input
+                        type="text"
+                        value={editFormData.companyName}
+                        onChange={(e) =>
+                          setEditFormData({ ...editFormData, companyName: e.target.value })
+                        }
+                        placeholder="Company or business name"
+                        className="w-full px-3.5 py-2.5 bg-gray-50/70 hover:bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white transition-all text-gray-900"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-700 mb-1.5">
+                        GST Number
+                      </label>
+                      <input
+                        type="text"
+                        value={editFormData.gstNumber}
+                        onChange={(e) =>
+                          setEditFormData({ ...editFormData, gstNumber: e.target.value })
+                        }
+                        placeholder="e.g. 27AAAAA0000A1Z5"
+                        className="w-full px-3.5 py-2.5 bg-gray-50/70 hover:bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white transition-all text-gray-900"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Section 5: Bio */}
+                <div className="space-y-2">
+                  <label className="block text-xs font-semibold text-gray-700">
+                    Student Bio / Notes
+                  </label>
+                  <textarea
+                    rows={3}
+                    value={editFormData.bio}
+                    onChange={(e) =>
+                      setEditFormData({ ...editFormData, bio: e.target.value })
+                    }
+                    placeholder="Enter student bio, background or administrative notes..."
+                    className="w-full px-3.5 py-2.5 bg-gray-50/70 hover:bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white transition-all text-gray-900 resize-none"
+                  />
+                </div>
+
+                {/* Section 6: Address Details */}
+                <div className="space-y-3.5">
+                  <div className="flex items-center gap-2 pb-1 border-b border-gray-100">
+                    <div className="w-6 h-6 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600">
+                      <MapPin className="w-3.5 h-3.5" />
+                    </div>
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-gray-700">
+                      Address Details
+                    </h4>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div className="sm:col-span-3">
+                      <label className="block text-xs font-semibold text-gray-700 mb-1.5">
+                        Street Address
+                      </label>
+                      <input
+                        type="text"
+                        value={editFormData.street}
+                        onChange={(e) =>
+                          setEditFormData({ ...editFormData, street: e.target.value })
+                        }
+                        placeholder="Street, apartment or locality"
+                        className="w-full px-3.5 py-2.5 bg-gray-50/70 hover:bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white transition-all text-gray-900"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-700 mb-1.5">
+                        City
+                      </label>
+                      <input
+                        type="text"
+                        value={editFormData.city}
+                        onChange={(e) =>
+                          setEditFormData({ ...editFormData, city: e.target.value })
+                        }
+                        placeholder="City"
+                        className="w-full px-3.5 py-2.5 bg-gray-50/70 hover:bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white transition-all text-gray-900"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-700 mb-1.5">
+                        State
+                      </label>
+                      <input
+                        type="text"
+                        value={editFormData.state}
+                        onChange={(e) =>
+                          setEditFormData({ ...editFormData, state: e.target.value })
+                        }
+                        placeholder="State"
+                        className="w-full px-3.5 py-2.5 bg-gray-50/70 hover:bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white transition-all text-gray-900"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-700 mb-1.5">
+                        Zip / Postal Code
+                      </label>
+                      <input
+                        type="text"
+                        value={editFormData.zipCode}
+                        onChange={(e) =>
+                          setEditFormData({ ...editFormData, zipCode: e.target.value })
+                        }
+                        placeholder="Zip Code"
+                        className="w-full px-3.5 py-2.5 bg-gray-50/70 hover:bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white transition-all text-gray-900"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Pinned Modal Footer */}
+              <div className="flex-shrink-0 px-6 py-4 bg-gray-50/90 border-t border-gray-200 flex items-center justify-end gap-3 shadow-inner">
+                <button
+                  type="button"
+                  onClick={() => setIsEditModalOpen(false)}
+                  disabled={isSavingUser}
+                  className="px-4 py-2.5 rounded-xl border border-gray-300 text-sm font-semibold text-gray-700 hover:bg-gray-100 transition-colors cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSavingUser}
+                  className="px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-sm font-semibold text-white shadow-md shadow-blue-500/20 transition-all flex items-center gap-2 cursor-pointer disabled:bg-blue-400"
+                >
+                  {isSavingUser ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      <span>Saving Changes...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Save className="w-4 h-4" />
+                      <span>Save Changes</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
       {/* Toast Message */}
       {toast && (
         <div
@@ -1570,9 +2178,7 @@ function StudentDetail() {
             <XCircle className="w-5 h-5 text-white" />
           )}
           <span>
-            {toast.type === "success"
-              ? "Drip disabled successfully for the selected module."
-              : toast.message}
+            {toast.message}
           </span>
         </div>
       )}

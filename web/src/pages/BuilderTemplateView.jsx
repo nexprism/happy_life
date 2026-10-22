@@ -215,7 +215,7 @@ export default function BuilderTemplateView() {
     setFormData((prev) => ({ ...prev, [fieldName]: value }));
   };
 
-  const handleLeadSubmit = async (e) => {
+  const handleLeadSubmit = async (e, paymentLink = "") => {
     e.preventDefault();
     setLeadError("");
     setLeadSuccess(false);
@@ -228,14 +228,25 @@ export default function BuilderTemplateView() {
     try {
       setSubmittingLead(true);
       const baseUrl = getApiBaseUrl();
+      const hasPayment = Boolean(paymentLink && typeof paymentLink === "string" && paymentLink.trim());
       const res = await fetch(`${baseUrl}/builder/public/${slug}/lead`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          ...formData,
+          hasPaymentLink: hasPayment,
+        }),
       });
       const data = await res.json();
 
       if (data.success) {
+        if (hasPayment) {
+          const targetUrl = paymentLink.trim();
+          const fullUrl = /^https?:\/\//i.test(targetUrl) ? targetUrl : `https://${targetUrl}`;
+          window.location.href = fullUrl;
+          return;
+        }
+
         setLeadSuccess(true);
         setShowWhatsappModal(true);
         setFormData({
@@ -716,7 +727,10 @@ export default function BuilderTemplateView() {
                                   </button>
                                 </div>
                               ) : (
-                                <form onSubmit={handleLeadSubmit} className="space-y-4 relative z-10 text-left">
+                                <form 
+                                  onSubmit={(e) => handleLeadSubmit(e, comp.content?.paymentLink)} 
+                                  className="space-y-4 relative z-10 text-left"
+                                >
                                   {leadError && (
                                     <div className="p-3.5 rounded-xl bg-red-50 border border-red-200 text-xs text-red-600 font-medium">
                                       {leadError}
@@ -817,11 +831,20 @@ export default function BuilderTemplateView() {
                                   <button
                                     type="submit"
                                     disabled={submittingLead}
-                                    className="w-full mt-2 py-3.5 bg-[#2171B5] hover:bg-blue-700 text-white font-bold rounded-xl text-sm shadow-lg shadow-blue-600/25 transition active:scale-98 disabled:opacity-50 cursor-pointer"
+                                    className="w-full mt-2 py-3.5 bg-[#2171B5] hover:bg-blue-700 active:bg-blue-800 text-white font-bold rounded-xl text-sm shadow-lg shadow-blue-600/25 transition active:scale-98 disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2"
                                   >
-                                    {submittingLead
-                                      ? "Submitting..."
-                                      : comp.content.buttonText || "Claim Free Consultation →"}
+                                    {submittingLead ? (
+                                      <>
+                                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                        <span>
+                                          {comp.content?.paymentLink?.trim()
+                                            ? "Redirecting to Payment..."
+                                            : "Submitting..."}
+                                        </span>
+                                      </>
+                                    ) : (
+                                      comp.content.buttonText || (comp.content?.paymentLink?.trim() ? "Complete Registration & Pay →" : "Claim Free Consultation →")
+                                    )}
                                   </button>
 
                                   {comp.content.guaranteeText && (
