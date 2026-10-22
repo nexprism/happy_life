@@ -43,7 +43,7 @@ const CourseCard = ({ item, className = '', variant = 'course', onRegister }) =>
           {item.category}
         </span>
         
-        <h3 className="font-montserrat text-2xl md:text-[28px] text-normal font-bold tracking-tight leading-tight pointer-events-none">
+        <h3 className="font-montserrat text-xl sm:text-2xl lg:text-[clamp(1.15rem,1.35vw,1.45rem)] text-normal font-bold tracking-tight leading-snug pointer-events-none break-words">
           {sanitizeDisplay(item.title)}
         </h3>
         

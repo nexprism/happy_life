@@ -35,9 +35,7 @@ const menuCategories = [
     title: 'Content & Resources',
     items: [
       { key: 'newsAndArticles', label: 'News & Articles' },
-      { key: 'jobs', label: 'Jobs' },
       { key: 'messages', label: 'Messages' },
-      { key: 'myJobPosts', label: 'My Job Posts' },
       { key: 'myForumPosts', label: 'My Forum Posts' },
     ]
   },

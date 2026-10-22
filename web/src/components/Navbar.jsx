@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import RollingText from './RollingText'
@@ -38,8 +38,7 @@ const Navbar = ({ isLoaded }) => {
     { key: 'ourCourses', name: t('ourCourses'), path: '/courses' },
     { key: 'forum', name: t('forum'), path: '/forum' },
     // { key: 'about Us', name: t('about Us'), path: '/about-us' },
-    { key: 'gig', name: t('gig'), path: '/gig' },
-    { key: 'news', name: t('news'), path: '/news' },
+    { key: 'upcomingEvents', name: t('upcomingEvents') || 'UPCOMING EVENTS', path: '/events' },
   ]
 
   const socialLinks = [
@@ -300,8 +299,8 @@ const Navbar = ({ isLoaded }) => {
                 to={link.path}
                 onMouseEnter={handleHover}
                 className={({ isActive }) =>
-                  `nav-slot nav-link-item group px-4 py-2 rounded-full font-montserrat text-[11px] font-semibold uppercase transition-all duration-300 tracking-[0.18em] relative z-10 ${
-                    isActive ? 'nav-item-active text-accent font-bold' : 'text-slate-700 hover:text-slate-900'
+                  `nav-slot nav-link-item group px-4 py-2 rounded-full font-montserrat text-[12px] font-bold uppercase transition-all duration-300 tracking-[0.14em] relative z-10 ${
+                    isActive ? 'nav-item-active text-accent font-extrabold' : 'text-slate-800 hover:text-slate-950'
                   }`
                 }
               >
@@ -314,9 +313,9 @@ const Navbar = ({ isLoaded }) => {
             {/* Sign In / Dashboard Button */}
             <Link
               to={isAuthenticated ? "/dashboard" : "/login"}
-              className="relative group bg-accent text-white font-bold px-4 md:px-5 py-2 rounded-full font-montserrat text-[10px] uppercase tracking-[0.15em] overflow-hidden transition-all duration-300 hover:scale-[1.04] active:scale-95 shadow-accent-soft flex items-center justify-center gap-1.5"
+              className="relative group bg-accent text-white font-extrabold px-4 md:px-5 py-2 rounded-full font-montserrat text-[11px] uppercase tracking-[0.14em] overflow-hidden transition-all duration-300 hover:scale-[1.04] active:scale-95 shadow-accent-soft flex items-center justify-center gap-1.5"
             >
-              <span className="relative z-10 font-black">{isAuthenticated ? t('dashboard') : t('signIn')}</span>
+              <span className="relative z-10 font-extrabold">{isAuthenticated ? t('dashboard') : t('signIn')}</span>
               <div className="absolute inset-0 bg-white/25 -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out skew-x-12" />
             </Link>
 
@@ -367,8 +366,8 @@ const Navbar = ({ isLoaded }) => {
                     to={link.path}
                     onClick={toggleMenu}
                     className={({ isActive }) =>
-                      `menu-item font-montserrat text-2xl sm:text-4xl md:text-7xl font-normal transition-all duration-300 block ${
-                        isActive ? 'text-accent' : 'text-slate-800 opacity-60 hover:opacity-100 hover:tracking-wider'
+                      `menu-item font-montserrat text-2xl sm:text-4xl md:text-7xl font-medium transition-all duration-300 block ${
+                        isActive ? 'text-accent font-semibold' : 'text-slate-800 opacity-60 hover:opacity-100 hover:tracking-wider'
                       }`
                     }
                   >

@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useLanguage } from '../context/LanguageContext'
@@ -192,7 +192,7 @@ const BrandFeatures = () => {
                     <div className="space-y-8">
                        <div className="space-y-4">
                           <span className="font-montserrat text-[9px] text-amber-700 tracking-[0.5em] font-black uppercase">{feature.tag}</span>
-                          <h3 className="font-montserrat text-4xl md:text-5xl text-slate-900 font-bold leading-none tracking-tight group-hover:text-amber-600 transition-colors duration-500">
+                          <h3 className="font-montserrat text-3xl sm:text-4xl md:text-[40px] text-slate-900 font-bold leading-[1.15] tracking-tight group-hover:text-amber-600 transition-colors duration-500">
                              {feature.title}
                           </h3>
                        </div>

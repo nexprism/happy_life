@@ -129,7 +129,7 @@ const StackingBanners = () => {
             <div className="relative pl-8">
               <div className="absolute left-0 top-0 bottom-0 w-[1px] bg-gradient-to-b from-accent/60 via-accent/10 to-transparent"></div>
               <div className="absolute left-[-3px] top-0 w-[7px] h-[7px] rounded-full bg-accent animate-pulse shadow-[0_0_15px_rgba(33,113,181,0.8)]"></div>
-              <p className="font-montserrat text-[11px] text-description tracking-[0.2em] leading-[2.2] uppercase max-w-sm">
+              <p className="font-montserrat text-[12px] font-semibold text-slate-700 tracking-[0.14em] leading-[2.1] uppercase max-w-md">
                 {t('selectionSub') || 'A hand-picked collection of lessons built to help you grow faster. Learn the best strategies from our most popular courses.'}
               </p>
             </div>

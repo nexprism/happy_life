@@ -140,6 +140,8 @@ export default function BuilderTemplateView() {
   const [submittingLead, setSubmittingLead] = useState(false);
   const [leadSuccess, setLeadSuccess] = useState(false);
   const [leadError, setLeadError] = useState("");
+  const [showWhatsappModal, setShowWhatsappModal] = useState(false);
+  const [whatsappCommunityLink, setWhatsappCommunityLink] = useState("https://chat.whatsapp.com/invite");
 
   // FAQ accordion open states
   const [openFaq, setOpenFaq] = useState({});
@@ -150,6 +152,21 @@ export default function BuilderTemplateView() {
 
   useEffect(() => {
     let isCancelled = false;
+
+    // Fetch site-wide public settings (e.g. WhatsApp community link)
+    const fetchSettings = async () => {
+      try {
+        const baseUrl = getApiBaseUrl();
+        const res = await fetch(`${baseUrl}/settings`);
+        const data = await res.json();
+        if (!isCancelled && data?.settings?.whatsappCommunityLink) {
+          setWhatsappCommunityLink(data.settings.whatsappCommunityLink);
+        }
+      } catch (err) {
+        console.error("Failed to load settings in builder view", err);
+      }
+    };
+    fetchSettings();
 
     const fetchTemplate = async () => {
       if (!slug || isReservedSlug(slug)) {
@@ -220,6 +237,7 @@ export default function BuilderTemplateView() {
 
       if (data.success) {
         setLeadSuccess(true);
+        setShowWhatsappModal(true);
         setFormData({
           name: "",
           email: "",
@@ -661,21 +679,38 @@ export default function BuilderTemplateView() {
                               </div>
 
                               {leadSuccess ? (
-                                <div className="p-8 rounded-2xl bg-emerald-50 border border-emerald-200 text-center space-y-4 animate-in fade-in zoom-in-95 duration-200">
+                                <div className="p-7 rounded-2xl bg-gradient-to-br from-emerald-50 via-green-50/70 to-emerald-50/30 border border-emerald-200 text-center space-y-4 animate-in fade-in zoom-in-95 duration-200">
                                   <div className="w-14 h-14 bg-emerald-100 text-emerald-600 rounded-2xl flex items-center justify-center mx-auto text-2xl font-bold border border-emerald-200 shadow-xs">
                                     ✓
                                   </div>
-                                  <h4 className="text-xl font-black text-emerald-800">
-                                    Enquiry Received!
-                                  </h4>
-                                  <p className="text-xs sm:text-sm text-emerald-700 leading-relaxed">
-                                    {comp.content.successMessage ||
-                                      "Thank you! Our dedicated counselor will contact you shortly."}
-                                  </p>
+                                  <div className="space-y-1">
+                                    <h4 className="text-xl font-black text-emerald-900">
+                                      Enquiry Received!
+                                    </h4>
+                                    <p className="text-xs sm:text-sm text-emerald-700 leading-relaxed max-w-sm mx-auto">
+                                      {comp.content.successMessage ||
+                                        "Thank you! Our dedicated counselor will contact you shortly."}
+                                    </p>
+                                  </div>
+
+                                  <div className="pt-2">
+                                    <a
+                                      href={whatsappCommunityLink}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="w-full bg-[#25D366] hover:bg-[#20ba59] active:scale-[0.99] text-white py-3 px-4 rounded-xl font-bold text-sm shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer"
+                                    >
+                                      <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                                        <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
+                                      </svg>
+                                      <span>Join WhatsApp Community</span>
+                                    </a>
+                                  </div>
+
                                   <button
                                     type="button"
                                     onClick={() => setLeadSuccess(false)}
-                                    className="text-xs text-[#2171B5] hover:text-blue-800 hover:underline pt-2 font-semibold cursor-pointer"
+                                    className="text-xs text-[#2171B5] hover:text-blue-800 hover:underline pt-2 font-semibold cursor-pointer block mx-auto"
                                   >
                                     Submit another enquiry →
                                   </button>
@@ -1589,6 +1624,84 @@ export default function BuilderTemplateView() {
             </div>
           )}
         </footer>
+      )}
+
+      {/* WHATSAPP COMMUNITY POPUP MODAL AFTER FORM SUBMISSION */}
+      {showWhatsappModal && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/75 backdrop-blur-md px-4 animate-in fade-in duration-300">
+          <div className="bg-white border border-slate-200 p-6 md:p-8 max-w-lg w-full relative rounded-2xl shadow-2xl text-center space-y-5">
+            {/* Dismiss X button */}
+            <button
+              onClick={() => setShowWhatsappModal(false)}
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-700 p-1 rounded-full hover:bg-slate-100 transition-colors cursor-pointer"
+              title="Close"
+            >
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+
+            {/* Checkmark icon */}
+            <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full mx-auto flex items-center justify-center border-2 border-emerald-300 shadow-sm">
+              <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+
+            <div className="space-y-1.5">
+              <span className="inline-block px-3 py-0.5 bg-emerald-100 text-emerald-800 text-xs font-bold rounded-full uppercase tracking-wider">
+                Submission Received!
+              </span>
+              <h3 className="text-2xl font-extrabold text-slate-900 tracking-tight">
+                Thank You for Registering!
+              </h3>
+              <p className="text-xs md:text-sm text-slate-600 max-w-sm mx-auto">
+                Your details have been submitted successfully. Our team will reach out to you shortly.
+              </p>
+            </div>
+
+            {/* WhatsApp Community Invitation Box */}
+            <div className="bg-gradient-to-br from-emerald-50 via-green-50/70 to-emerald-50/30 border border-emerald-200/90 p-4 md:p-5 rounded-xl text-left space-y-3.5 shadow-sm">
+              <div className="flex items-start gap-3.5">
+                <div className="w-11 h-11 rounded-xl bg-[#25D366] text-white flex items-center justify-center flex-shrink-0 shadow-md">
+                  <svg className="w-6 h-6 fill-current" viewBox="0 0 24 24">
+                    <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
+                  </svg>
+                </div>
+                <div>
+                  <h4 className="font-bold text-slate-900 text-sm">Join Our WhatsApp Community</h4>
+                  <p className="text-xs text-slate-600 mt-0.5 leading-relaxed">
+                    Connect with fellow learners, get instant webinar links, study resources, and exclusive announcements.
+                  </p>
+                </div>
+              </div>
+
+              <a
+                href={whatsappCommunityLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full bg-[#25D366] hover:bg-[#20ba59] active:scale-[0.99] text-white py-3 px-4 rounded-xl font-bold text-sm shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer"
+              >
+                <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                  <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
+                </svg>
+                <span>Join WhatsApp Community</span>
+                <svg className="w-4 h-4 ml-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                </svg>
+              </a>
+            </div>
+
+            {/* Close / Done Button */}
+            <button
+              type="button"
+              onClick={() => setShowWhatsappModal(false)}
+              className="w-full bg-slate-900 hover:bg-slate-800 active:scale-[0.99] text-white py-3.5 px-4 rounded-xl font-bold text-sm shadow-md transition-all cursor-pointer"
+            >
+              Continue Browsing
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );

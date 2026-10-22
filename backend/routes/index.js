@@ -62,7 +62,6 @@ import UserEngagementrouter from "./user-engagement-analytics.js";
 import projectrouter from "./project-analytics.js";
 import queryRouter from "./queryRoutes.js";
 import notificationRouter from "./notification.js";
-import job from "./jobPostRouter.js";
 import testimonialRouter from "./testimonialRoutes.js";
 import bannerRouter from "./bannerRoutes.js";
 import personalityRouter from "./personalityRoutes.js";
@@ -125,7 +124,6 @@ router.use("/settings", settingRouter);
 
 router.use("/sales-analytics", Salesrouter); // Drip checker route
 router.use("/chunk", chunkRouter); // Chunk upload routes
-router.use("/jobs", job); // Job post routes
 router.use("/", testimonialRouter);
 
 router.use("/user-engagement-analytics", UserEngagementrouter);

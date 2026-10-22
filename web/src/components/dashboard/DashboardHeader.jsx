@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { logout } from '../../redux/slices/authSlice'
@@ -68,8 +68,7 @@ const DashboardHeader = () => {
     { key: 'myCourses', name: (t('myCourses') || 'MY COURSES').toUpperCase(), path: '/dashboard/my-courses' },
     { key: 'allCourses', name: (t('allCourses') || 'ALL COURSES').toUpperCase(), path: '/dashboard/courses' },
     { key: 'forum', name: (t('forum') || 'FORUM').toUpperCase(), path: '/dashboard/forum' },
-    { key: 'news', name: (t('news') || 'NEWS').toUpperCase(), path: '/dashboard/news' },
-    { key: 'jobPostings', name: (t('jobPostings') || 'JOB POSTINGS').toUpperCase(), path: '/dashboard/job-posts' },
+    { key: 'upcomingEvents', name: (t('upcomingEvents') || 'UPCOMING EVENTS').toUpperCase(), path: '/events' },
   ]
 
   const menuRef = useRef(null)

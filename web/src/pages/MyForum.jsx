@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchMyThreads } from '../redux/slices/forumSlice'
@@ -115,7 +115,7 @@ const MyForum = () => {
                         </div>
 
                         <div className="space-y-2.5">
-                           <h2 className="font-montserrat text-slate-900 group-hover:text-amber-600 text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] transition-colors">
+                           <h2 className="font-montserrat text-slate-900 group-hover:text-accent text-lg sm:text-xl md:text-2xl font-bold tracking-tight leading-snug transition-colors">
                               {thread.title}
                            </h2>
                            <p className="font-montserrat text-xs text-slate-600 leading-relaxed max-w-4xl line-clamp-2 font-medium">

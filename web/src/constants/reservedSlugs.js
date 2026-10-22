@@ -9,6 +9,7 @@ export const RESERVED_SLUGS = [
   "forum",
   "gig",
   "news",
+  "events",
   "personality-test",
   "contact",
   "about-us",

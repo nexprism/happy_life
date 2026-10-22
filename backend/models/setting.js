@@ -35,6 +35,32 @@ settingSchema.statics.getDefaultEnrolledStudentsCount = async function () {
   return parseInt(setting.value);
 };
 
+// Method to get or initialize showLandingRegisterButton setting
+settingSchema.statics.getShowLandingRegisterButton = async function () {
+  let setting = await this.findOne({ key: "showLandingRegisterButton" });
+  if (!setting) {
+    setting = await this.create({
+      key: "showLandingRegisterButton",
+      value: true,
+      description: "Controls visibility of the floating circular register button on the landing page",
+    });
+  }
+  return Boolean(setting.value);
+};
+
+// Method to get or initialize whatsappCommunityLink setting
+settingSchema.statics.getWhatsappCommunityLink = async function () {
+  let setting = await this.findOne({ key: "whatsappCommunityLink" });
+  if (!setting) {
+    setting = await this.create({
+      key: "whatsappCommunityLink",
+      value: "https://chat.whatsapp.com/invite",
+      description: "Official WhatsApp Community link for enrolled students",
+    });
+  }
+  return setting.value;
+};
+
 // Add singleton pattern to prevent model recompilation
 const Setting =
   mongoose.model.Setting || mongoose.model("Setting", settingSchema);

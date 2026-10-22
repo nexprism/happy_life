@@ -6,6 +6,7 @@ import Home from './pages/Home'
 import Courses from './pages/Courses'
 import Forum from './pages/Forum'
 import Gigs from './pages/Gigs'
+import Events from './pages/Events'
 import News from './pages/News'
 import NewsDetail from './pages/NewsDetail'
 import PersonalityTest from './pages/PersonalityTest'
@@ -335,6 +336,7 @@ const AppContent = () => {
             <Route path="/courses" element={<Courses />} />
             <Route path="/forum" element={<Forum />} />
             <Route path="/gig" element={<Gigs />} />
+            <Route path="/events" element={<Events />} />
             <Route path="/news" element={<News />} />
             <Route path="/news/:id" element={<NewsDetail />} />
             <Route path="/course-detail/:id" element={<CourseDetail />} />

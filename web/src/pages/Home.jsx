@@ -4,6 +4,7 @@ import LogoMarquee from '../components/LogoMarquee'
 import EventHero from '../components/EventHero'
 import StackingBanners from '../components/StackingBanners'
 import BrandFeatures from '../components/BrandFeatures'
+import LandingRegisterButton from '../components/LandingRegisterButton'
 import { eventData } from '../constants/events'
 
 const Home = ({ isLoaded }) => {
@@ -18,6 +19,9 @@ const Home = ({ isLoaded }) => {
       <LogoMarquee />
       <StackingBanners />
       <BrandFeatures />
+
+      {/* Fixed bottom-right Register Button (Toggleable from Admin) */}
+      <LandingRegisterButton />
     </div>
   )
 }

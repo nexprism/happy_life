@@ -110,14 +110,6 @@ const Footer = () => {
           </a>
         </div>
 
-        <div className="flex flex-wrap justify-center gap-x-8 gap-y-2 font-montserrat text-[10px] uppercase tracking-[0.2em] text-white">
-          <Link className="hover:opacity-70 transition-opacity" to="/privacy-policy">Privacy Policy</Link>
-          <Link className="hover:opacity-70 transition-opacity" to="/courses">Services</Link>
-          <Link className="hover:opacity-70 transition-opacity" to="/news">Blog</Link>
-          <Link className="hover:opacity-70 transition-opacity" to="/gig">Work</Link>
-          <Link className="hover:opacity-70 transition-opacity" to="/contact">Contact</Link>
-        </div>
-
         <div className="opacity-50 text-white text-center">
           <p className="font-montserrat text-[8px] md:text-[9px] uppercase tracking-[0.4em]">Align Your Energy, Unlock Success, and Live with Purpose</p>
         </div>

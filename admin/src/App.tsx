@@ -53,9 +53,6 @@ import EditForumThread from "./pages/Forum/EditForumThread";
 import AddEvent from "./pages/Events/AddEvent";
 import EventList from "./pages/Events/EventList";
 import EditEvent from "./pages/Events/EditEvent";
-import AddJob from "./pages/Jobs/AddJob";
-import JobList from "./pages/Jobs/JobList";
-import EditJob from "./pages/Jobs/EditJob";
 import TestimonialsPage from "./pages/Testimonials";
 import Banner from "./pages/Banner/banner";
 import AllBanners from "./pages/Banner/AllBanners";
@@ -149,10 +146,6 @@ export default function App() {
                 <Route path="/events" element={<EventList />} />
                 <Route path="/events/edit/:id" element={<EditEvent />} />
 
-                {/* Jobs */}
-                <Route path="/jobs/add" element={<AddJob />} />
-                <Route path="/jobs" element={<JobList />} />
-                <Route path="/jobs/edit/:id" element={<EditJob />} />
                 {/* Courses */}
                 <Route path="/courses/add" element={<AddCourse />} />
                 <Route path="/courses/all/courses" element={<CourseList />} />
