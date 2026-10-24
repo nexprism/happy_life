@@ -16,64 +16,10 @@ import {
   CelestialZodiacWheel,
   getVedicIcon,
 } from "../components/VedicIcons";
+import LandingRegisterButton from "../components/LandingRegisterButton";
 
-// Dynamic Base URL Helper for Web Client
-export const getApiBaseUrl = () => {
-  const isLocalhost =
-    typeof window !== "undefined" &&
-    (window.location.hostname === "localhost" ||
-      window.location.hostname === "127.0.0.1");
-
-  const defaultBase = isLocalhost
-    ? "http://localhost:5000"
-    : "https://api.happylifeastro.school";
-
-  const envUrl =
-    import.meta.env.VITE_API_BASE ||
-    import.meta.env.VITE_BASE_URL ||
-    import.meta.env.VITE_IMAGE_URL;
-
-  if (envUrl) {
-    if (!isLocalhost && (envUrl.includes("localhost") || envUrl.includes("127.0.0.1"))) {
-      return defaultBase;
-    }
-    return envUrl.replace(/\/+$/, "");
-  }
-
-  return defaultBase;
-};
-
-// Dynamic Media URL Resolver for all images and videos
-export const resolveMediaUrl = (url) => {
-  if (!url || typeof url !== "string") return url;
-  if (url.startsWith("data:") || url.startsWith("blob:")) return url;
-
-  const baseUrl = getApiBaseUrl();
-
-  // 1. If it's a relative uploads path: "/uploads/..."
-  if (url.startsWith("/uploads/")) {
-    return `${baseUrl}${url}`;
-  }
-
-  // 2. If it points to localhost / 127.0.0.1 and we are not on localhost (live site)
-  const isLocalhost =
-    typeof window !== "undefined" &&
-    (window.location.hostname === "localhost" ||
-      window.location.hostname === "127.0.0.1");
-
-  if (/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?/i.test(url)) {
-    if (!isLocalhost) {
-      return url.replace(/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?/i, baseUrl);
-    }
-  }
-
-  // 3. If it points to old onrender backend
-  if (url.includes("happy-life-sx03.onrender.com")) {
-    return url.replace("https://happy-life-sx03.onrender.com", baseUrl);
-  }
-
-  return url;
-};
+// Dynamic Base URL and Media URL Helpers
+export { getApiBaseUrl, resolveMediaUrl } from "../utils/mediaUrl";
 
 // Container width mapping helper
 const getSectionWidthClass = (maxWidth) => {
@@ -1726,6 +1672,9 @@ export default function BuilderTemplateView() {
           </div>
         </div>
       )}
+
+      {/* Floating Register CTA Button for Builder Landing Pages */}
+      <LandingRegisterButton />
     </div>
   );
 }

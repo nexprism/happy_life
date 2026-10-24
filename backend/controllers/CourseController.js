@@ -9,7 +9,8 @@ import TextLesson from '../models/TextLesson.js';
 import File from '../models/File.js';
 import Quiz from '../models/Quiz.js';
 import Assignment from '../models/Assignment.js';
-import axios from 'axios';
+import fs from 'fs';
+import path from 'path';
 import CourseEnrollment from "../models/CourseEnrollment.js";
 import CoursePlan from "../models/CoursePlan.js";
 
@@ -1577,12 +1578,12 @@ export const updateCourse = async (req, res) => {
 
     const updateData = {
       ...req.body,
-      thumbnail: req.files?.thumbnail?.[0]?.path.replace(/\\/g, "/") || req.body.thumbnail,
-      coverImage: req.files?.coverImage?.[0]?.path.replace(/\\/g, "/") || req.body.coverImage,
-      verticalCarouselImage: req.files?.verticalCarouselImage?.[0]?.path.replace(/\\/g, "/") || req.body.verticalCarouselImage,
-      featuredImageBanner: req.files?.featuredImageBanner?.[0]?.path.replace(/\\/g, "/") || req.body.featuredImageBanner,
-      mentorImage: req.files?.mentorImage?.[0]?.path.replace(/\\/g, "/") || req.body.mentorImage,
-      certificateImage: req.files?.certificateImage?.[0]?.path.replace(/\\/g, "/") || req.body.certificateImage,
+      thumbnail: req.files?.thumbnail?.[0]?.path.replace(/\\/g, "/") ?? (req.body.thumbnail !== undefined ? req.body.thumbnail : undefined),
+      coverImage: req.files?.coverImage?.[0]?.path.replace(/\\/g, "/") ?? (req.body.coverImage !== undefined ? req.body.coverImage : undefined),
+      verticalCarouselImage: req.files?.verticalCarouselImage?.[0]?.path.replace(/\\/g, "/") ?? (req.body.verticalCarouselImage !== undefined ? req.body.verticalCarouselImage : undefined),
+      featuredImageBanner: req.files?.featuredImageBanner?.[0]?.path.replace(/\\/g, "/") ?? (req.body.featuredImageBanner !== undefined ? req.body.featuredImageBanner : undefined),
+      mentorImage: req.files?.mentorImage?.[0]?.path.replace(/\\/g, "/") ?? (req.body.mentorImage !== undefined ? req.body.mentorImage : undefined),
+      certificateImage: req.files?.certificateImage?.[0]?.path.replace(/\\/g, "/") ?? (req.body.certificateImage !== undefined ? req.body.certificateImage : undefined),
       demoVideo: req.files?.demoVideo?.[0]?.path
         ? req.files.demoVideo[0].path.replace(/\\/g, "/")
         : req.body.demoVideo !== undefined
@@ -1664,6 +1665,32 @@ export const updateCourse = async (req, res) => {
         return { overviewSection, comparisonSection, benefitsSection, frameworkSection, solutionSection, landingPageSections };
       })(),
     };
+
+    // Safely remove replaced or cleared media files from disk to prevent dangling files
+    try {
+      const existingCourse = await Course.findById(id).select("thumbnail coverImage verticalCarouselImage featuredImageBanner mentorImage certificateImage").lean();
+      if (existingCourse) {
+        const checkAndUnlink = (field, newVal) => {
+          const oldVal = existingCourse[field];
+          if (oldVal && typeof oldVal === 'string' && oldVal.startsWith('uploads/') && !oldVal.includes('default_course')) {
+            if (newVal !== undefined && newVal !== oldVal) {
+              const fullOldPath = path.resolve(process.cwd(), oldVal);
+              if (fs.existsSync(fullOldPath)) {
+                fs.unlink(fullOldPath, () => {});
+              }
+            }
+          }
+        };
+        checkAndUnlink('verticalCarouselImage', updateData.verticalCarouselImage);
+        checkAndUnlink('featuredImageBanner', updateData.featuredImageBanner);
+        checkAndUnlink('coverImage', updateData.coverImage);
+        checkAndUnlink('thumbnail', updateData.thumbnail);
+        checkAndUnlink('mentorImage', updateData.mentorImage);
+        checkAndUnlink('certificateImage', updateData.certificateImage);
+      }
+    } catch (e) {
+      console.warn("⚠️ Media cleanup warning:", e.message);
+    }
 
     const updatedCourse = await courseService.updateById(id, updateData, req.user);
 

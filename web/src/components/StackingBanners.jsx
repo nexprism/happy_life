@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useSelector, useDispatch } from 'react-redux'
+import { fetchCourses } from '../redux/slices/courseSlice'
 import RollingText from './RollingText'
 import authorizedFetch from '../utils/apiClient'
 import { useLanguage } from '../context/LanguageContext'
+import { resolveMediaUrl } from '../utils/mediaUrl'
 
 const DEFAULT_SELECTIONS = [
   {
@@ -38,26 +41,22 @@ const DEFAULT_SELECTIONS = [
 const StackingBanners = () => {
   const [featured, setFeatured] = useState([])
   const navigate = useNavigate()
+  const dispatch = useDispatch()
+  const { courses: apiCourses } = useSelector((state) => state.courses || {})
   const { t } = useLanguage()
 
   const getImageUrl = (thumb) => {
-    if (!thumb) return null
-    try {
-      if (/^https?:\/\//i.test(thumb)) return thumb
-      let path = thumb
-      if (!path.startsWith('/') && !path.startsWith('uploads/')) {
-        path = `uploads/${path}`
-      }
-      const rawBase = import.meta.env.VITE_BASE_URL || 'https://happy-life-sx03.onrender.com'
-      const baseUrl = rawBase.replace(/\/api\/v1\/?$/, '')
-      return `${baseUrl}${path.startsWith('/') ? '' : '/'}${path}`
-    } catch {
-      return null
-    }
+    return resolveMediaUrl(thumb, '/courses/architecture.png')
   }
 
   const stripHTML = (str) =>
     typeof str === 'string' ? str.replace(/<[^>]*>?/gm, '') : ''
+
+  useEffect(() => {
+    if (!apiCourses || apiCourses.length === 0) {
+      dispatch(fetchCourses())
+    }
+  }, [dispatch, apiCourses])
 
   useEffect(() => {
     let mounted = true
@@ -78,16 +77,29 @@ const StackingBanners = () => {
     return () => { mounted = false }
   }, [])
 
-  const bannerItems = featured.length > 0 
-    ? featured.slice(0, 6).map((c) => ({
-        id: c._id || c.id,
-        title: c.title,
-        description: stripHTML(c.description || ''),
-        image: getImageUrl(c.image),
-        type: c.type,
-        referenceId: c.referenceId,
-      }))
-    : DEFAULT_SELECTIONS
+  // Build items prioritizing courses that have a dedicated featuredImageBanner
+  const courseBannerItems = (apiCourses || [])
+    .filter((c) => Boolean(c.featuredImageBanner))
+    .map((c) => ({
+      id: c._id || c.id,
+      title: c.title,
+      description: stripHTML(c.subtitle || c.shortDescription || c.description || ''),
+      image: getImageUrl(c.featuredImageBanner),
+      type: 'course',
+      referenceId: c._id || c.id,
+    }))
+
+  const standaloneBanners = featured.map((c) => ({
+    id: c._id || c.id,
+    title: c.title,
+    description: stripHTML(c.description || ''),
+    image: getImageUrl(c.image),
+    type: c.type,
+    referenceId: c.referenceId,
+  }))
+
+  const combinedItems = [...courseBannerItems, ...standaloneBanners]
+  const bannerItems = combinedItems.length > 0 ? combinedItems.slice(0, 6) : DEFAULT_SELECTIONS
 
   const handleCardClick = (item) => {
     if (item.type === 'course' && item.referenceId) {

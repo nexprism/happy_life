@@ -20,30 +20,15 @@ import "./config/jwt-authenticate.js";
 const app = express();
 app.set("trust proxy", 1); // Trust first proxy (Render load balancer)
 
-app.use(cookieParser());
-app.use(passport.initialize());
-app.use("/uploads", protectedUploads);
-
-// Serve static files with secure headers and fallback placeholder
-app.use("/uploads", express.static(path.join(__dirname, "uploads"), {
-  setHeaders: (res, filePath) => {
-    res.setHeader("X-Content-Type-Options", "nosniff");
-    const lower = filePath.toLowerCase();
-    if (lower.endsWith(".html") || lower.endsWith(".htm") || lower.endsWith(".svg") || lower.endsWith(".xml")) {
-      res.setHeader("Content-Disposition", "attachment");
-    }
-  }
-}), (req, res) => {
-  const defaultFile = path.join(__dirname, "uploads", "default_course.png");
-  res.sendFile(defaultFile);
-});
-
 // CORS config — dynamic origin to support credentials (wildcard '*' is
 // incompatible with credentials:true per the browser spec)
 const ALLOWED_ORIGINS = [
   "https://happy-life-nu.vercel.app",
   "https://happy-life-admin.vercel.app",
   "https://happy-life-sx03.onrender.com",
+  "https://api.happylifeastro.school",
+  "https://happylifeastro.school",
+  "https://www.happylifeastro.school",
   process.env.FRONTEND_URL,
   process.env.ADMIN_URL,
   "http://localhost:5173",
@@ -77,6 +62,26 @@ const corsOptions = {
 app.use(cors(corsOptions));
 // Handle OPTIONS preflight for all routes (path-to-regexp v8+ compatible syntax)
 app.options("/{*splat}", cors(corsOptions));
+
+app.use(cookieParser());
+app.use(passport.initialize());
+app.use("/uploads", protectedUploads);
+
+// Serve static files with secure headers and cross-origin access
+app.use("/uploads", express.static(path.join(__dirname, "uploads"), {
+  setHeaders: (res, filePath) => {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
+    res.setHeader("X-Content-Type-Options", "nosniff");
+    const lower = filePath.toLowerCase();
+    if (lower.endsWith(".html") || lower.endsWith(".htm") || lower.endsWith(".svg") || lower.endsWith(".xml")) {
+      res.setHeader("Content-Disposition", "attachment");
+    }
+  }
+}), (req, res) => {
+  const defaultFile = path.join(__dirname, "uploads", "default_course.png");
+  res.sendFile(defaultFile);
+});
 
 // Rate limiting
 const authLimiter = rateLimit({

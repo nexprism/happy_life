@@ -22,11 +22,24 @@ const LandingRegisterButton = () => {
 
   if (!isVisible) return null
 
+  const handleClick = (e) => {
+    const leadForm = document.getElementById('lead-form')
+    if (leadForm) {
+      e.preventDefault()
+      leadForm.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      const firstInput = leadForm.querySelector('input')
+      if (firstInput) {
+        setTimeout(() => firstInput.focus(), 400)
+      }
+    }
+  }
+
   return (
     <aside aria-label="Quick Registration" className="fixed bottom-6 right-6 md:bottom-8 md:right-8 z-50 group">
       {/* Responsive Floating Action Button */}
       <Link
         to="/signup"
+        onClick={handleClick}
         aria-label="Register on Happy Life Astro"
         className="relative flex items-center justify-center rounded-full bg-gradient-to-r from-[#175284] via-[#2171B5] to-[#3a91dd] text-white border border-white/25 shadow-[0_6px_20px_rgba(33,113,181,0.28)] hover:shadow-[0_10px_28px_rgba(33,113,181,0.4)] hover:scale-[1.03] active:scale-95 transition-all duration-300 overflow-hidden w-12 h-12 sm:w-14 sm:h-14 md:w-auto md:h-auto md:px-5 md:py-3"
       >

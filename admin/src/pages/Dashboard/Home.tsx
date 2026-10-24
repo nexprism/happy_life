@@ -66,7 +66,7 @@ const Home: React.FC = () => {
       await axiosInstance.put('/settings', {
         showLandingRegisterButton: nextVal
       });
-      toast.success(nextVal ? 'Landing Register Button is now VISIBLE on Home Screen' : 'Landing Register Button is now HIDDEN from Home Screen');
+      toast.success(nextVal ? 'Register Button is now VISIBLE on Builder Pages' : 'Register Button is now HIDDEN on Builder Pages');
     } catch (err) {
       setShowRegisterBtn(!nextVal); // Rollback on error
       toast.error('Failed to update setting');
@@ -187,7 +187,7 @@ const Home: React.FC = () => {
             <div>
               <div className="flex items-center gap-2.5">
                 <h3 className="text-base font-semibold text-gray-900">
-                  Landing Page Register Button
+                  Builder Pages Register Button
                 </h3>
                 <span className={`px-2.5 py-0.5 text-xs font-semibold rounded-full ${
                   showRegisterBtn ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'
@@ -196,7 +196,7 @@ const Home: React.FC = () => {
                 </span>
               </div>
               <p className="text-xs text-gray-500 mt-0.5">
-                Toggle the fixed circular register button on the bottom right of the landing page.
+                Toggle the fixed circular register button on the bottom right of pages created by the builder.
               </p>
             </div>
           </div>

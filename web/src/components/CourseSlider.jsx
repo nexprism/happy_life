@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { fetchCourses } from '../redux/slices/courseSlice'
 import sanitizeDisplay from '../utils/textSanitize'
 import RollingText from './RollingText'
+import { resolveMediaUrl } from '../utils/mediaUrl'
 
 const fallbackCourses = [
   { id: '1', title: 'Become An AI Builder In 30 Days.', tag: 'AI & TECH', thumbnail: '/courses/curator.png' },
@@ -191,14 +192,8 @@ const CourseSlider = () => {
   }
 
   const getImageUrl = (course) => {
-    const imgPath = course.thumbnail || course.coverImage || course.horizontalCarouselImage || course.verticalCarouselImage
-    if (!imgPath || imgPath === '/herocard.png') return '/courses/curator.png'
-    if (imgPath.startsWith('http://') || imgPath.startsWith('https://') || imgPath.startsWith('data:') || imgPath.startsWith('/courses/') || imgPath.startsWith('/gig_') || imgPath.startsWith('/digital_')) {
-      return imgPath
-    }
-    const rawBase = import.meta.env.VITE_IMAGE_URL || import.meta.env.VITE_BASE_URL || import.meta.env.VITE_API_BASE || 'https://happy-life-sx03.onrender.com'
-    const baseUrl = rawBase.replace(/\/api\/v1\/?$/, '')
-    return `${baseUrl}${imgPath.startsWith('/') ? '' : '/'}${imgPath}`
+    const imgPath = course.verticalCarouselImage || course.thumbnail || course.coverImage || course.horizontalCarouselImage
+    return resolveMediaUrl(imgPath, '/courses/curator.png')
   }
 
   return (

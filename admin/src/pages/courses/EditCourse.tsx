@@ -1165,18 +1165,40 @@ const EditCourse = () => {
     // Handle mentor image file separately if uploaded
     if (formData.mentorImageFile) {
       submitFormData.set("mentorImage", formData.mentorImageFile);
+    } else if (formData.mentorImage !== undefined) {
+      submitFormData.set("mentorImage", formData.mentorImage || "");
     }
 
     // Handle certificate image file separately if uploaded
     if (formData.certificateImageFile) {
       submitFormData.set("certificateImage", formData.certificateImageFile);
+    } else if (formData.certificateImage !== undefined) {
+      submitFormData.set("certificateImage", formData.certificateImage || "");
     }
 
-    if (verticalCarouselImageFile) submitFormData.set("verticalCarouselImage", verticalCarouselImageFile);
-    if (featuredImageBannerFile) submitFormData.set("featuredImageBanner", featuredImageBannerFile);
+    if (verticalCarouselImageFile) {
+      submitFormData.set("verticalCarouselImage", verticalCarouselImageFile);
+    } else {
+      submitFormData.set("verticalCarouselImage", formData.verticalCarouselImage ?? "");
+    }
 
-    if (thumbnailFile) submitFormData.set("thumbnail", thumbnailFile);
-    if (coverImageFile) submitFormData.set("coverImage", coverImageFile);
+    if (featuredImageBannerFile) {
+      submitFormData.set("featuredImageBanner", featuredImageBannerFile);
+    } else {
+      submitFormData.set("featuredImageBanner", formData.featuredImageBanner ?? "");
+    }
+
+    if (thumbnailFile) {
+      submitFormData.set("thumbnail", thumbnailFile);
+    } else {
+      submitFormData.set("thumbnail", formData.thumbnail ?? "");
+    }
+
+    if (coverImageFile) {
+      submitFormData.set("coverImage", coverImageFile);
+    } else {
+      submitFormData.set("coverImage", formData.coverImage ?? "");
+    }
 
     // --- FLATTEN PLANS IN PAYLOAD WITHOUT QUOTES ---
     let finalPlans = [...plans];
@@ -1201,6 +1223,10 @@ const EditCourse = () => {
       await dispatch(
         updateCourse({ id: courseId, data: submitFormData })
       ).unwrap();
+      setVerticalCarouselImageFile(null);
+      setFeaturedImageBannerFile(null);
+      setThumbnailFile(null);
+      setCoverImageFile(null);
       setPopup({
         isVisible: true,
         message: isDraft

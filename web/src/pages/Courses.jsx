@@ -9,6 +9,7 @@ import EventHero from '../components/EventHero'
 import { fetchEvents } from '../redux/slices/eventSlice'
 import { useLanguage } from '../context/LanguageContext'
 import { dummyCourses, testSeriesData, buyBooksData } from '../data/coursesData'
+import { resolveMediaUrl } from '../utils/mediaUrl'
 
 const Courses = () => {
   const dispatch = useDispatch()
@@ -280,11 +281,7 @@ const Courses = () => {
   }, [])
 
   const getImageUrl = (thumb) => {
-    if (!thumb) return '/herocard.png'
-    const normalized = String(thumb).replace(/\\/g, '/')
-    if (/^https?:\/\//i.test(normalized)) return normalized
-    const baseUrl = import.meta.env.VITE_BASE_URL || 'https://happy-life-sx03.onrender.com'
-    return normalized.startsWith('/') ? `${baseUrl}${normalized}` : `${baseUrl}/${normalized}`
+    return resolveMediaUrl(thumb, '/herocard.png')
   }
 
   // Quiz Handling

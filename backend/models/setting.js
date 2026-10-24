@@ -42,7 +42,7 @@ settingSchema.statics.getShowLandingRegisterButton = async function () {
     setting = await this.create({
       key: "showLandingRegisterButton",
       value: true,
-      description: "Controls visibility of the floating circular register button on the landing page",
+      description: "Controls visibility of the floating circular register button on builder-created landing pages",
     });
   }
   return Boolean(setting.value);
