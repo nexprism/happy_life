@@ -19,7 +19,8 @@ import {
 import LandingRegisterButton from "../components/LandingRegisterButton";
 
 // Dynamic Base URL and Media URL Helpers
-export { getApiBaseUrl, resolveMediaUrl } from "../utils/mediaUrl";
+import { getApiBaseUrl, resolveMediaUrl } from "../utils/mediaUrl";
+export { getApiBaseUrl, resolveMediaUrl };
 
 // Container width mapping helper
 const getSectionWidthClass = (maxWidth) => {
