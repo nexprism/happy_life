@@ -327,7 +327,9 @@ const CourseDetail = () => {
       {/* Global Static/Common Sections */}
       <BonusSection course={course} />
       <TestimonialsScroll reviews={course.reviews} />
-      <GuaranteeSection />
+      {course?.guaranteeSection?.show !== false && (
+        <GuaranteeSection guarantee={course?.guaranteeSection} />
+      )}
       <FAQSection course={course} />
       <div id="pricing-section" className="scroll-mt-32">
         <CertificatePricingSection course={course} />

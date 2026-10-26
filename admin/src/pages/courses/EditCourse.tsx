@@ -34,12 +34,14 @@ import {
   Sparkles,
   Target,
   Star,
+  ShieldCheck,
 } from "lucide-react";
 import ModuleSection from "./ModuleSection";
 import Faqs from "./components/Faqs";
 import QuillEditor from "../../components/QuillEditor";
 import Editor from "../../components/Editor";
 import LandingPageSections from "./LandingPageSections";
+import GuaranteeSectionForm from "./GuaranteeSectionForm";
 import AddReview from "./AddReview";
 
 const baseUrl = import.meta.env.VITE_IMAGE_URL || import.meta.env.VITE_BASE_URL || "https://happy-life-sx03.onrender.com/";
@@ -577,6 +579,7 @@ const EditCourse = () => {
     benefitsSection: { show: false, title: "", content: null, points: [""] },
     frameworkSection: { show: false, title: "", subtitle: "", description: null, media: "" },
     solutionSection: { show: false, title: "", content: null, points: [""] },
+    guaranteeSection: undefined,
   });
 
   // Plans state
@@ -836,6 +839,7 @@ const EditCourse = () => {
             : [""],
           content: parseEditorData(course.solutionSection?.content)
         },
+        guaranteeSection: course.guaranteeSection || undefined,
       }));
 
       setDescription(course.description || "");
@@ -1108,7 +1112,7 @@ const EditCourse = () => {
         submitFormData.append(key, JSON.stringify(value));
       } else if (Array.isArray(value)) {
         submitFormData.append(key, value.length > 0 ? String(value[0]) : "");
-      } else if (key === "overviewSection" || key === "comparisonSection" || key === "benefitsSection" || key === "frameworkSection" || key === "solutionSection") {
+      } else if (key === "overviewSection" || key === "comparisonSection" || key === "benefitsSection" || key === "frameworkSection" || key === "solutionSection" || key === "guaranteeSection") {
         // Handle individual landing page sections objects (for backward compatibility or direct updates)
         if (value && typeof value === "object") {
           // Clean up comparisonSection: filter out empty strings from points arrays
@@ -1280,6 +1284,7 @@ const EditCourse = () => {
     { key: "faqs", title: "FAQs", icon: MessageCircle, isRequired: false },
     { key: "mentor", title: "Mentor Information", icon: Users, isRequired: false },
     { key: "landingPage", title: "Landing Page Sections", icon: Layout, isRequired: false },
+    { key: "guarantee", title: "Guarantee Protocol", icon: ShieldCheck, isRequired: false },
     { key: "certificate", title: "Certificate", icon: Award, isRequired: false },
     { key: "publication", title: "Publication Status", icon: Eye, isRequired: false },
     { key: "reviews", title: "Reviews", icon: Star, isRequired: false },
@@ -2341,6 +2346,10 @@ const EditCourse = () => {
 
                 {activeTab === "landingPage" && (
                   <LandingPageSections formData={formData} setFormData={setFormData} />
+                )}
+
+                {activeTab === "guarantee" && (
+                  <GuaranteeSectionForm formData={formData} setFormData={setFormData} />
                 )}
 
                 {activeTab === "certificate" && (

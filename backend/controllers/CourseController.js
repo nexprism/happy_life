@@ -319,6 +319,20 @@ export const createCourse = async (req, res) => {
         }
         return { overviewSection, comparisonSection, benefitsSection, frameworkSection, solutionSection, landingPageSections };
       })(),
+
+      // Guarantee Protocol Section
+      ...(() => {
+        if (!req.body.guaranteeSection) return {};
+        try {
+          const guaranteeSection = typeof req.body.guaranteeSection === 'string'
+            ? JSON.parse(req.body.guaranteeSection)
+            : req.body.guaranteeSection;
+          return { guaranteeSection };
+        } catch (err) {
+          console.error('Error parsing guaranteeSection:', err);
+          return {};
+        }
+      })(),
     };
 
     //console.log("📋 Course Data to Create:", JSON.stringify(courseData, null, 2));
@@ -1663,6 +1677,20 @@ export const updateCourse = async (req, res) => {
           }
         }
         return { overviewSection, comparisonSection, benefitsSection, frameworkSection, solutionSection, landingPageSections };
+      })(),
+
+      // Guarantee Protocol Section
+      ...(() => {
+        if (!req.body.guaranteeSection) return {};
+        try {
+          const guaranteeSection = typeof req.body.guaranteeSection === 'string'
+            ? JSON.parse(req.body.guaranteeSection)
+            : req.body.guaranteeSection;
+          return { guaranteeSection };
+        } catch (err) {
+          console.error('Error parsing guaranteeSection:', err);
+          return {};
+        }
       })(),
     };
 

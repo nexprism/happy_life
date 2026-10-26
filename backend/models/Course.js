@@ -312,6 +312,25 @@ const courseSchema = new mongoose.Schema({
     content: { type: mongoose.Schema.Types.Mixed },
     points: [{ type: String, trim: true }]
   },
+  guaranteeSection: {
+    show: { type: Boolean, default: true },
+    tagline: { type: String, trim: true, default: "Verified / Security Protocol" },
+    title: { type: String, trim: true, default: "The 30-Day" },
+    highlightText: { type: String, trim: true, default: "Integrity" },
+    titleSuffix: { type: String, trim: true, default: "Protocol." },
+    description: { 
+      type: String, 
+      trim: true, 
+      default: "As with any High-Yield investment, risk is a variable. However, if you Execute the blueprint and possess an operative product—we eliminate the friction. We guarantee Stability & Predictability within 30 days." 
+    },
+    point1Title: { type: String, trim: true, default: "System Refund Path" },
+    point1Description: { type: String, trim: true, default: "Initiate support via happylifereport@gmail.com for any inquiries." },
+    point2Title: { type: String, trim: true, default: "Response Speed" },
+    point2Description: { type: String, trim: true, default: "Total protocol reversion within 48 Hours of verified log ingestion." },
+    circleWord1: { type: String, trim: true, default: "100" },
+    circleWord2: { type: String, trim: true, default: "Guarantee" },
+    circleFooter: { type: String, trim: true, default: "Vanguard protocol A-01" }
+  },
 
   // Soft Delete
   isDeleted: { type: Boolean, default: false },

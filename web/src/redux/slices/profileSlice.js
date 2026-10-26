@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import authorizedFetch from '../../utils/apiClient';
 
 const BASE_URL = import.meta.env.VITE_BASE_URL || 'https://happy-life-sx03.onrender.com';
 
@@ -108,6 +109,26 @@ export const deleteEducation = createAsyncThunk(
   }
 );
 
+export const changePassword = createAsyncThunk(
+  'profile/changePassword',
+  async ({ oldPassword, newPassword, confirmPassword }, { rejectWithValue }) => {
+    try {
+      const res = await authorizedFetch('/change-password', {
+        method: 'POST',
+        body: JSON.stringify({ oldPassword, newPassword, confirmPassword }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        return rejectWithValue(data?.message || 'Failed to update password');
+      }
+      return data;
+    } catch (err) {
+      return rejectWithValue(err.message || 'Network error');
+    }
+  }
+);
+
 // ── Slice ────────────────────────────────────────────────────────────────────
 const profileSlice = createSlice({
   name: 'profile',
@@ -117,11 +138,19 @@ const profileSlice = createSlice({
     error: null,
     updateLoading: false,
     updateError: null,
+    passwordLoading: false,
+    passwordError: null,
+    passwordSuccess: false,
   },
   reducers: {
     clearProfileError(state) {
       state.error = null;
       state.updateError = null;
+    },
+    clearPasswordStatus(state) {
+      state.passwordError = null;
+      state.passwordSuccess = false;
+      state.passwordLoading = false;
     },
   },
   extraReducers: (builder) => {
@@ -183,9 +212,25 @@ const profileSlice = createSlice({
       .addCase(deleteEducation.rejected, (state, { payload }) => {
         state.updateLoading = false;
         state.updateError = payload;
+      })
+      // Change Password
+      .addCase(changePassword.pending, (state) => {
+        state.passwordLoading = true;
+        state.passwordError = null;
+        state.passwordSuccess = false;
+      })
+      .addCase(changePassword.fulfilled, (state) => {
+        state.passwordLoading = false;
+        state.passwordSuccess = true;
+        state.passwordError = null;
+      })
+      .addCase(changePassword.rejected, (state, { payload }) => {
+        state.passwordLoading = false;
+        state.passwordError = payload;
+        state.passwordSuccess = false;
       });
   },
 });
 
-export const { clearProfileError } = profileSlice.actions;
+export const { clearProfileError, clearPasswordStatus } = profileSlice.actions;
 export default profileSlice.reducer;

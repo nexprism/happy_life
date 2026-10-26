@@ -1,11 +1,23 @@
-﻿import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/all'
 
 gsap.registerPlugin(ScrollTrigger)
 
-const GuaranteeSection = () => {
+const GuaranteeSection = ({ guarantee }) => {
   const containerRef = useRef(null)
+
+  const tagline = guarantee?.tagline || "Verified / Security Protocol"
+  const title = guarantee?.title || "The 30-Day"
+  const highlightText = guarantee?.highlightText !== undefined ? guarantee.highlightText : "Integrity"
+  const titleSuffix = guarantee?.titleSuffix !== undefined ? guarantee.titleSuffix : "Protocol."
+  const point1Title = guarantee?.point1Title || "System Refund Path"
+  const point1Description = guarantee?.point1Description || "Initiate support via happylifereport@gmail.com for any inquiries."
+  const point2Title = guarantee?.point2Title || "Response Speed"
+  const point2Description = guarantee?.point2Description || "Total protocol reversion within 48 Hours of verified log ingestion."
+  const circleWord1 = guarantee?.circleWord1 || "100"
+  const circleWord2 = guarantee?.circleWord2 !== undefined ? guarantee.circleWord2 : "Guarantee"
+  const circleFooter = guarantee?.circleFooter || "Vanguard protocol A-01"
   
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -62,30 +74,48 @@ const GuaranteeSection = () => {
               <div className="flex items-center gap-3 g-reveal">
                  <div className="h-[1px] w-12 bg-accent/40" />
                  <span className="font-montserrat text-[14px] text-accent tracking-[0.8em] uppercase font-bold">
-                   Verified / Security Protocol
+                   {tagline}
                  </span>
               </div>
               <h2 className="g-reveal font-montserrat text-normal text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] transition-colors">
-                The 30-Day <br /> <span className="text-accent underline-lime decoration-accent/40">Integrity</span> Protocol.
+                {title} <br /> {highlightText ? <span className="text-accent underline-lime decoration-accent/40">{highlightText}</span> : null} {titleSuffix}
               </h2>
             </div>
             
-            <p className="g-reveal font-montserrat text-xs md:text-base text-description leading-[2.2] tracking-wide uppercase max-w-2xl">
-              As with any High-Yield investment, risk is a variable. However, if you <span className="text-normal font-bold">Execute</span> the blueprint and possess an operative product—we eliminate the friction. We guarantee <span className="text-accent underline-lime">Stability & Predictability</span> within 30 days.
-            </p>
+            {guarantee?.description ? (
+              <p className="g-reveal font-montserrat text-xs md:text-base text-description leading-[2.2] tracking-wide uppercase max-w-2xl">
+                {guarantee.description}
+              </p>
+            ) : (
+              <p className="g-reveal font-montserrat text-xs md:text-base text-description leading-[2.2] tracking-wide uppercase max-w-2xl">
+                As with any High-Yield investment, risk is a variable. However, if you <span className="text-normal font-bold">Execute</span> the blueprint and possess an operative product—we eliminate the friction. We guarantee <span className="text-accent underline-lime">Stability & Predictability</span> within 30 days.
+              </p>
+            )}
 
             <div className="g-reveal pt-12 border-t border-white/10 space-y-8">
                <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                   <div className="space-y-4">
-                     <p className="font-montserrat text-[9px] text-accent font-black tracking-[0.5em] uppercase">System Refund Path</p>
+                     <p className="font-montserrat text-[9px] text-accent font-black tracking-[0.5em] uppercase">{point1Title}</p>
                      <p className="font-montserrat text-[9px] text-description/80 leading-relaxed uppercase tracking-widest">
-                        Initiate support via <span className="text-normal underline decoration-accent/20">happylifereport@gmail.com</span> for any inquiries.
+                        {point1Description.includes('@') ? (
+                          <>
+                            {point1Description.split(/(happylifereport@gmail\.com|[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/g).map((part, i) => 
+                              part.includes('@') ? (
+                                <span key={i} className="text-normal underline decoration-accent/20">{part}</span>
+                              ) : (
+                                <span key={i}>{part}</span>
+                              )
+                            )}
+                          </>
+                        ) : (
+                          point1Description
+                        )}
                      </p>
                   </div>
                   <div className="space-y-4">
-                     <p className="font-montserrat text-[9px] text-accent font-black tracking-[0.5em] uppercase">Response Speed</p>
+                     <p className="font-montserrat text-[9px] text-accent font-black tracking-[0.5em] uppercase">{point2Title}</p>
                      <p className="font-montserrat text-[9px] text-description/80 leading-relaxed uppercase tracking-widest">
-                        Total protocol reversion within <span className="text-normal">48 Hours</span> of verified log ingestion.
+                        {point2Description}
                      </p>
                   </div>
                </div>
@@ -105,9 +135,15 @@ const GuaranteeSection = () => {
                    <div className="absolute inset-3 border border-accent/10 rounded-full border-dashed animate-spin-slow" />
                    <div className="absolute inset-8 border border-white/5 rounded-full" />
                    
-                   <div className="text-center space-y-2 relative z-10">
-                      <span className="font-montserrat text-7xl md:text-8xl text-accent drop-shadow-[0_0_20px_rgba(139, 92, 246,0.3)]">100</span>
-                      <p className="font-montserrat text-[14px] tracking-[0.8em] text-description uppercase font-black">Guarantee</p>
+                   <div className="text-center space-y-2 relative z-10 px-4">
+                      <span className="font-montserrat text-6xl md:text-8xl text-accent drop-shadow-[0_0_20px_rgba(139,92,246,0.3)] block font-bold leading-none">
+                        {circleWord1}
+                      </span>
+                      {circleWord2 ? (
+                        <p className="font-montserrat text-[13px] md:text-[14px] tracking-[0.6em] md:tracking-[0.8em] text-description uppercase font-black">
+                          {circleWord2}
+                        </p>
+                      ) : null}
                    </div>
                 </div>
              </div>
@@ -116,7 +152,9 @@ const GuaranteeSection = () => {
                 <div className="flex gap-4 justify-center">
                    {[1,2,3].map(i => <div key={i} className="w-1.5 h-1.5 bg-accent/40 rounded-full" />)}
                 </div>
-                <p className="font-montserrat text-[8px] tracking-[1em] uppercase text-description/80">Vanguard protocol A-01</p>
+                <p className="font-montserrat text-[8px] tracking-[1em] uppercase text-description/80">
+                  {circleFooter}
+                </p>
              </div>
           </div>
 

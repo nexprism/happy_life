@@ -31,6 +31,7 @@ import {
   FileEdit,
   Layers,
   Layout,
+  ShieldCheck,
 } from "lucide-react";
 import { createCourse } from "../../store/slices/course";
 import CategorySubcategoryDropdowns from "../../components/CategorySubcategoryDropdowns";
@@ -39,6 +40,7 @@ import { useNavigate } from "react-router-dom";
 import Editor from "../../components/Editor";
 import QuillEditor from "../../components/QuillEditor";
 import LandingPageSections from "./LandingPageSections";
+import GuaranteeSectionForm from "./GuaranteeSectionForm";
 // Validation schema
 type FormErrors = {
   title?: string;
@@ -586,6 +588,7 @@ const AddCourse = () => {
     benefitsSection: { show: false, title: "", content: null, points: [""] },
     frameworkSection: { show: false, title: "", subtitle: "", description: null, media: "" },
     solutionSection: { show: false, title: "", content: null, points: [""] },
+    guaranteeSection: undefined,
   });
 
   // Plans state
@@ -784,7 +787,7 @@ const AddCourse = () => {
         submitFormData.append(key, JSON.stringify(value));
       } else if (Array.isArray(value)) {
         submitFormData.append(key, value.length > 0 ? String(value[0]) : "");
-      } else if (["overviewSection", "comparisonSection", "benefitsSection", "frameworkSection", "solutionSection"].includes(key)) {
+      } else if (["overviewSection", "comparisonSection", "benefitsSection", "frameworkSection", "solutionSection", "guaranteeSection"].includes(key)) {
         // Handle landing page sections
         if (value && typeof value === "object") {
           // Clean up comparisonSection: filter out empty strings from points arrays
@@ -980,6 +983,7 @@ const AddCourse = () => {
     { key: "seo", title: "SEO Settings", icon: Target, isRequired: false },
     { key: "mentor", title: "Mentor Information", icon: Users, isRequired: false },
     { key: "landingPage", title: "Landing Page Sections", icon: Layout, isRequired: false },
+    { key: "guarantee", title: "Guarantee Protocol", icon: ShieldCheck, isRequired: false },
   ];
 
   // Check if a section is complete (for sidebar indicators)
@@ -1982,6 +1986,10 @@ const AddCourse = () => {
 
             {activeTab === "landingPage" && (
               <LandingPageSections formData={formData} setFormData={setFormData} />
+            )}
+
+            {activeTab === "guarantee" && (
+              <GuaranteeSectionForm formData={formData} setFormData={setFormData} />
             )}
 
           </div>
