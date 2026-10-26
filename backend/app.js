@@ -86,7 +86,17 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads"), {
 // Rate limiting
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 20,
+  max: process.env.NODE_ENV === 'production' ? 20 : 1000,
+  skip: (req) => {
+    // In local development, avoid locking out testing from localhost
+    if (process.env.NODE_ENV !== 'production') {
+      const ip = req.ip || req.connection?.remoteAddress || '';
+      if (ip.includes('127.0.0.1') || ip.includes('::1') || ip === 'localhost') {
+        return true;
+      }
+    }
+    return false;
+  },
   message: { success: false, message: "Too many attempts, please try again after 15 minutes" },
   standardHeaders: true,
   legacyHeaders: false,

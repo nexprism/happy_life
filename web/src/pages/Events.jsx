@@ -31,6 +31,28 @@ const Events = () => {
   const [isRegistering, setIsRegistering] = useState(false)
   const [regSuccess, setRegSuccess] = useState(false)
   const [regError, setRegError] = useState('')
+  const [banners, setBanners] = useState([])
+
+  useEffect(() => {
+    const loadBanners = async () => {
+      try {
+        const BASE_URL = import.meta.env.VITE_BASE_URL || 'https://happy-life-sx03.onrender.com'
+        const res = await fetch(`${BASE_URL}/banners?isActive=true`)
+        if (res.ok) {
+          const json = await res.json()
+          const list = json?.data?.banners || []
+          const activeEventBanners = list.filter(
+            (b) => b.isActive !== false && (!b.type || b.type === 'all_events' || b.type === 'event')
+          )
+          activeEventBanners.sort((a, b) => (b.priority || 0) - (a.priority || 0))
+          setBanners(activeEventBanners)
+        }
+      } catch (err) {
+        console.error('Failed to load event banners:', err)
+      }
+    }
+    loadBanners()
+  }, [])
 
   useEffect(() => {
     dispatch(fetchEvents({ status: 'published', limit: 50 }))
@@ -184,6 +206,8 @@ const Events = () => {
 
   // Use API events if available, otherwise display curated events
   const displayedEvents = (eventList && eventList.length > 0) ? eventList : fallbackEventData
+  // Display active admin banners in the hero section; fall back to displayedEvents if no banners are defined
+  const heroItems = (banners && banners.length > 0) ? banners : displayedEvents
 
   return (
     <div className="w-full bg-[#f8fafc] text-slate-900 min-h-screen pt-28 pb-24 px-4 md:px-12 selection:bg-accent selection:text-white">
@@ -211,9 +235,9 @@ const Events = () => {
         </div>
 
         {/* 2. Optional Highlight Showcase Banner */}
-        {displayedEvents && displayedEvents.length > 0 && (
+        {heroItems && heroItems.length > 0 && (
           <div className="events-hero-reveal rounded-3xl overflow-hidden border border-slate-200/80 shadow-sm">
-            <EventHero events={displayedEvents} />
+            <EventHero events={heroItems} />
           </div>
         )}
 

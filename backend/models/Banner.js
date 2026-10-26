@@ -3,7 +3,8 @@ import mongoose from 'mongoose';
 const BannerSchema = new mongoose.Schema({
   title: { 
     type: String, 
-    required: true,
+    required: false,
+    default: '',
     trim: true
   },
   description: { 
@@ -19,13 +20,14 @@ const BannerSchema = new mongoose.Schema({
   },
   type: {
     type: String,
-    enum: ['course', 'event', 'job','all_courses', 'all_events', 'all_jobs'],
-    required: true
+    enum: ['course', 'event', 'job', 'announcement', 'all_courses', 'all_events', 'all_jobs'],
+    required: false,
+    default: 'all_events'
   },
   referenceId: { 
     type: mongoose.Schema.Types.ObjectId, 
-    refPath: 'type', 
-    required: function() { return this.type !== 'all'; } 
+    ref: 'Event', 
+    required: false 
   },
   isActive: { 
     type: Boolean, 

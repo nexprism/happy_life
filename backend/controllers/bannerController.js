@@ -10,6 +10,11 @@ export const createBanner = async (req, res) => {
     if (req.files && req.files['mobileImage'] && req.files['mobileImage'][0]) {
       data = { ...data, mobileImage: req.files['mobileImage'][0].filename };
     }
+    data.type = data.type || 'all_events';
+    data.title = data.title !== undefined ? data.title : '';
+    if (!data.referenceId || data.referenceId === "" || data.referenceId === "undefined" || data.referenceId === "null") {
+      delete data.referenceId;
+    }
     const banner = await bannerService.createBanner(data);
     res.status(201).json({
       success: true,
@@ -84,6 +89,9 @@ export const updateBanner = async (req, res) => {
     }
     if (req.files && req.files['mobileImage'] && req.files['mobileImage'][0]) {
       data = { ...data, mobileImage: req.files['mobileImage'][0].filename };
+    }
+    if (!data.referenceId || data.referenceId === "" || data.referenceId === "undefined" || data.referenceId === "null") {
+      data.referenceId = null;
     }
     const banner = await bannerService.updateBanner(req.params.id, data);
     if (!banner) return res.status(404).json({

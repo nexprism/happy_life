@@ -6,7 +6,7 @@ export const createBanner = async (data) => {
 };
 
 export const getBanners = async (filter = {}) => {
-  return await Banner.find(filter);
+  return await Banner.find(filter).sort({ priority: -1, createdAt: -1 });
 };
 
 export const getBanner = async (id) => {
