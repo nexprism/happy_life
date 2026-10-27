@@ -162,6 +162,40 @@ export default function BuilderTemplateView() {
     setFormData((prev) => ({ ...prev, [fieldName]: value }));
   };
 
+  const buildPrefilledPaymentUrl = (rawLink = "", details = {}) => {
+    try {
+      let trimmed = (rawLink || "").trim();
+      if (!trimmed) return "";
+
+      // If user provided raw Razorpay button/page ID (e.g. "pl_TrHUsASr37CJvl")
+      if (/^pl_[a-zA-Z0-9]+$/i.test(trimmed)) {
+        trimmed = `https://pages.razorpay.com/${trimmed}/view`;
+      }
+
+      const fullUrl = /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
+      const url = new URL(fullUrl);
+
+      const { email, phone, name } = details;
+      if (email && email.trim()) {
+        url.searchParams.set("email", email.trim().toLowerCase());
+      }
+      if (phone) {
+        const cleanPhone = String(phone).replace(/\D/g, "").slice(-10);
+        url.searchParams.set("phone", cleanPhone || String(phone).trim());
+        url.searchParams.set("contact", cleanPhone || String(phone).trim());
+      }
+      if (name && name.trim()) {
+        url.searchParams.set("name", name.trim());
+        url.searchParams.set("full_name", name.trim());
+      }
+      return url.toString();
+    } catch (err) {
+      console.warn("Failed to construct prefilled payment URL:", err);
+      const targetUrl = (rawLink || "").trim();
+      return /^https?:\/\//i.test(targetUrl) ? targetUrl : `https://${targetUrl}`;
+    }
+  };
+
   const handleLeadSubmit = async (e, paymentLink = "") => {
     e.preventDefault();
     setLeadError("");
@@ -181,6 +215,7 @@ export default function BuilderTemplateView() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...formData,
+          paymentLink: paymentLink ? paymentLink.trim() : "",
           hasPaymentLink: hasPayment,
         }),
       });
@@ -188,9 +223,8 @@ export default function BuilderTemplateView() {
 
       if (data.success) {
         if (hasPayment) {
-          const targetUrl = paymentLink.trim();
-          const fullUrl = /^https?:\/\//i.test(targetUrl) ? targetUrl : `https://${targetUrl}`;
-          window.location.href = fullUrl;
+          const targetUrl = data.redirectUrl || buildPrefilledPaymentUrl(paymentLink, formData);
+          window.location.href = targetUrl;
           return;
         }
 

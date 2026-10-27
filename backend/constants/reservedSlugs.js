@@ -34,6 +34,8 @@ export const RESERVED_SLUGS = [
   "my-forum",
   "my-submissions",
   "my-results",
+  "my-events",
+  "event-success",
   "quiz",
   "assignment",
   "reading",

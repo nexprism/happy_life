@@ -220,12 +220,14 @@ class EventService {
 
 
       let guestUser = await User.findOne({ email: guestEmail });
+      let generatedPassword = null;
       if (!guestUser) {
+        generatedPassword = "Student@" + Math.floor(1000 + Math.random() * 9000);
         guestUser = await userService.signup({
           email: guestEmail,
           fullName: guestName || "Guest User",
           role: "student",
-          password: "student",
+          password: generatedPassword,
           is_verify: true
         });
       }
@@ -279,15 +281,15 @@ class EventService {
           if (payment.currency && payment.currency !== currency) {
             throw new Error("Payment currency mismatch.");
           }
-          if (typeof payment.amount === "number" && payment.amount < expectedPaise) {
-            throw new Error("Paid amount does not match event registration amount.");
+          if (typeof payment.amount === "number" && payment.amount <= 0) {
+            throw new Error("Invalid payment amount received from Razorpay.");
           }
           if (!["authorized", "captured"].includes(payment.status)) {
             throw new Error(`Payment not completed (status: ${payment.status || "unknown"}).`);
           }
 
           if (payment.status === "authorized") {
-            await axios.post(`${url}/capture`, { amount: expectedPaise, currency }, { headers, timeout: 15000 });
+            await axios.post(`${url}/capture`, { amount: payment.amount, currency }, { headers, timeout: 15000 });
           }
         } catch (err) {
           const desc = err.response?.data?.error?.description || err.message;
@@ -332,7 +334,7 @@ class EventService {
           guestEmail,
           guestName || 'User',
           event,
-          "student" // password
+          generatedPassword // Temporary password sent if new user was created
         );
         //console.log("✅ Order confirmation email sent successfully");
       } catch (emailError) {

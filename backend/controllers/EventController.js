@@ -3,6 +3,7 @@ import getRazorpayInstance, { getRazorpayKeys } from '../config/razorpay.js';
 import Setting from '../models/setting.js';
 import User from '../models/user.js';
 import Event from '../models/Event.js';
+import crypto from 'crypto';
 
 const eventService = new EventService();
 
@@ -403,5 +404,183 @@ export const updateParticipantStatus = async (req, res) => {
       message: error.message,
       error: error
     });
+  }
+};
+
+export const getMyRegisteredEvents = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const events = await Event.find({
+      'registeredParticipants.userId': userId,
+      isDeleted: false
+    })
+      .sort({ startDate: -1 })
+      .select('title description type startDate endDate venue onlineLink price currency thumbnail status registeredParticipants landingPageUrl');
+
+    const formatted = events.map((evt) => {
+      const myTicket = evt.registeredParticipants?.find(
+        (p) => p.userId && p.userId.toString() === userId.toString()
+      );
+      return {
+        _id: evt._id,
+        title: evt.title,
+        description: evt.description,
+        type: evt.type,
+        startDate: evt.startDate,
+        endDate: evt.endDate,
+        venue: evt.venue,
+        onlineLink: evt.onlineLink,
+        price: evt.price,
+        currency: evt.currency,
+        thumbnail: evt.thumbnail,
+        status: evt.status,
+        landingPageUrl: evt.landingPageUrl,
+        ticket: myTicket
+          ? {
+              ticketNo: myTicket.ticketNo,
+              ticketPrice: myTicket.ticketPrice,
+              invoice: myTicket.invoice,
+              purchasedAt: myTicket.purchasedAt || myTicket.registeredAt,
+              status: myTicket.status,
+              paymentStatus: myTicket.paymentStatus,
+            }
+          : null,
+      };
+    });
+
+    return res.status(200).json({
+      success: true,
+      data: formatted,
+    });
+  } catch (error) {
+    console.error('Error fetching registered events:', error);
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+export const verifyPublicRegistration = async (req, res) => {
+  try {
+    const { paymentId, email, name, phone, slug, eventId } = req.body;
+
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email address is required for registration',
+      });
+    }
+
+    let targetEvent = null;
+    if (eventId) {
+      targetEvent = await Event.findOne({ _id: eventId, isDeleted: false });
+    }
+    if (!targetEvent && slug) {
+      targetEvent = await Event.findOne({
+        isDeleted: false,
+        landingPageUrl: new RegExp(`^/?${slug}$`, 'i'),
+      });
+    }
+
+    // If this builder page is NOT assigned to any event, do NOT grab an unrelated event
+    if (!targetEvent) {
+      return res.status(200).json({
+        success: true,
+        isEvent: false,
+        message: 'Payment received. This landing page is not assigned to an event, so no event was registered.',
+      });
+    }
+
+    // Register participant using eventService
+    const result = await eventService.registerParticipant(targetEvent._id, {
+      guestEmail: email.trim().toLowerCase(),
+      guestName: name ? name.trim() : 'Student',
+      guestPhone: phone,
+      paymentId: paymentId || 'FREE_EVENT',
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: 'Registration confirmed successfully',
+      data: result,
+    });
+  } catch (error) {
+    console.error('Error verifying public registration:', error);
+    if (error.message && error.message.includes('already registered')) {
+      return res.status(200).json({
+        success: true,
+        alreadyRegistered: true,
+        message: 'You are already registered for this event. Your access details are in your email and dashboard.',
+      });
+    }
+    return res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+export const handleRazorpayWebhook = async (req, res) => {
+  try {
+    const signature = req.headers['x-razorpay-signature'];
+    const { keySecret } = await getRazorpayKeys();
+
+    if (signature) {
+      const expectedSignature = crypto
+        .createHmac('sha256', keySecret)
+        .update(JSON.stringify(req.body))
+        .digest('hex');
+
+      if (expectedSignature !== signature) {
+        console.warn('⚠️ Invalid Razorpay webhook signature');
+        return res.status(400).json({ success: false, message: 'Invalid signature' });
+      }
+    }
+
+    const eventType = req.body.event;
+    console.log(`🔔 Received Razorpay webhook event: ${eventType}`);
+
+    if (['payment.captured', 'payment_link.paid', 'order.paid'].includes(eventType)) {
+      const payload = req.body.payload;
+      const payment = payload?.payment?.entity || payload?.payment_link?.entity || {};
+      const email = payment.email || payment.customer?.email;
+      const contact = payment.contact || payment.customer?.contact;
+      const notes = payment.notes || {};
+
+      if (email) {
+        const cleanEmail = email.trim().toLowerCase();
+        let targetEvent = null;
+
+        if (notes.eventId) {
+          targetEvent = await Event.findOne({ _id: notes.eventId, isDeleted: false });
+        }
+        if (!targetEvent && notes.slug) {
+          targetEvent = await Event.findOne({
+            isDeleted: false,
+            landingPageUrl: new RegExp(`^/?${notes.slug}$`, 'i'),
+          });
+        }
+
+        if (targetEvent) {
+          try {
+            await eventService.registerParticipant(targetEvent._id, {
+              guestEmail: cleanEmail,
+              guestName: notes.name || notes.guestName || payment.description || 'Student',
+              guestPhone: contact,
+              paymentId: payment.id || 'WEBHOOK_PAYMENT',
+            });
+            console.log(`✅ Participant ${cleanEmail} registered for ${targetEvent.title} via Razorpay webhook`);
+          } catch (regErr) {
+            console.warn(`Webhook participant registration note: ${regErr.message}`);
+          }
+        }
+      }
+    }
+
+    return res.status(200).json({ status: 'ok' });
+  } catch (error) {
+    console.error('Error handling Razorpay webhook:', error);
+    return res.status(500).json({ success: false, message: error.message });
   }
 };

@@ -31,6 +31,7 @@ import JobDetail from './pages/JobDetail'
 import MyForum from './pages/MyForum'
 import MySubmissions from './pages/MySubmissions'
 import MyResults from './pages/MyResults'
+import MyEvents from './pages/MyEvents'
 import Notifications from './pages/dashboard/Notifications'
 import DashboardQuiz from './pages/DashboardQuiz'
 import DashboardAssignment from './pages/DashboardAssignment'
@@ -42,6 +43,7 @@ import AboutUs from './pages/AboutUs'
 import PrivacyPolicy from './pages/PrivacyPolicy'
 import Terms from './pages/Terms'
 import RefundPolicy from './pages/RefundPolicy'
+import EventRegistrationSuccess from './pages/EventRegistrationSuccess'
 import BuilderTemplateView from './pages/BuilderTemplateView'
 import { isReservedSlug } from './constants/reservedSlugs'
 import { TrackerProvider } from './components/ActivityTracker'
@@ -90,9 +92,10 @@ const AppContent = () => {
   // Tactical Path Matching
   const isDashboard = location.pathname.startsWith('/dashboard')
   const isAuthPage = location.pathname === '/login' || location.pathname === '/signup' || location.pathname === '/checkout' || location.pathname === '/reset-password'
+  const isEventSuccess = location.pathname === '/event-success'
   const pathSegments = location.pathname.split('/').filter(Boolean)
   const isBuilderPage = pathSegments.length === 1 && !isReservedSlug(pathSegments[0])
-  const isCleanPage = isDashboard || isAuthPage || isBuilderPage
+  const isCleanPage = isDashboard || isAuthPage || isBuilderPage || isEventSuccess
 
   // Authentication check for dashboard elements
   const token = useSelector((state) => state.auth?.token)
@@ -326,7 +329,7 @@ const AppContent = () => {
       {/* 2. Main Site Content Wrapper (Perspective Ready) */}
       <div
         id="content-wrapper"
-        className={`relative min-h-screen origin-right ${isCleanPage ? 'bg-dark' : ''} opacity-0 pointer-events-none`}
+        className={`relative min-h-screen origin-right ${isCleanPage && !isEventSuccess ? 'bg-dark' : ''} opacity-0 pointer-events-none`}
       >
         <main>
           <SecureWrapper>
@@ -352,6 +355,7 @@ const AppContent = () => {
             <Route path="/signup" element={<Signup />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/checkout" element={<Checkout />} />
+            <Route path="/event-success" element={<EventRegistrationSuccess />} />
 
             {/* Nested Tactical Dashboard (v2.1 Routing - Protected) */}
             <Route path="/dashboard" element={<ProtectedRoute />}>
@@ -376,6 +380,7 @@ const AppContent = () => {
               <Route path="my-forum" element={<MyForum />} />
               <Route path="my-submissions" element={<MySubmissions />} />
               <Route path="my-results" element={<MyResults />} />
+              <Route path="my-events" element={<MyEvents />} />
               <Route path="notifications" element={<Notifications />} />
               <Route path="*" element={<Navigate to="/dashboard" replace />} />
             </Route>

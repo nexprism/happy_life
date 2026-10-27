@@ -3703,11 +3703,25 @@ export default function TemplateEditor() {
                         onChange={(e) =>
                           updateActiveComponentContent({ paymentLink: e.target.value })
                         }
-                        placeholder="e.g. https://rzp.io/l/... or Cashfree link"
+                        onBlur={async (e) => {
+                          const val = e.target.value?.trim();
+                          if (val && (val.includes("rzp.io") || /^pl_[a-zA-Z0-9]+$/i.test(val))) {
+                            try {
+                              const res = await builderService.resolvePaymentLink(val);
+                              if (res.success && res.resolvedUrl && res.resolvedUrl !== val) {
+                                updateActiveComponentContent({ paymentLink: res.resolvedUrl });
+                                toast.success("Auto-expanded to permanent Razorpay link!");
+                              }
+                            } catch {
+                              // Ignore error if offline
+                            }
+                          }
+                        }}
+                        placeholder="e.g. https://pages.razorpay.com/pl_.../view or rzp.io link"
                         className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#2171B5]"
                       />
                       <p className="text-[10px] text-slate-500 leading-normal">
-                        Paste your Razorpay, Cashfree, or custom payment link here. When provided, the user's details are saved first and they are redirected to pay. If empty, details are submitted directly.
+                        Paste your Razorpay or custom payment link. Short links (rzp.io) are automatically expanded to permanent Razorpay URLs to guarantee name, email, and phone pre-filling.
                       </p>
                     </div>
 

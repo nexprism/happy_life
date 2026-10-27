@@ -163,4 +163,10 @@ export const builderService = {
     });
     return res.data;
   },
+
+  // Resolve short payment link
+  resolvePaymentLink: async (url: string) => {
+    const res = await axiosInstance.post("/builder/resolve-link", { url });
+    return res.data;
+  },
 };

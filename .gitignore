@@ -86,3 +86,6 @@ uploads/*
 
 # Audit & Local Output
 audit-output/
+
+# Planning & Documentation
+EVENT_REGISTRATION_FLOW_PLAN.md

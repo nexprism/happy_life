@@ -232,6 +232,50 @@ class BuilderService {
 
   // --- Leads management ---
 
+  /**
+   * Resolves any Razorpay short links (rzp.io/l/..., rzp.io/rzp/...) or button IDs
+   * to their permanent long URL (https://pages.razorpay.com/pl_.../view).
+   */
+  async resolvePaymentUrl(rawUrl) {
+    if (!rawUrl || typeof rawUrl !== "string") return "";
+    let trimmed = rawUrl.trim();
+
+    // Check if raw button/page ID like pl_Tst6oujj3wU57R
+    if (/^pl_[a-zA-Z0-9]+$/i.test(trimmed)) {
+      return `https://pages.razorpay.com/${trimmed}/view`;
+    }
+
+    let current = /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
+
+    // If not a short link, return as-is
+    if (!current.includes("rzp.io")) {
+      return current;
+    }
+
+    try {
+      for (let hop = 0; hop < 3; hop++) {
+        const res = await fetch(current, {
+          method: "GET",
+          redirect: "manual",
+          headers: { "User-Agent": "HappyLifeApp/1.0" },
+        });
+
+        if ([301, 302, 307, 308].includes(res.status)) {
+          const loc = res.headers.get("location");
+          if (loc) {
+            current = loc.startsWith("http") ? loc : new URL(loc, current).href;
+            continue;
+          }
+        }
+        break;
+      }
+      return current;
+    } catch (err) {
+      console.warn("Could not resolve short link, using original:", err.message);
+      return current;
+    }
+  }
+
   async submitLead(slug, leadData, reqInfo = {}) {
     const template = await builderRepo.findBySlug(slug);
     if (!template) {
@@ -271,7 +315,31 @@ class BuilderService {
     });
 
     await builderRepo.incrementLeads(template._id);
-    return record;
+
+    // Auto-resolve payment link and build prefilled URL
+    let redirectUrl = null;
+    const paymentLinkToResolve = leadData.paymentLink || "";
+    if (leadData.hasPaymentLink && paymentLinkToResolve) {
+      try {
+        const expandedBaseUrl = await this.resolvePaymentUrl(paymentLinkToResolve);
+        const urlObj = new URL(expandedBaseUrl);
+        urlObj.searchParams.set("email", leadData.email.trim().toLowerCase());
+        urlObj.searchParams.set("phone", cleanPhone.slice(-10));
+        urlObj.searchParams.set("contact", cleanPhone.slice(-10));
+        if (leadData.name) {
+          urlObj.searchParams.set("name", leadData.name.trim());
+          urlObj.searchParams.set("full_name", leadData.name.trim());
+        }
+        redirectUrl = urlObj.toString();
+      } catch (urlErr) {
+        console.warn("Error building prefilled payment redirect:", urlErr.message);
+      }
+    }
+
+    return {
+      record,
+      redirectUrl,
+    };
   }
 
   async getAllLeads(filter = {}, sort = { createdAt: -1 }, page = 1, limit = 50) {

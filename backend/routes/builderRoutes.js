@@ -14,6 +14,7 @@ import {
   deleteLead,
   exportLeadsCsv,
   uploadFile,
+  resolvePaymentLink,
 } from "../controllers/builderController.js";
 import accessTokenAutoRefresh from "../middlewares/accessTokenAutoRefresh.js";
 import passport from "passport";
@@ -39,6 +40,7 @@ const leadLimiter = rateLimit({
 // ==========================
 router.get("/public/:slug", getPublicTemplate);
 router.post("/public/:slug/lead", leadLimiter, submitLead);
+router.post("/resolve-link", resolvePaymentLink);
 
 // ==========================
 // Admin Protected Routes

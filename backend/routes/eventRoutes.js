@@ -7,7 +7,10 @@ import {
   deleteEvent,
   checkRegisterForEvent,
   registerForEvent,
-  updateParticipantStatus
+  updateParticipantStatus,
+  getMyRegisteredEvents,
+  verifyPublicRegistration,
+  handleRazorpayWebhook
 } from '../controllers/EventController.js';
 import accessTokenAutoRefresh from '../middlewares/accessTokenAutoRefresh.js';
 import passport from 'passport';
@@ -18,6 +21,8 @@ const router = express.Router();
 
 // Public routes
 router.get('/', getAllEvents);
+router.post('/razorpay-webhook', handleRazorpayWebhook);
+router.post('/verify-public-registration', verifyPublicRegistration);
 router.get('/:id', getEventById);
 
 // Optional auth helper: populates req.user if token is present, but allows guest submissions
@@ -37,9 +42,12 @@ const optionalAuth = (req, res, next) => {
 router.post('/:id/check-register', optionalAuth, checkRegisterForEvent);
 router.post('/:id/register', optionalAuth, registerForEvent);
 
-// Protected routes
+// Protected routes (Logged in student / user)
 router.use(accessTokenAutoRefresh);
 router.use(passport.authenticate('jwt', { session: false }));
+
+// Student dashboard: registered events
+router.get('/my/registered-events', getMyRegisteredEvents);
 
 // Event creation and management (admin only)
 router.post('/',

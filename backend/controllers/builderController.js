@@ -65,15 +65,33 @@ export const submitLead = async (req, res) => {
       userAgent: req.headers["user-agent"] || "",
     };
 
-    const lead = await builderService.submitLead(slug, req.body, reqInfo);
+    const result = await builderService.submitLead(slug, req.body, reqInfo);
     return res.status(201).json({
       success: true,
       message: "Lead submitted successfully",
-      data: lead,
+      data: result.record || result,
+      redirectUrl: result.redirectUrl || null,
     });
   } catch (error) {
     console.error("❌ Error submitting lead:", error);
     return res.status(400).json({ success: false, message: error.message });
+  }
+};
+
+export const resolvePaymentLink = async (req, res) => {
+  try {
+    const { url } = req.body;
+    if (!url) {
+      return res.status(400).json({ success: false, message: "URL is required" });
+    }
+    const resolvedUrl = await builderService.resolvePaymentUrl(url);
+    return res.status(200).json({
+      success: true,
+      originalUrl: url,
+      resolvedUrl,
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
   }
 };
 
