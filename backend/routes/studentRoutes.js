@@ -4,6 +4,7 @@ import passport from 'passport';
 import accessTokenAutoRefresh from '../middlewares/accessTokenAutoRefresh.js';
 import { isAdmin } from '../middlewares/isAdmin.js';
 import { getAllStudents, getStudentById, getStudentAnalytics, updateStudentByAdmin } from '../controllers/studentController.js';
+import { deleteUser } from '../controllers/userController.js';
 
 const studentRouter = express.Router();
 
@@ -37,6 +38,14 @@ studentRouter.get(
   passport.authenticate('jwt', { session: false }),
   isAdmin,
   getStudentAnalytics
+);
+
+studentRouter.delete(
+  '/:id',
+  accessTokenAutoRefresh,
+  passport.authenticate('jwt', { session: false }),
+  isAdmin,
+  deleteUser
 );
 
 export default studentRouter;

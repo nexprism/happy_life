@@ -23,6 +23,7 @@ import {
 } from "../utils/tokens/generateTokens.js";
 import UserRefreshToken from "../models/UserRefreshToken.js";
 import DeviceApproval from "../models/DeviceApproval.js";
+import DeleteAccountRequest from "../models/DeleteAccountRequest.js";
 import LoginLog from "../models/LoginLog.js";
 import axios from "axios";
 
@@ -1803,21 +1804,25 @@ export const deleteUser = async (req, res) => {
     // 1. Delete all enrollments for this user
     await CourseEnrollment.deleteMany({ userId });
 
-    // 2. Optionally: Remove user from enrolledStudents in Course and CourseBundle
-    // (If you store user IDs in those arrays)
+    // 2. Remove user from enrolledStudents in Course and CourseBundle
     await Course.updateMany({}, { $pull: { enrolledStudents: userId } });
     await CourseBundle.updateMany({}, { $pull: { enrolledStudents: userId } });
 
-    // 3. Delete the user
+    // 3. Clean up tokens, approvals, and delete requests
+    await UserRefreshToken.deleteMany({ userId });
+    await DeviceApproval.deleteMany({ userId });
+    await DeleteAccountRequest.deleteMany({ user: userId });
+
+    // 4. Delete the user
     const deletedUser = await User.findByIdAndDelete(userId);
 
-    // 4. Optionally: Remove user's created courses, assignments, etc. (if required)
+    // 5. Remove user's created courses, assignments, etc. (if required)
     await Course.deleteMany({ instructorId: userId });
     await Assignment.deleteMany({ createdBy: userId });
 
     return res
       .status(200)
-      .json({ success: true, message: "User and related records deleted" });
+      .json({ success: true, message: "User and related records deleted permanently" });
   } catch (error) {
     console.error("❌ Delete User Error:", error);
     return res

@@ -78,7 +78,7 @@ const DeleteModal: React.FC<{
                 <AlertTriangle className="w-5 h-5 text-red-600 dark:text-red-400" />
               </div>
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                Delete Student
+                Delete Student Permanently
               </h3>
             </div>
             <button
@@ -91,15 +91,15 @@ const DeleteModal: React.FC<{
 
           {/* Content */}
           <div className="p-6">
-            <p className="text-gray-600 dark:text-gray-300 mb-4">
-              Are you sure you want to delete the student{" "}
+            <p className="text-gray-600 dark:text-gray-300 mb-3">
+              Are you sure you want to permanently delete the student{" "}
               <strong className="text-gray-900 dark:text-white">
                 "{student.fullName || student.name}"
               </strong>
               ?
             </p>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              This action cannot be undone.
+            <p className="text-sm text-red-600 dark:text-red-400 font-medium">
+              This action cannot be undone. All student data, enrollments, and associated records will be permanently removed.
             </p>
           </div>
 
@@ -283,7 +283,7 @@ const StudentList: React.FC = () => {
         setPopup({
           message: `Student "${
             studentToDelete.fullName || studentToDelete.name
-          }" deleted successfully`,
+          }" deleted permanently`,
           type: "success",
           isVisible: true,
         });
@@ -292,26 +292,32 @@ const StudentList: React.FC = () => {
         closeDeleteModal();
 
         // Refresh the students list
-        const activeFilters = {
-          isDeleted: false,
-          ...(localFilters.status ? { status: localFilters.status } : {}),
-        };
+        const activeFilters: Record<string, any> = {};
+        if (localFilters.status === "active") {
+          activeFilters.isActive = true;
+        } else if (localFilters.status === "inactive") {
+          activeFilters.isActive = false;
+        }
+        if (typeof localFilters.isActive === "boolean") {
+          activeFilters.isActive = localFilters.isActive;
+        }
 
         dispatch(
           fetchAllStudents({
             page: pagination.page,
             limit: pagination.limit,
             filters: activeFilters,
-            searchFields: searchQuery
-              ? { name: searchQuery, email: searchQuery }
-              : {},
+            searchFields: searchQuery ? { search: searchQuery } : {},
             sort: { createdAt: "desc" },
           })
         );
-      } catch (error) {
+      } catch (error: any) {
         console.error("Failed to delete student:", error);
         setPopup({
-          message: "Failed to delete student. Please try again.",
+          message:
+            typeof error === "string"
+              ? error
+              : error?.message || "Failed to delete student. Please try again.",
           type: "error",
           isVisible: true,
         });
@@ -734,6 +740,19 @@ const StudentList: React.FC = () => {
                               <Ban className="h-5 w-5" />
                             </button>
                           )}
+
+                          {/* Delete Student Permanently Button */}
+                          <button
+                            className="text-red-600 hover:text-red-800 transition-colors p-1"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              openDeleteModal(student);
+                            }}
+                            disabled={isDeleting}
+                            title="Delete Student Permanently"
+                          >
+                            <Trash2 className="h-5 w-5" />
+                          </button>
                         </div>
                       </td>
                     </tr>
