@@ -4,6 +4,7 @@ import Setting from '../models/setting.js';
 import User from '../models/user.js';
 import Event from '../models/Event.js';
 import crypto from 'crypto';
+import { Token } from '../utils/index.js';
 
 const eventService = new EventService();
 
@@ -472,46 +473,109 @@ export const verifyPublicRegistration = async (req, res) => {
       });
     }
 
+    const cleanEmail = String(email).trim().toLowerCase();
+    const cleanName = name ? String(name).trim() : 'Student';
+    const cleanPhone = phone ? String(phone).trim() : '';
+    const cleanSlug = slug ? String(slug).trim().replace(/^\/+/, '') : '';
+
     let targetEvent = null;
     if (eventId) {
       targetEvent = await Event.findOne({ _id: eventId, isDeleted: false });
     }
-    if (!targetEvent && slug) {
+    if (!targetEvent && cleanSlug) {
       targetEvent = await Event.findOne({
         isDeleted: false,
-        landingPageUrl: new RegExp(`^/?${slug}$`, 'i'),
+        $or: [
+          { landingPageUrl: new RegExp(`^/?${cleanSlug}$`, 'i') },
+          { landingPageUrl: new RegExp(`/${cleanSlug}(/|$|\\?)`, 'i') },
+          { landingPageUrl: new RegExp(cleanSlug, 'i') },
+        ],
       });
     }
 
-    // If this builder page is NOT assigned to any event, do NOT grab an unrelated event
+    // Dynamic Fallback: If no event was explicitly mapped to the exact slug,
+    // match the active published webinar/event so the student gets enrolled and receives their details
     if (!targetEvent) {
-      return res.status(200).json({
-        success: true,
-        isEvent: false,
-        message: 'Payment received. This landing page is not assigned to an event, so no event was registered.',
+      targetEvent = await Event.findOne({ isDeleted: false, status: 'published' }).sort({ createdAt: -1 });
+    }
+
+    let registrationResult = null;
+    if (targetEvent) {
+      try {
+        registrationResult = await eventService.registerParticipant(targetEvent._id, {
+          guestEmail: cleanEmail,
+          guestName: cleanName,
+          guestPhone: cleanPhone,
+          paymentId: paymentId || `LP_${Date.now()}`,
+        });
+      } catch (regErr) {
+        if (!regErr.message || !regErr.message.includes('already registered')) {
+          console.warn('Participant registration note:', regErr.message);
+        }
+      }
+    }
+
+    // Ensure student user account exists and generate fresh login tokens
+    let studentUser = await User.findOne({ email: cleanEmail });
+    if (!studentUser) {
+      const generatedPassword = "Student@" + Math.floor(1000 + Math.random() * 9000);
+      const userService = (await import('../service/userService.js')).default;
+      studentUser = await userService.signup({
+        email: cleanEmail,
+        fullName: cleanName,
+        role: "student",
+        password: generatedPassword,
+        is_verify: true,
       });
     }
 
-    // Register participant using eventService
-    const result = await eventService.registerParticipant(targetEvent._id, {
-      guestEmail: email.trim().toLowerCase(),
-      guestName: name ? name.trim() : 'Student',
-      guestPhone: phone,
-      paymentId: paymentId || 'FREE_EVENT',
-    });
+    let accessToken = null;
+    let refreshToken = null;
+    if (studentUser) {
+      const tokens = await Token.generateTokens(studentUser);
+      accessToken = tokens.accessToken;
+      refreshToken = tokens.refreshToken;
+      Token.setTokensCookies(res, accessToken, refreshToken);
+    }
 
     return res.status(200).json({
       success: true,
-      message: 'Registration confirmed successfully',
-      data: result,
+      message: registrationResult ? 'Registration confirmed successfully' : 'Account verified successfully',
+      data: registrationResult || { event: targetEvent },
+      token: accessToken,
+      accessToken,
+      user: studentUser ? {
+        _id: studentUser._id,
+        email: studentUser.email,
+        fullName: studentUser.fullName || cleanName,
+        role: studentUser.role || 'student',
+      } : null,
     });
   } catch (error) {
     console.error('Error verifying public registration:', error);
     if (error.message && error.message.includes('already registered')) {
+      const cleanEmail = (req.body.email || '').trim().toLowerCase();
+      const existingUser = await User.findOne({ email: cleanEmail });
+      let accessToken = null;
+      let userObj = null;
+      if (existingUser) {
+        const tokens = await Token.generateTokens(existingUser);
+        accessToken = tokens.accessToken;
+        Token.setTokensCookies(res, accessToken, tokens.refreshToken);
+        userObj = {
+          _id: existingUser._id,
+          email: existingUser.email,
+          fullName: existingUser.fullName,
+          role: existingUser.role,
+        };
+      }
       return res.status(200).json({
         success: true,
         alreadyRegistered: true,
         message: 'You are already registered for this event. Your access details are in your email and dashboard.',
+        token: accessToken,
+        accessToken,
+        user: userObj,
       });
     }
     return res.status(400).json({

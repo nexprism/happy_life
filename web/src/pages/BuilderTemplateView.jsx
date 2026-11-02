@@ -223,6 +223,22 @@ export default function BuilderTemplateView() {
 
       if (data.success) {
         if (hasPayment) {
+          try {
+            localStorage.setItem(
+              "pending_event_registration",
+              JSON.stringify({
+                slug: slug || "",
+                name: formData.name ? formData.name.trim() : "",
+                email: formData.email ? formData.email.trim().toLowerCase() : "",
+                phone: formData.phone || "",
+                source: formData.source || "",
+                timestamp: Date.now(),
+              })
+            );
+          } catch (storageErr) {
+            console.warn("Could not save pending registration state:", storageErr);
+          }
+
           const targetUrl = data.redirectUrl || buildPrefilledPaymentUrl(paymentLink, formData);
           window.location.href = targetUrl;
           return;

@@ -7,12 +7,23 @@ const EventRegistrationSuccess = () => {
   const [eventData, setEventData] = useState(null);
   const [message, setMessage] = useState('');
 
-  const paymentId = searchParams.get('razorpay_payment_id') || searchParams.get('payment_id') || '';
-  const email = searchParams.get('email') || '';
-  const name = searchParams.get('name') || '';
-  const phone = searchParams.get('phone') || searchParams.get('contact') || '';
-  const slug = searchParams.get('slug') || '';
-  const eventId = searchParams.get('event_id') || searchParams.get('eventId') || '';
+  // Check both URL search params and cached registration from builder redirect
+  let cachedReg = {};
+  try {
+    const raw = typeof window !== 'undefined' ? localStorage.getItem('pending_event_registration') : null;
+    if (raw) cachedReg = JSON.parse(raw);
+  } catch (e) {
+    console.warn('Error reading pending registration:', e);
+  }
+
+  const paymentId = searchParams.get('razorpay_payment_id') || searchParams.get('payment_id') || cachedReg.paymentId || '';
+  const email = (searchParams.get('email') || cachedReg.email || '').trim().toLowerCase();
+  const name = searchParams.get('name') || cachedReg.name || '';
+  const phone = searchParams.get('phone') || searchParams.get('contact') || cachedReg.phone || '';
+  const slug = searchParams.get('slug') || cachedReg.slug || '';
+  const eventId = searchParams.get('event_id') || searchParams.get('eventId') || cachedReg.eventId || '';
+
+  const [registeredEmail, setRegisteredEmail] = useState(email);
 
   const getApiBaseUrl = () => {
     const raw = import.meta.env.VITE_BASE_URL || import.meta.env.VITE_API_BASE || 'https://happy-life-sx03.onrender.com';
@@ -21,6 +32,10 @@ const EventRegistrationSuccess = () => {
 
   useEffect(() => {
     window.scrollTo(0, 0);
+
+    if (email) {
+      setRegisteredEmail(email);
+    }
 
     const verifyAndLoad = async () => {
       try {
@@ -42,6 +57,31 @@ const EventRegistrationSuccess = () => {
           if (data.success) {
             setEventData(data.data?.event || null);
             setMessage(data.message || 'Seat confirmed successfully!');
+
+            // Auto-login: If backend returned user & token for this registered student, activate their session
+            if (data.token && data.user) {
+              localStorage.setItem('edrilla_token', data.token);
+              localStorage.setItem('edrilla_user', JSON.stringify(data.user));
+              window.dispatchEvent(new Event('storage'));
+            } else {
+              // If an old mismatched user session was present in localStorage, clear it so the wrong user isn't shown
+              try {
+                const currentUser = JSON.parse(localStorage.getItem('edrilla_user') || '{}');
+                if (currentUser?.email && currentUser.email.toLowerCase() !== email.toLowerCase()) {
+                  localStorage.removeItem('edrilla_token');
+                  localStorage.removeItem('edrilla_user');
+                }
+              } catch {
+                // ignore
+              }
+            }
+
+            // Cleanup pending registration to prevent duplicate processing
+            try {
+              localStorage.removeItem('pending_event_registration');
+            } catch {
+              // ignore
+            }
           } else {
             setMessage(data.message || 'Payment received. Confirmation email on the way.');
           }
@@ -87,9 +127,9 @@ const EventRegistrationSuccess = () => {
           <p className="text-xs text-blue-800 leading-relaxed">
             We have emailed your <strong>Zoom / Google Meet joining link</strong>, Meeting ID, Passcode, and your <strong>Student Portal Login Credentials</strong> (Email & Temporary Password) to:
           </p>
-          {email && (
+          {(registeredEmail || email) && (
             <div className="font-mono text-xs font-bold text-blue-950 bg-white/80 border border-blue-200/80 px-3 py-1.5 rounded-lg inline-block">
-              {email}
+              {registeredEmail || email}
             </div>
           )}
         </div>
@@ -98,7 +138,7 @@ const EventRegistrationSuccess = () => {
         <div className="space-y-3 pt-2">
           {/* WhatsApp Community Join */}
           <a
-            href="https://chat.whatsapp.com/"
+            href={eventData?.whatsappCommunityLink || "https://chat.whatsapp.com/"}
             target="_blank"
             rel="noopener noreferrer"
             className="w-full bg-[#25D366] hover:bg-[#20ba59] active:scale-[0.99] text-white py-3.5 px-6 rounded-xl font-black text-sm shadow-lg shadow-emerald-500/20 hover:shadow-xl transition-all flex items-center justify-center gap-2 cursor-pointer"
