@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { setAuthSession } from '../redux/slices/authSlice';
 
 const EventRegistrationSuccess = () => {
+  const dispatch = useDispatch();
   const [searchParams] = useSearchParams();
   const [loading, setLoading] = useState(true);
   const [eventData, setEventData] = useState(null);
@@ -58,8 +61,9 @@ const EventRegistrationSuccess = () => {
             setEventData(data.data?.event || null);
             setMessage(data.message || 'Seat confirmed successfully!');
 
-            // Auto-login: If backend returned user & token for this registered student, activate their session
+            // Auto-login: If backend returned user & token for this registered student, activate their session in Redux & localStorage
             if (data.token && data.user) {
+              dispatch(setAuthSession({ token: data.token, user: data.user }));
               localStorage.setItem('edrilla_token', data.token);
               localStorage.setItem('edrilla_user', JSON.stringify(data.user));
               window.dispatchEvent(new Event('storage'));
@@ -94,7 +98,13 @@ const EventRegistrationSuccess = () => {
     };
 
     verifyAndLoad();
-  }, [paymentId, email, name, phone, slug, eventId]);
+  }, [paymentId, email, name, phone, slug, eventId, dispatch]);
+
+  const handleGoToDashboard = () => {
+    if (loading) return;
+    // Hard navigate to ensure entire application rehydrates with the registered student session
+    window.location.href = '/dashboard/my-events';
+  };
 
   return (
     <div className="min-h-screen bg-[#f8fafc] flex items-center justify-center p-4 sm:p-6 text-slate-900">
@@ -150,13 +160,28 @@ const EventRegistrationSuccess = () => {
           </a>
 
           {/* Go to My Events in Dashboard */}
-          <Link
-            to="/dashboard/my-events"
-            className="w-full bg-[#2171B5] hover:bg-blue-700 active:scale-[0.99] text-white py-3 px-6 rounded-xl font-bold text-xs uppercase tracking-wider shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2"
+          <button
+            type="button"
+            onClick={handleGoToDashboard}
+            disabled={loading}
+            className={`w-full py-3.5 px-6 rounded-xl font-bold text-xs uppercase tracking-wider shadow-md transition-all flex items-center justify-center gap-2 ${
+              loading
+                ? 'bg-blue-300 text-white cursor-wait opacity-80'
+                : 'bg-[#2171B5] hover:bg-blue-700 active:scale-[0.99] text-white cursor-pointer hover:shadow-lg'
+            }`}
           >
-            <span>Go to My Events Dashboard</span>
-            <span>→</span>
-          </Link>
+            {loading ? (
+              <>
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                <span>Activating Your Dashboard...</span>
+              </>
+            ) : (
+              <>
+                <span>Go to My Events Dashboard</span>
+                <span>→</span>
+              </>
+            )}
+          </button>
         </div>
 
         {/* Footer Note */}

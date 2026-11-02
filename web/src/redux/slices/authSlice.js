@@ -194,6 +194,17 @@ const authSlice = createSlice({
     clearAuthError(state) {
       state.error = null;
     },
+    setAuthSession(state, action) {
+      const data = action.payload?.data || action.payload || {};
+      const token = data.accessToken || data.token || '';
+      const user = data.user || null;
+      state.token = token || null;
+      state.user = user || null;
+      state.loading = false;
+      state.error = null;
+      if (token) localStorage.setItem('edrilla_token', token);
+      if (user) localStorage.setItem('edrilla_user', JSON.stringify(user));
+    },
   },
   extraReducers: (builder) => {
     // Shared pending/rejected handler for both thunks
@@ -268,5 +279,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { logout, clearAuthError } = authSlice.actions;
+export const { logout, clearAuthError, setAuthSession } = authSlice.actions;
 export default authSlice.reducer;
