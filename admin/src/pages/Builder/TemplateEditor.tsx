@@ -1668,8 +1668,8 @@ export default function TemplateEditor() {
 
           <label
             className={`px-2.5 py-1.5 rounded-lg border text-xs font-bold flex items-center gap-1.5 cursor-pointer transition shrink-0 ${isCurrentUploading
-                ? "bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed"
-                : "bg-white hover:bg-blue-50 text-[#2171B5] border-blue-300 hover:border-[#2171B5] shadow-xs active:scale-95"
+              ? "bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed"
+              : "bg-white hover:bg-blue-50 text-[#2171B5] border-blue-300 hover:border-[#2171B5] shadow-xs active:scale-95"
               }`}
           >
             {isCurrentUploading ? (
@@ -1790,8 +1790,8 @@ export default function TemplateEditor() {
             />
             <span
               className={`text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full font-bold ${template.status === "published"
-                  ? "bg-emerald-100 text-emerald-800"
-                  : "bg-amber-100 text-amber-800"
+                ? "bg-emerald-100 text-emerald-800"
+                : "bg-amber-100 text-amber-800"
                 }`}
             >
               {template.status}
@@ -1805,8 +1805,8 @@ export default function TemplateEditor() {
             <button
               onClick={() => setViewport("desktop")}
               className={`px-3 py-1 rounded-md text-xs font-semibold flex items-center gap-1.5 transition ${viewport === "desktop"
-                  ? "bg-white text-[#2171B5] shadow-xs"
-                  : "text-slate-600 hover:text-slate-900"
+                ? "bg-white text-[#2171B5] shadow-xs"
+                : "text-slate-600 hover:text-slate-900"
                 }`}
             >
               <Monitor className="w-3.5 h-3.5" />
@@ -1815,8 +1815,8 @@ export default function TemplateEditor() {
             <button
               onClick={() => setViewport("tablet")}
               className={`px-3 py-1 rounded-md text-xs font-semibold flex items-center gap-1.5 transition ${viewport === "tablet"
-                  ? "bg-white text-[#2171B5] shadow-xs"
-                  : "text-slate-600 hover:text-slate-900"
+                ? "bg-white text-[#2171B5] shadow-xs"
+                : "text-slate-600 hover:text-slate-900"
                 }`}
             >
               <Tablet className="w-3.5 h-3.5" />
@@ -1825,8 +1825,8 @@ export default function TemplateEditor() {
             <button
               onClick={() => setViewport("mobile")}
               className={`px-3 py-1 rounded-md text-xs font-semibold flex items-center gap-1.5 transition ${viewport === "mobile"
-                  ? "bg-white text-[#2171B5] shadow-xs"
-                  : "text-slate-600 hover:text-slate-900"
+                ? "bg-white text-[#2171B5] shadow-xs"
+                : "text-slate-600 hover:text-slate-900"
                 }`}
             >
               <Smartphone className="w-3.5 h-3.5" />
@@ -1842,8 +1842,8 @@ export default function TemplateEditor() {
                   key={w}
                   onClick={() => setDesktopCanvasWidth(w)}
                   className={`px-2 py-0.5 rounded font-mono font-bold text-[11px] transition ${desktopCanvasWidth === w
-                      ? "bg-[#2171B5] text-white shadow-xs"
-                      : "text-slate-600 hover:text-slate-900"
+                    ? "bg-[#2171B5] text-white shadow-xs"
+                    : "text-slate-600 hover:text-slate-900"
                     }`}
                 >
                   {w.toUpperCase()}
@@ -1938,8 +1938,8 @@ export default function TemplateEditor() {
                       type="button"
                       onClick={() => setActiveCategory(cat.id)}
                       className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl border text-xs font-semibold transition-all cursor-pointer text-left ${isSelected
-                          ? "bg-red-50/60 border-red-200 text-red-700 shadow-xs"
-                          : "bg-white hover:bg-slate-50/80 border-slate-200/90 text-slate-700"
+                        ? "bg-red-50/60 border-red-200 text-red-700 shadow-xs"
+                        : "bg-white hover:bg-slate-50/80 border-slate-200/90 text-slate-700"
                         }`}
                     >
                       <Icon
@@ -2019,16 +2019,16 @@ export default function TemplateEditor() {
         <main className="flex-1 overflow-y-auto p-4 sm:p-8 flex justify-center items-start bg-[#eef3f9]">
           <div
             className={`transition-all duration-300 bg-white text-slate-800 shadow-xl rounded-2xl border border-slate-200 overflow-hidden ${viewport === "desktop"
-                ? desktopCanvasWidth === "full"
-                  ? "w-full max-w-[1600px]"
-                  : desktopCanvasWidth === "7xl"
-                    ? "w-full max-w-7xl"
-                    : desktopCanvasWidth === "6xl"
-                      ? "w-full max-w-6xl"
-                      : "w-full max-w-5xl"
-                : viewport === "tablet"
-                  ? "w-[768px]"
-                  : "w-[375px]"
+              ? desktopCanvasWidth === "full"
+                ? "w-full max-w-[1600px]"
+                : desktopCanvasWidth === "7xl"
+                  ? "w-full max-w-7xl"
+                  : desktopCanvasWidth === "6xl"
+                    ? "w-full max-w-6xl"
+                    : "w-full max-w-5xl"
+              : viewport === "tablet"
+                ? "w-[768px]"
+                : "w-[375px]"
               }`}
           >
             {/* Viewport header indicator */}
@@ -2190,8 +2190,8 @@ export default function TemplateEditor() {
                                         setIsInspectorOpen(true);
                                       }}
                                       className={`${isMobileView
-                                          ? "p-0 rounded-2xl bg-transparent border-0 shadow-none"
-                                          : "p-4 sm:p-5 rounded-2xl bg-white border border-slate-200/90 shadow-sm"
+                                        ? "p-0 rounded-2xl bg-transparent border-0 shadow-none"
+                                        : "p-4 sm:p-5 rounded-2xl bg-white border border-slate-200/90 shadow-sm"
                                         } transition relative group/comp cursor-pointer ${isSelectedComp
                                           ? "ring-2 ring-[#2171B5] ring-offset-2"
                                           : "hover:outline hover:outline-1 hover:outline-[#2171B5]/30"
@@ -2220,8 +2220,8 @@ export default function TemplateEditor() {
                                         comp.content.style === "webinar" || comp.content.eventDate ? (
                                           <div
                                             className={`relative overflow-hidden ${isMobileView
-                                                ? "rounded-[28px] p-5 sm:p-6 pt-7 pb-8 min-h-[80vh] flex flex-col justify-between bg-gradient-to-b from-[#06152B] via-[#091D38] to-[#051326]"
-                                                : "rounded-2xl sm:rounded-3xl p-5 sm:p-8 lg:p-10 bg-gradient-to-r from-[#071322] via-[#0d2238] to-[#17436b]"
+                                              ? "rounded-[28px] p-5 sm:p-6 pt-7 pb-8 min-h-[80vh] flex flex-col justify-between bg-gradient-to-b from-[#06152B] via-[#091D38] to-[#051326]"
+                                              : "rounded-2xl sm:rounded-3xl p-5 sm:p-8 lg:p-10 bg-gradient-to-r from-[#071322] via-[#0d2238] to-[#17436b]"
                                               } text-white shadow-2xl border border-blue-900/40`}
                                             style={
                                               comp.content.backgroundImage
@@ -3116,8 +3116,8 @@ export default function TemplateEditor() {
                   color: template.footerConfig.textColor || "#475569",
                 }}
                 className={`cursor-pointer border-t border-slate-200 transition ${selectedItem.type === "footer"
-                    ? "ring-2 ring-[#2171B5] ring-inset"
-                    : "hover:border-[#2171B5]/50"
+                  ? "ring-2 ring-[#2171B5] ring-inset"
+                  : "hover:border-[#2171B5]/50"
                   }`}
               >
                 {/* OPTION 1: Happy Life Signature (Center Stacked - Exact Website Match) */}
@@ -3139,8 +3139,8 @@ export default function TemplateEditor() {
                     {/* Slogan / Headline Typography */}
                     <div className="max-w-3xl mx-auto space-y-1 mb-6 sm:mb-8 relative z-10 px-2">
                       <h2 className={`font-black tracking-tight text-white ${isMobileView
-                          ? "text-lg sm:text-xl leading-snug"
-                          : "text-2xl sm:text-4xl md:text-5xl leading-[1.15]"
+                        ? "text-lg sm:text-xl leading-snug"
+                        : "text-2xl sm:text-4xl md:text-5xl leading-[1.15]"
                         }`}>
                         {template.footerConfig.headline ||
                           "Your Birth Chart Holds Clues, Not Instant MIRACLES"}
@@ -3219,8 +3219,8 @@ export default function TemplateEditor() {
                           className="h-11 md:h-14 w-auto object-contain brightness-0 invert drop-shadow-md"
                         />
                         <h2 className={`font-black tracking-tight text-white ${isMobileView
-                            ? "text-lg sm:text-xl leading-snug"
-                            : "text-2xl sm:text-3xl md:text-4xl leading-tight"
+                          ? "text-lg sm:text-xl leading-snug"
+                          : "text-2xl sm:text-3xl md:text-4xl leading-tight"
                           }`}>
                           {template.footerConfig.headline ||
                             "Your Birth Chart Holds Clues, Not Instant MIRACLES"}
@@ -3332,8 +3332,8 @@ export default function TemplateEditor() {
                     {/* Center Big Statement */}
                     <div className="my-8 sm:my-10 text-center max-w-4xl mx-auto relative z-10 px-2">
                       <h2 className={`font-black text-white tracking-tight ${isMobileView
-                          ? "text-lg sm:text-xl leading-snug"
-                          : "text-2xl sm:text-4xl md:text-5xl leading-tight"
+                        ? "text-lg sm:text-xl leading-snug"
+                        : "text-2xl sm:text-4xl md:text-5xl leading-tight"
                         }`}>
                         {template.footerConfig.headline ||
                           "Your Birth Chart Holds Clues, Not Instant MIRACLES"}
@@ -3549,8 +3549,8 @@ export default function TemplateEditor() {
                             type="button"
                             onClick={() => updateActiveSectionStyle({ maxWidth: opt.value })}
                             className={`py-1.5 px-1 rounded-lg border text-[11px] font-bold text-center transition cursor-pointer ${isSelected
-                                ? "bg-[#2171B5] text-white border-[#2171B5] shadow-xs"
-                                : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
+                              ? "bg-[#2171B5] text-white border-[#2171B5] shadow-xs"
+                              : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
                               }`}
                           >
                             {opt.label}
@@ -4122,8 +4122,8 @@ export default function TemplateEditor() {
                             type="button"
                             onClick={() => updateActiveComponentContent({ align: al.id })}
                             className={`py-1.5 text-xs font-bold rounded-lg transition ${(activeComponent.content.align || "center") === al.id
-                                ? "bg-white text-[#2171B5] shadow-xs"
-                                : "text-slate-600 hover:text-slate-900"
+                              ? "bg-white text-[#2171B5] shadow-xs"
+                              : "text-slate-600 hover:text-slate-900"
                               }`}
                           >
                             {al.label}
@@ -4411,8 +4411,8 @@ export default function TemplateEditor() {
                           type="button"
                           onClick={() => updateActiveComponentContent({ mediaType: "video" })}
                           className={`px-3 py-2 rounded-xl text-xs font-bold border transition flex items-center justify-center gap-1.5 ${activeComponent.content.mediaType !== "image"
-                              ? "bg-blue-50 border-blue-400 text-[#2171B5]"
-                              : "bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100"
+                            ? "bg-blue-50 border-blue-400 text-[#2171B5]"
+                            : "bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100"
                             }`}
                         >
                           <VideoIcon className="w-3.5 h-3.5" />
@@ -4422,8 +4422,8 @@ export default function TemplateEditor() {
                           type="button"
                           onClick={() => updateActiveComponentContent({ mediaType: "image" })}
                           className={`px-3 py-2 rounded-xl text-xs font-bold border transition flex items-center justify-center gap-1.5 ${activeComponent.content.mediaType === "image"
-                              ? "bg-blue-50 border-blue-400 text-[#2171B5]"
-                              : "bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100"
+                            ? "bg-blue-50 border-blue-400 text-[#2171B5]"
+                            : "bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100"
                             }`}
                         >
                           <ImageIcon className="w-3.5 h-3.5" />
@@ -4575,8 +4575,8 @@ export default function TemplateEditor() {
                             type="button"
                             onClick={() => updateActiveComponentContent({ align: a })}
                             className={`py-1.5 px-3 rounded-lg text-xs font-bold capitalize transition cursor-pointer ${(activeComponent.content.align || "left") === a
-                                ? "bg-white text-[#2171B5] shadow-xs"
-                                : "text-slate-600 hover:text-slate-900"
+                              ? "bg-white text-[#2171B5] shadow-xs"
+                              : "text-slate-600 hover:text-slate-900"
                               }`}
                           >
                             {a}
@@ -4855,8 +4855,8 @@ export default function TemplateEditor() {
                               });
                             }}
                             className={`w-full px-3 py-2 rounded-xl text-xs font-bold border transition text-left cursor-pointer flex items-center justify-between ${(template.footerConfig.templateStyle || 1) === tpl.id
-                                ? "bg-blue-50 border-blue-400 text-[#2171B5] shadow-xs"
-                                : "bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100"
+                              ? "bg-blue-50 border-blue-400 text-[#2171B5] shadow-xs"
+                              : "bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100"
                               }`}
                           >
                             <span>{tpl.name}</span>
@@ -5219,8 +5219,8 @@ export default function TemplateEditor() {
                                 })
                               }
                               className={`py-1 text-[10px] font-semibold rounded-md border transition cursor-pointer ${isCurrent
-                                  ? "bg-[#2171B5] text-white border-[#2171B5]"
-                                  : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50"
+                                ? "bg-[#2171B5] text-white border-[#2171B5]"
+                                : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50"
                                 }`}
                             >
                               {preset.label}
