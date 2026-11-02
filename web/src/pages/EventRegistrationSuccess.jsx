@@ -27,7 +27,7 @@ const EventRegistrationSuccess = () => {
 
   const getApiBaseUrl = () => {
     const raw = import.meta.env.VITE_BASE_URL || import.meta.env.VITE_API_BASE || 'https://happy-life-sx03.onrender.com';
-    return raw.replace(/\/api\/v1\/?$/, '') + '/api/v1';
+    return raw.replace(/\/api\/v1\/?$/, '').replace(/\/api\/?$/, '').replace(/\/+$/, '');
   };
 
   useEffect(() => {

@@ -156,6 +156,8 @@ app.use((req, res, next) => {
 // API Routes
 app.use(downloadLinks);
 app.use("/", routes);
+app.use("/api/v1", routes);
+app.use("/api", routes);
 
 // Global 404 handler for unmatched API routes
 app.use((req, res) => {
